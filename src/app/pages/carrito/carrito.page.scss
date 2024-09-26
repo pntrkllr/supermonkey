@@ -1,0 +1,28 @@
+//sass imágenes de cards
+ion-card img {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}
+
+.propiedades {
+    margin-left: 40px;
+}
+
+//sass boton pagar
+.boton-pagar {
+    margin-left: 35px;
+}
+
+.total-pagar {
+    margin-left: 75px;
+}
+
+mat-icon {
+    padding: 0;
+    color: red;
+}
+
+.precio {
+    margin-left: 15px;
+}

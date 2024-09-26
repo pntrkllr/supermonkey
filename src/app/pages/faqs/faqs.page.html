@@ -1,0 +1,54 @@
+<ion-header [translucent]="true">
+  <ion-header>
+    <ion-toolbar color="success">
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>
+        Preguntas frecuentes
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <h2>Infórmate sobre todo lo que necesitas saber de Supermonkey.</h2>
+  
+  <ion-accordion-group>
+    <ion-accordion value="first">
+      <ion-item slot="header" color="light">
+        <ion-label>¿Cómo puedo crear una cuenta en Supermonkey?</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">Entra en la aplicación, selecciona "Regístrate" y sigue las instrucciones para ingresar tu información personal y crear una cuenta.</div>
+    </ion-accordion>
+
+    <ion-accordion value="second">
+      <ion-item slot="header" color="light">
+        <ion-label>¿Supermonkey ofrece entrega a domicilio?</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">Sí, ofrecemos entrega a domicilio. Simplemente selecciona los productos que deseas, procede al pago, y elige la opción de entrega a domicilio.</div>
+    </ion-accordion>
+
+    <ion-accordion value="third">
+      <ion-item slot="header" color="light">
+        <ion-label>¿Qué métodos de pago están disponibles en Supermonkey?</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">Aceptamos tarjetas de crédito, débito y pagos mediante billeteras electrónicas como Google Pay y Apple Pay.</div>
+    </ion-accordion>
+
+    <ion-accordion value="fourth">
+      <ion-item slot="header" color="light">
+        <ion-label>¿Supermonkey ofrece descuentos o promociones?</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">Sí, regularmente ofrecemos descuentos y promociones exclusivas para nuestros usuarios.</div>
+    </ion-accordion>
+
+    <ion-accordion value="fifth">
+      <ion-item slot="header" color="light">
+        <ion-label>¿Cómo puedo actualizar mi información personal en Supermonkey?</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">Ve a "Mi perfil" en la aplicación y selecciona "Editar perfil" para actualizar tu información personal.</div>
+    </ion-accordion>
+
+  </ion-accordion-group>
+</ion-content>

@@ -1,0 +1,45 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button [routerLink]="['/home']"></ion-back-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div id="container">
+    <ion-card class="bordes">
+      <ion-item>
+        <ion-title>Inicio de sesión</ion-title>
+      </ion-item>
+
+      <br />
+      <br />
+
+      <ion-input label="Usuario" label-placement="floating" fill="outline" placeholder="Escriba su nombre de usuario" [(ngModel)]="usuario"></ion-input>
+      <br />
+  
+      <ion-input label="Contraseña" type="password"  label-placement="floating" fill="outline" placeholder="Introduzca su contraseña"[(ngModel)]="contrasena">
+        <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+      </ion-input>
+      
+      <br />
+
+      <ion-label>
+        <p>¿No tienes una cuenta de Supermonkey? <a [routerLink]="['/register']">Regístrate</a></p>
+      </ion-label>
+
+      <ion-label>
+        <p><a (click)="restablecerContrasena()">¿Olvidaste tu contraseña?</a></p>
+      </ion-label>
+
+      <div class="container-boton">
+        <ion-button class="boton" color="success" (click)="validarUsuario()">Iniciar sesión</ion-button>
+      </div>
+      <br />
+
+    </ion-card>
+  </div>
+</ion-content>

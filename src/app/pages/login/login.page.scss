@@ -1,0 +1,52 @@
+#container {
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#container strong {
+    font-size: 20px;
+    line-height: 26px;
+}
+
+#container p {
+    font-size: 16px;
+    line-height: 22px;
+
+    color: #8c8c8c;
+
+    margin: 0;
+}
+
+#container a {
+    text-decoration: none;
+}
+
+ion-label {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+
+// scss botón:
+.container-boton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+//scss título
+ion-title {
+    text-align: center;
+}
+
+.bordes {
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 10px;
+}
+  

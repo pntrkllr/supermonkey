@@ -1,0 +1,47 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/login"></ion-back-button>
+    </ion-buttons>
+    
+    <ion-title>Regístrate en Supermonkey</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div id="container">
+    <ion-card class="bordes">
+      <div class="div-titulo">
+        <ion-title>Registro</ion-title>
+      </div>
+
+      <br />
+      <br />
+
+      <ion-input label="Nombre de usuario" label-placement="floating" fill="outline" placeholder="Ingrese su nombre de usuario" [(ngModel)]="usuario"></ion-input>
+      <br />
+
+      <ion-input label="Correo electrónico" type="email" label-placement="floating" fill="outline" placeholder="Ingrese su correo electrónico" [(ngModel)]="email"></ion-input>
+      <br />
+
+      <ion-input label="Contraseña" type="password" label-placement="floating" fill="outline" placeholder="Ingrese su contraseña" [(ngModel)]="contrasena">
+        <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+      </ion-input>
+      <br />
+      <ion-input label="Confirmar Contraseña" type="password" label-placement="floating" fill="outline" placeholder="Corfirme su contraseña" [(ngModel)]="contrasena2">
+        <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+      </ion-input>
+      <br />
+
+      <div class="container-check">
+        <ion-checkbox>Acepto los <a [routerLink]="[]" (click)="$event.stopPropagation()">términos y condiciones</a></ion-checkbox>
+      </div>
+
+      <div class="container-boton">
+        <ion-button class="boton" color="success" (click)="validarUsuario()">Crear cuenta</ion-button>
+      </div>
+
+    </ion-card>
+  </div>
+</ion-content>

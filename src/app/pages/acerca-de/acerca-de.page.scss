@@ -1,0 +1,30 @@
+h1 {
+    color: #2dd55b;
+    margin-top: 15px;
+    font-size: 30px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 20px;
+    text-align: center;
+}
+
+//para que tome toda la pantalla
+ion-content {
+    width: 100%;
+    height: 100%;
+}
+
+p {
+    margin-top: 25px;
+    font-size: 22px;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.logo {
+    width: 135px;
+    height: 135px;
+    margin-left: 23%;
+}

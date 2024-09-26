@@ -1,0 +1,36 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="success">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/productos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Agregar producto</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  
+  <div id="container">
+    <ion-card class="bordes">
+      <div class="div-titulo">
+        <ion-title></ion-title>
+      </div>
+
+      <br />
+      <br />
+
+      <ion-input label="Nombre del producto" type="input" label-placement="floating" fill="outline" placeholder="Nombre del producto"></ion-input>
+      <br />
+      <ion-input label="Cantidad" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."></ion-input>
+      <br />
+      <ion-input label="Precio" type="input" label-placement="floating" fill="outline" placeholder="Precio del producto"></ion-input>
+      <br />
+
+      <div class="container-boton">
+        <ion-button class="boton" color="success">Confirmar</ion-button>
+        <ion-button class="boton" color="danger">Cancelar</ion-button>
+      </div>
+
+    </ion-card>
+  </div>
+
+</ion-content>
