@@ -1,0 +1,42 @@
+//scss avatar principal
+ion-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+//scss para el div del avatar, hace que se muestre enmedio de la página
+.avatar {
+    display: grid;
+    place-items: center;
+    margin-top: 10%;
+}
+
+.datos-usuario {
+    margin-left: 25px;
+    margin-right: 25px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.recientes {
+    margin-top: 50px;
+}
+
+.boton-perfil {
+    margin-top: 20px;
+}
+
+.margin-form {
+    margin: 0 20px;
+}
+
+.modificar {
+    margin-top: 20px;
+    display: grid;
+    justify-content: center;
+}
+
+ion-input {
+    margin-top: 5px;
+}

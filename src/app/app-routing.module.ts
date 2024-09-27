@@ -64,10 +64,13 @@ const routes: Routes = [
     loadChildren: () => import('./pages/historial-compra/historial-compra.module').then( m => m.HistorialCompraPageModule)
   },
   {
+    path: 'modificar-contrasena',
+    loadChildren: () => import('./pages/modificar-contrasena/modificar-contrasena.module').then( m => m.ModificarContrasenaPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./pages/notfound/notfound.module').then( m => m.NotfoundPageModule)
   },
-
 
 ];
 

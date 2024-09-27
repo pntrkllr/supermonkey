@@ -1,64 +1,47 @@
 <ion-header [translucent]="true">
-  <ion-header>
-    <ion-toolbar color="success">
-      <ion-buttons slot="start">
-        <ion-back-button default-href="/productos"></ion-back-button>
-      </ion-buttons>
-      <ion-title>
-        Mi perfil
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-toolbar color="success">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/productos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true">
 
-    <div class="avatar">
-      <ion-avatar>
-        <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-      </ion-avatar>
-      <h2>Usuario</h2>
-    </div>
+  <div class="avatar">
+    <ion-avatar>
+      <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+    </ion-avatar>
+    <br />
+  </div>
 
-    <div class="datos-usuario">
-      <p>Nombre: Usuario</p>
-      <p>Correo: usuario&#64;monosql.com</p>
+  <div class="margin-form">
 
-      <ion-button class="boton-perfil" color="success" [routerLink]="['/modificar-perfil']">Modificar perfil</ion-button>
+    <ion-label position="stacked">Nombre</ion-label>
+    <ion-input [readonly]="true" label="Ángel" fill="outline"></ion-input>
+    <br />
 
-      <div class="recientes">
-        <ion-label>Comprados recientemente:</ion-label>
+    <ion-label position="stacked">Apellido</ion-label>
+    <ion-input [readonly]="true" label="Llanos" fill="outline"></ion-input>
+    <br />
 
-        <ion-card>
-          <img class="container-imagen" alt="manzana verde" src="../assets/Productos/manzana-verde.png" />
-          <ion-card-header>
-            <ion-card-title>Manzana Verde</ion-card-title>
-            <ion-card-subtitle>1 kg.</ion-card-subtitle>
-          </ion-card-header>
+    <ion-label position="stacked">Nombre de usuario</ion-label>
+    <ion-input [readonly]="true" label="kaifury" fill="outline"></ion-input>
+    <br />
 
-          <ion-card-content>
-            Precio : $2.390
-          </ion-card-content>
-          <div class="container-boton">
-            <ion-button color="success" [routerLink]="['/productos']">Ver en productos</ion-button>
-          </div>
-        </ion-card>
+    <ion-label position="stacked">Correo electrónico</ion-label>
+    <ion-input [readonly]="true" type="email" label="kaifury@gmail.com" fill="outline"></ion-input>
 
-        <ion-card style="margin-top: 35px;">
-          <img class="container-imagen" alt="manzana verde" src="../assets/Productos/manzana-roja.png" />
-          <ion-card-header>
-            <ion-card-title>Manzana Roja</ion-card-title>
-            <ion-card-subtitle>1 kg.</ion-card-subtitle>
-          </ion-card-header>
+    <ion-button class="modificar" color="success" [routerLink]="['/modificar-perfil']">Modificar datos</ion-button>
 
-          <ion-card-content>
-            Precio : $2.390
-          </ion-card-content>
-          <div class="container-boton">
-            <ion-button color="success" [routerLink]="['/productos']">Ver en productos</ion-button>
-          </div>
-        </ion-card>
+    <br />
 
-      </div>
-    </div>
+    <ion-label class="contrasena">
+      <br />
+      <p>¿Deseas modificar tu contraseña? <a [routerLink]="['/modificar-contrasena']">Entra aquí</a></p>
+    </ion-label>
 
-  </ion-content>
+  </div>
+
+</ion-content>

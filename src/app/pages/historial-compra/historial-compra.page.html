@@ -9,6 +9,39 @@
 
 <ion-content [fullscreen]="true">
   
-  
+  <div class="recientes">
+    <ion-label>Comprados recientemente:</ion-label>
+
+    <ion-card>
+      <img class="container-imagen" alt="manzana verde" src="../assets/Productos/manzana-verde.png" />
+      <ion-card-header>
+        <ion-card-title>Manzana Verde</ion-card-title>
+        <ion-card-subtitle>1 kg.</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        Precio : $2.390
+      </ion-card-content>
+      <div class="container-boton">
+        <ion-button color="success" [routerLink]="['/productos']">Ver en productos</ion-button>
+      </div>
+    </ion-card>
+
+    <ion-card style="margin-top: 35px;">
+      <img class="container-imagen" alt="manzana verde" src="../assets/Productos/manzana-roja.png" />
+      <ion-card-header>
+        <ion-card-title>Manzana Roja</ion-card-title>
+        <ion-card-subtitle>1 kg.</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        Precio : $2.390
+      </ion-card-content>
+      <div class="container-boton">
+        <ion-button color="success" [routerLink]="['/productos']">Ver en productos</ion-button>
+      </div>
+    </ion-card>
+
+  </div>
 
 </ion-content>

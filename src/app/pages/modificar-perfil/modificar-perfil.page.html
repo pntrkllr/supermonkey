@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="success">
     <ion-buttons slot="start">
-      <ion-back-button default-href="/productos"></ion-back-button>
+      <ion-back-button default-href="/perfil"></ion-back-button>
     </ion-buttons>
     <ion-title>Modificar perfil</ion-title>
   </ion-toolbar>
@@ -9,6 +9,28 @@
 
 <ion-content [fullscreen]="true">
   
-  
+  <div class="avatar">
+    <ion-avatar>
+      <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+    </ion-avatar>
+    <br />
+  </div>
+
+  <div class="margin-form">
+
+    <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Su nuevo nombre"></ion-input>
+    <br />
+
+    <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Su nuevo apellido"></ion-input>
+    <br />
+
+    <ion-input label="Nombre de usuario" label-placement="floating" fill="outline" placeholder="Nuevo nombre de usuario"></ion-input>
+    <br />
+
+    <ion-input label="Correo electrónico" label-placement="floating" type="email" fill="outline" placeholder="Nuevo correo electrónico"></ion-input>
+
+    <ion-button class="modificar" color="success" [routerLink]="['/modificar-perfil']">Modificar</ion-button>
+
+  </div>
 
 </ion-content>
