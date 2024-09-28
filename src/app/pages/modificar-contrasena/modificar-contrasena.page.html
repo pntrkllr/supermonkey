@@ -9,6 +9,27 @@
 
 <ion-content [fullscreen]="true">
 
-  
+  <div class="margin-form">
+
+    <br />
+    <br />
+
+    <ion-input label="Contraseña actual" type="password" label-placement="floating" fill="outline" placeholder="Ingrese su contraseña" [(ngModel)]="contrasena">
+      <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+    </ion-input>
+    <br />
+
+    <ion-input label="Nueva contraseña" type="password" label-placement="floating" fill="outline" placeholder="Ingrese su nueva contraseña" [(ngModel)]="contrasena2">
+      <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+    </ion-input>
+    <br />
+
+    <ion-input label="Confirmar Contraseña" type="password" label-placement="floating" fill="outline" placeholder="Corfirme su nueva contraseña" [(ngModel)]="contrasena3">
+      <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+    </ion-input>
+
+    <ion-button class="modificar" color="success" (click)="validarContrasena()">Modificar</ion-button>
+
+  </div>
 
 </ion-content>

@@ -11,14 +11,42 @@ import { AlertController, ToastController } from '@ionic/angular';
 
 export class RegisterPage implements OnInit {
 
+  nombre: string = "";
+  apellido: string = "";
   usuario: string = "";
   email: string = "";
   contrasena: string = "";
   contrasena2: string = "";
 
+  inputNombre: boolean = false;
+  inputApellido: boolean = false;
+  inputUsuario: boolean = false;
+  inputEmail: boolean = false;
+  inputContrasena: boolean = false;
+  inputContrasena2: boolean = false;
+
   constructor(public alertcontroller: AlertController, private router: Router, private toastController: ToastController) { }
 
   ngOnInit() {
+  }
+
+  onNombreBlur() {
+    this.inputNombre = true;
+  }
+  onApellidoBlur() {
+    this.inputApellido = true;
+  }
+  onUsuarioBlur() {
+    this.inputUsuario = true;
+  }
+  onEmailBlur() {
+    this.inputEmail = true;
+  }
+  onContrasenaBlur() {
+    this.inputContrasena = true;
+  }
+  onContrasena2Blur() {
+    this.inputContrasena2 = true;
   }
 
   async presentAlert() {

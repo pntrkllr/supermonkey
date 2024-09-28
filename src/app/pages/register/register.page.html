@@ -19,6 +19,12 @@
       <br />
       <br />
 
+      <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nombre" [(ngModel)]="nombre"></ion-input>
+      <br />
+
+      <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Ingrese su apellido" [(ngModel)]="apellido"></ion-input>
+      <br />
+
       <ion-input label="Nombre de usuario" label-placement="floating" fill="outline" placeholder="Ingrese su nombre de usuario" [(ngModel)]="usuario"></ion-input>
       <br />
 
@@ -29,6 +35,7 @@
         <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
       </ion-input>
       <br />
+      
       <ion-input label="Confirmar Contraseña" type="password" label-placement="floating" fill="outline" placeholder="Corfirme su contraseña" [(ngModel)]="contrasena2">
         <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
       </ion-input>
