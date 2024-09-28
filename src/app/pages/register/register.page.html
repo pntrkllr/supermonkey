@@ -4,7 +4,7 @@
     <ion-buttons slot="start">
       <ion-back-button default-href="/login"></ion-back-button>
     </ion-buttons>
-    
+
     <ion-title>Regístrate en Supermonkey</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -19,35 +19,54 @@
       <br />
       <br />
 
-      <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nombre" [(ngModel)]="nombre"></ion-input>
-      <br />
+      <form [formGroup]="form">
 
-      <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Ingrese su apellido" [(ngModel)]="apellido"></ion-input>
-      <br />
+        <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nombre"
+          formControlName="nombre" (ionBlur)="nombre.markAsTouched()"></ion-input>
+        <p *ngIf="isNombreInvalid()">{{ getNombreError() }}</p>
+        <br />
 
-      <ion-input label="Nombre de usuario" label-placement="floating" fill="outline" placeholder="Ingrese su nombre de usuario" [(ngModel)]="usuario"></ion-input>
-      <br />
+        <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Ingrese su apellido"
+          formControlName="apellido" (ionBlur)="apellido.markAsTouched()"></ion-input>
+        <p *ngIf="isApellidoInvalid()">{{ getApellidoError() }}</p>
+        <br />
 
-      <ion-input label="Correo electrónico" type="email" label-placement="floating" fill="outline" placeholder="Ingrese su correo electrónico" [(ngModel)]="email"></ion-input>
-      <br />
+        <ion-input label="Nombre de usuario" label-placement="floating" fill="outline"
+          placeholder="Ingrese su nombre de usuario" formControlName="usuario" (ionBlur)="usuario.markAsTouched()"></ion-input>
+        <p *ngIf="isUsuarioInvalid()">{{ getUsuarioError() }}</p>
+        <br />
 
-      <ion-input label="Contraseña" type="password" label-placement="floating" fill="outline" placeholder="Ingrese su contraseña" [(ngModel)]="contrasena">
-        <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
-      </ion-input>
-      <br />
-      
-      <ion-input label="Confirmar Contraseña" type="password" label-placement="floating" fill="outline" placeholder="Corfirme su contraseña" [(ngModel)]="contrasena2">
-        <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
-      </ion-input>
-      <br />
+        <ion-input label="Correo electrónico" type="email" label-placement="floating" fill="outline"
+          placeholder="Ingrese su correo electrónico" formControlName="email" (ionBlur)="email.markAsTouched()"></ion-input>
+        <p *ngIf="isEmailInvalid()">{{ getEmailError() }}</p>
+        <br />
 
-      <div class="container-check">
-        <ion-checkbox>Acepto los <a [routerLink]="[]" (click)="$event.stopPropagation()">términos y condiciones</a></ion-checkbox>
-      </div>
+        <ion-input label="Contraseña" type="password" label-placement="floating" fill="outline"
+          placeholder="Ingrese su contraseña" formControlName="password"
+          (ionBlur)="markPasswordAsTouched()">
+          <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+        </ion-input>
+        <p *ngIf="isPasswordInvalid()">{{ getPasswordError() }}</p>
+        <br />
 
-      <div class="container-boton">
-        <ion-button class="boton" color="success" (click)="validarUsuario()">Crear cuenta</ion-button>
-      </div>
+        <ion-input label="Confirmar Contraseña" type="password" label-placement="floating" fill="outline"
+          placeholder="Confirme su contraseña" formControlName="confirmPassword"
+          (ionBlur)="markPasswordAsTouched()">
+          <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+        </ion-input>
+        <p *ngIf="arePasswordsDifferent()">{{ getConfirmPasswordError() }}</p>
+        <br />
+
+        <div class="container-check">
+          <ion-checkbox>Acepto los <a [routerLink]="[]" (click)="$event.stopPropagation()">términos y
+              condiciones</a></ion-checkbox>
+        </div>
+
+        <div class="container-boton">
+          <ion-button color="success" [disabled]="form.invalid">Crear cuenta</ion-button>
+        </div>
+
+      </form>
 
     </ion-card>
   </div>
