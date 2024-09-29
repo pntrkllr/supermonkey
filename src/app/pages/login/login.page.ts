@@ -18,8 +18,8 @@ export class LoginPage implements OnInit {
   usuarioCli: string ="usuario";
   contrasenaCli: string ="123456789";
 
-  usuario:string ="";
-  contrasena:string="";
+  usuario: string ="";
+  contrasena: string="";
 
 
   constructor( public alertcontroller : AlertController, private router: Router, private toastController: ToastController) { 
@@ -65,6 +65,18 @@ export class LoginPage implements OnInit {
     }if (this.contrasena!==this.contrasenaAdmin && this.usuario!==this.usuarioAdmin && this.contrasena!==this.contrasenaCli && this.usuario!==this.usuarioCli){
       
       this.presentAlert('El usuario no existe','Por favor, ingrese su nombre de usuario o regístrese');
+      return;
+    }if (this.usuario===this.usuarioCli && this.contrasena!==this.contrasenaCli){
+      this.presentAlert('Datos incorrectos', 'Nombre de usuario o contraseña no coincide.');
+      return;
+    }if (this.usuario===this.usuarioAdmin && this.contrasena!==this.contrasenaAdmin){
+      this.presentAlert('Datos incorrectos', 'Nombre de usuario o contraseña no coincide.');
+      return;
+    }if (this.usuario!==this.usuarioCli && this.contrasena===this.contrasenaCli){
+      this.presentAlert('Datos incorrectos', 'Nombre de usuario o contraseña no coincide.');
+      return;
+    }if (this.usuario!==this.usuarioAdmin && this.contrasena===this.contrasenaAdmin){
+      this.presentAlert('Datos incorrectos', 'Nombre de usuario o contraseña no coincide.');
       return;
     }
   }

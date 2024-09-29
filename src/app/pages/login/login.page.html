@@ -18,7 +18,7 @@
       <br />
       <br />
 
-      <ion-input label="Usuario" label-placement="floating" fill="outline" placeholder="Escriba su nombre de usuario" [(ngModel)]="usuario"></ion-input>
+      <ion-input label="Nombre de usuario" label-placement="floating" fill="outline" placeholder="Escriba su nombre de usuario" [(ngModel)]="usuario"></ion-input>
       <br />
   
       <ion-input label="Contraseña" type="password"  label-placement="floating" fill="outline" placeholder="Introduzca su contraseña"[(ngModel)]="contrasena">
@@ -32,7 +32,7 @@
       </ion-label>
 
       <ion-label>
-        <p><a (click)="restablecerContrasena()">¿Olvidaste tu contraseña?</a></p>
+        <p><a [routerLink]="['/recuperar-contrasena']">¿Olvidaste tu contraseña?</a></p>
       </ion-label>
 
       <div class="container-boton">

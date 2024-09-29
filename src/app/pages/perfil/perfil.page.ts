@@ -8,6 +8,9 @@ import { AlertController } from '@ionic/angular';
 })
 export class PerfilPage implements OnInit {
 
+  usuario: string = "";
+  contrasena: string = "";
+
   constructor( public alertcontroller : AlertController) { }
 
   ngOnInit() {

@@ -63,7 +63,7 @@
         </div>
 
         <div class="container-boton">
-          <ion-button color="success" [disabled]="form.invalid">Crear cuenta</ion-button>
+          <ion-button color="success" [disabled]="form.invalid" (click)="presentAlert()" [routerLink]="['/login']">Crear cuenta</ion-button>
         </div>
 
       </form>

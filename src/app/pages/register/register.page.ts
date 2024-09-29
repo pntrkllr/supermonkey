@@ -133,7 +133,7 @@ export class RegisterPage implements OnInit {
 
   getPasswordError() {
     if (this.password.errors?.['required']) {
-      return 'La contraseña es obligatoria.';
+      return 'El campo "Contraseña" está vacío.';
     } else if (this.password.errors?.['pattern']) {
       return 'La contraseña debe tener entre 8 y 16 caracteres, incluir al menos un número y un símbolo.';
     }

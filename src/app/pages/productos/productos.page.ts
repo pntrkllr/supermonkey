@@ -13,8 +13,8 @@ import { library, playCircle, radio, search } from 'ionicons/icons';
 
 export class ProductosPage implements OnInit {
 
-  usuario: string ="";
-  contrasena: string ="";
+  usuario: string = "";
+  contrasena: string = "";
 
   constructor(public alertcontroller : AlertController,private router: Router,private activedroute: ActivatedRoute) { 
     addIcons({ library, playCircle, radio, search });
@@ -76,7 +76,6 @@ export class ProductosPage implements OnInit {
   }
 
   agregar(){
-
       this.presentAlert4('Agregar producto')
   }
 

@@ -7,6 +7,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HistorialCompraPage implements OnInit {
 
+  usuario: string = "";
+  contrasena: string = "";
+
   constructor() { }
 
   ngOnInit() {
