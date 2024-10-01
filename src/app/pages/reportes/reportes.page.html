@@ -7,8 +7,14 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  
-  
+<ion-content [fullscreen]="true" padding>
+
+  <ion-item>
+    <ion-thumbnail slot="start">
+      <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+    </ion-thumbnail>
+    <ion-label>Usuario</ion-label>
+    <ion-button color="success" [routerLink]="['/historial-compra']">Ver más</ion-button>
+  </ion-item>
 
 </ion-content>

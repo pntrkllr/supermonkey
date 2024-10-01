@@ -68,10 +68,14 @@ const routes: Routes = [
     loadChildren: () => import('./pages/modificar-contrasena/modificar-contrasena.module').then( m => m.ModificarContrasenaPageModule)
   },
   {
+    path: 'terminos-y-condiciones',
+    loadChildren: () => import('./pages/terminos-y-condiciones/terminos-y-condiciones.module').then( m => m.TerminosYCondicionesPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./pages/notfound/notfound.module').then( m => m.NotfoundPageModule)
   },
-
+  
 ];
 
 @NgModule({

@@ -8,28 +8,50 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  
+
   <div class="avatar">
     <ion-avatar>
       <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+      <ion-button color="success" class="foto-perfil" (click)="triggerFileInput()">Editar foto
+        <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" hidden>
+      </ion-button>
     </ion-avatar>
     <br />
   </div>
 
-  <div class="margin-form">
+  <br />
+  <br />
 
-    <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Su nuevo nombre"></ion-input>
+  <div id="nota">
+    <h3>Nota: El nombre de usuario no es modificable.</h3>
     <br />
+  </div>
 
-    <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Su nuevo apellido"></ion-input>
-    <br />
+  <div id="container">
 
-    <ion-input label="Nombre de usuario" label-placement="floating" fill="outline" placeholder="Nuevo nombre de usuario"></ion-input>
-    <br />
+    <form class="margin-form" [formGroup]="form">
 
-    <ion-input label="Correo electrónico" label-placement="floating" type="email" fill="outline" placeholder="Nuevo correo electrónico"></ion-input>
+      <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nombre"
+        formControlName="nombre" (ionBlur)="nombre.markAsTouched()"></ion-input>
+      <p *ngIf="isNombreInvalid()">{{ getNombreError() }}</p>
+      <br />
 
-    <ion-button class="modificar" color="success" [routerLink]="['/modificar-perfil']">Modificar</ion-button>
+      <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Ingrese su apellido"
+        formControlName="apellido" (ionBlur)="apellido.markAsTouched()"></ion-input>
+      <p *ngIf="isApellidoInvalid()">{{ getApellidoError() }}</p>
+      <br />
+
+      <ion-input label="Correo electrónico" type="email" label-placement="floating" fill="outline"
+        placeholder="Ingrese su correo electrónico" formControlName="email"
+        (ionBlur)="email.markAsTouched()"></ion-input>
+      <p *ngIf="isEmailInvalid()">{{ getEmailError() }}</p>
+      <br />
+
+      <div class="container-boton">
+        <ion-button class="modificar" color="success" [disabled]="form.invalid">Modificar</ion-button>
+      </div>
+
+    </form>
 
   </div>
 
