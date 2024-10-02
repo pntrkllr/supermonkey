@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-modificar-contrasena',
@@ -13,7 +14,7 @@ export class ModificarContrasenaPage implements OnInit {
   contrasena2: string = "";
   contrasena3: string = "";
 
-  constructor(public alertcontroller: AlertController, private router: Router, private toastController: ToastController) { }
+  constructor(public alertcontroller: AlertController, private router: Router, private toastController: ToastController, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
   }
