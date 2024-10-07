@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-
 import { addIcons } from 'ionicons';
 import { eye, lockClosed } from 'ionicons/icons';
-import { AlertController, ToastController } from '@ionic/angular';
-import {NavigationExtras, Router } from '@angular/router';
+import { AlertController, NavController } from '@ionic/angular';
+import { ServicebdService } from 'src/app/services/servicebd.service';
 
 @Component({
   selector: 'app-login',
@@ -11,85 +10,47 @@ import {NavigationExtras, Router } from '@angular/router';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
+  nom_usuario: string = "";
+  contrasena: string = "";
+  rolUsuario: string | null = null; // Aquí se declara la propiedad para almacenar el rol del usuario
 
-  usuarioAdmin: string="admin";
-  contrasenaAdmin: string="admin123";
-  
-  usuarioCli: string ="usuario";
-  contrasenaCli: string ="123456789";
-
-  usuario: string ="";
-  contrasena: string="";
-
-
-  constructor( public alertcontroller : AlertController, private router: Router, private toastController: ToastController) { 
+  constructor(
+    public alertcontroller: AlertController,
+    private navcontroller: NavController,
+    private bd: ServicebdService
+  ) {
     addIcons({ eye, lockClosed });
-    
   }
 
   ngOnInit() {
-  }
-  async presentAlert( titulo:string,texto:string) {
-    const alert = await this.alertcontroller.create({
-      header: titulo,
-      message: texto,
-      buttons: ['Aceptar'],
-    });
+    // Verificar si hay un usuario logueado al iniciar la aplicación
+    const username = localStorage.getItem('nom_usuario');
+    this.rolUsuario = localStorage.getItem('id_rol'); // Aquí se obtiene el rol del usuario desde localStorage
 
-    await alert.present();
-  }
-
-  validarUsuario(){
-    if (this.usuario===this.usuarioAdmin && this.contrasena===this.contrasenaAdmin){
-      let navigationextras: NavigationExtras = {
-        state:{
-          con: this.contrasenaAdmin,
-          user: this.usuarioAdmin
-        }
-      }
-      this.presentAlert('Bienvenido','Ha iniciado sesión como admin. Disfrute de Supermonkey!');
-      this.router.navigate(['/productos'],navigationextras)
-    }if(this.usuario===this.usuarioCli && this.contrasena===this.contrasenaCli){
-      let navigationextras: NavigationExtras = {
-        state:{
-          con: this.contrasenaCli,
-          user: this.usuarioCli
-        }
-      }
-      this.presentAlert('Bienvenido usuario!','Ha iniciado sesión correctamente. Disfrute de Supermonkey!');
-      this.router.navigate(['/productos'], navigationextras)
-    }if (this.usuario==="" || this.contrasena===""){
-
-      this.presentAlert('Los campos están vacíos','Por favor, ingrese su nombre de usuario o regístrese');
-      return;
-    }if (this.contrasena!==this.contrasenaAdmin && this.usuario!==this.usuarioAdmin && this.contrasena!==this.contrasenaCli && this.usuario!==this.usuarioCli){
-      
-      this.presentAlert('El usuario no existe','Por favor, ingrese su nombre de usuario o regístrese');
-      return;
-    }if (this.usuario===this.usuarioCli && this.contrasena!==this.contrasenaCli){
-      this.presentAlert('Datos incorrectos', 'Nombre de usuario o contraseña no coincide.');
-      return;
-    }if (this.usuario===this.usuarioAdmin && this.contrasena!==this.contrasenaAdmin){
-      this.presentAlert('Datos incorrectos', 'Nombre de usuario o contraseña no coincide.');
-      return;
-    }if (this.usuario!==this.usuarioCli && this.contrasena===this.contrasenaCli){
-      this.presentAlert('Datos incorrectos', 'Nombre de usuario o contraseña no coincide.');
-      return;
-    }if (this.usuario!==this.usuarioAdmin && this.contrasena===this.contrasenaAdmin){
-      this.presentAlert('Datos incorrectos', 'Nombre de usuario o contraseña no coincide.');
-      return;
+    if (username) {
+      // Redirigir a la página de productos si hay un usuario logueado
+      this.navcontroller.navigateForward('/productos');
     }
   }
 
-  async presentToast(position: 'bottom', texto:string) {
-    const toast = await this.toastController.create({
-      message: texto,
-      duration: 1500,
-      position: position,
-    });
-
-    await toast.present();
+  loginUsuario() {
+    this.bd.getUsuario(this.nom_usuario, this.contrasena)
+      .then((usuario) => {
+        if (usuario) {
+          // Guardar el rol del usuario en localStorage
+          localStorage.setItem('id_rol', usuario.id_rol);
+          localStorage.setItem('nom_usuario', usuario.nom_usuario);
+  
+          // Redirigir a la página home si el login es exitoso
+          this.navcontroller.navigateForward('/productos');
+          alert('Bienvenido a Supermonkey!');
+        } else {
+          alert('Usuario o contraseña incorrectos');
+        }
+      })
+      .catch(e => console.error('Error en el login', e));
   }
+  
 
   async restablecerContrasena() {
     const alert = await this.alertcontroller.create({
@@ -106,13 +67,7 @@ export class LoginPage implements OnInit {
         text: 'Cancelar',
         role: 'cancel',
       },
-      {
-        text: 'Aceptar',
-        handler: ()=> {
-          this.presentToast('bottom', 'Se ha enviado un correo de recuperación.');
-        }
-      }
-    ],
+      ],
     });
 
     await alert.present();

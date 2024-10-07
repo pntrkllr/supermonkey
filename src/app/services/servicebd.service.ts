@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { AlertController, Platform } from '@ionic/angular';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Categoria } from '../models/categoria';
+import { Productos } from '../models/productos';
+import { Usuario } from '../models/usuario';
+import { NavigationExtras } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -8,35 +13,219 @@ import { AlertController, Platform } from '@ionic/angular';
 
 export class ServicebdService {
 
-  //variables de insertar por defecto
-  registroRol: string = "INSERT or IGNORE INTO rol (id_rol, nom_rol) VALUES (1, Admin)";
-
   public database!: SQLiteObject;
 
   //creación de tablas:
 
   //1.
-  rol: string = "CREATE TABLE IF NOT EXISTS rol (id_rol INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, nom_rol VARCHAR(20) NOT NULL)";
+  tablaRol: string = "CREATE TABLE IF NOT EXISTS rol(id_rol INTEGER PRIMARY KEY NOT NULL, nom_rol VARCHAR(20) NOT NULL)";
 
   //2.
-  estado: string = "CREATE TABLE IF NOT EXISTS estado (id_estado INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, nom_estado VARCHAR(20) NOT NULL)";
+  tablaEstado: string = "CREATE TABLE IF NOT EXISTS estado(id_estado INTEGER PRIMARY KEY autoincrement NOT NULL, nom_estado VARCHAR(20) NOT NULL)";
 
   //3.
-  categoria: string = "CREATE TABLE IF NOT EXISTS categoria (id_categoria INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, nomb_categoria VARCHAR(20) NOT NULL)";
+  tablaCategoria: string = "CREATE TABLE IF NOT EXISTS categoria(id_categoria INTEGER PRIMARY KEY NOT NULL, nomb_categoria VARCHAR(20) NOT NULL)";
 
   //tablas con fk
 
   //4.
-  usuario: string = "CREATE TABLE IF NOT EXISTS usuario (id_usuario INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, foto_perfil BLOB, pnombre VARCHAR(20) NOT NULL, apellido VARCHAR(30) NOT NULL, nom_usuario VARCHAR(30) NOT NULL, correo VARCHAR(40) NOT NULL, contrasena VARCHAR(16), id_rol INTEGER, FOREIGN KEY (id_rol) REFERENCES rol(id_rol))";
+  tablaUsuario: string = "CREATE TABLE IF NOT EXISTS usuario(id_usuario INTEGER PRIMARY KEY autoincrement NOT NULL, foto_perfil BLOB, pnombre VARCHAR(20) NOT NULL, apellido VARCHAR(30) NOT NULL, nom_usuario VARCHAR(30) NOT NULL, correo VARCHAR(40) NOT NULL, contrasena VARCHAR(16), id_rol INTEGER, FOREIGN KEY (id_rol) REFERENCES rol(id_rol))";
 
   //5.
-  venta: string = "CREATE TABLE IF NOT EXISTS venta (id_venta INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cant_venta INTEGER, total INTEGER, id_usuario INTEGER, id_estado INTEGER, FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario), FOREIGN KEY (id_estado) REFERENCES estado(id_estado)))";
+  tablaVenta: string = "CREATE TABLE IF NOT EXISTS venta(id_venta INTEGER PRIMARY KEY autoincrement NOT NULL, cant_venta INTEGER, total INTEGER, id_usuario INTEGER, id_estado INTEGER, FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario), FOREIGN KEY (id_estado) REFERENCES estado(id_estado)))";
 
   //6.
-  producto: string = "CREATE TABLE IF NOT EXISTS producto (id_producto INTEGER PRIMERY KEY AUTOINCREMENT NOT NULL, nombre_pr VARCHAR(30) NOT NULL, cantidad_kg INTEGER NOT NULL, precio INTEGER NOT NULL, stock INTEGER, foto BLOB NOT NULL, estatus BOOLEAN NOT NULL, id_categoria INTEGER, FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria))";
+  tablaProducto: string = "CREATE TABLE IF NOT EXISTS producto(id_producto INTEGER PRIMARY KEY autoincrement NOT NULL, nombre_pr VARCHAR(30) NOT NULL, cantidad_kg INTEGER NOT NULL, precio INTEGER NOT NULL, stock INTEGER, foto BLOB NOT NULL, estatus VARCHAR(20) NOT NULL, id_categoria INTEGER, FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria))";
 
   //7.
-  detalle: string = "CREATE TABLE IF NOT EXISTS detalle (id_detalle INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cantidad INTEGER, sub_total INTEGER, id_venta INTEGER, id_producto INTEGER, FOREIGN KEY (id_venta) REFERENCES venta(id_venta), FOREIGN KEY (id_producto) REFERENCES producto(id_producto)))";
+  tablaDetalle: string = "CREATE TABLE IF NOT EXISTS detalle(id_detalle INTEGER PRIMARY KEY autoincrement NOT NULL, cantidad INTEGER, sub_total INTEGER, id_venta INTEGER, id_producto INTEGER, FOREIGN KEY (id_venta) REFERENCES venta(id_venta), FOREIGN KEY (id_producto) REFERENCES producto(id_producto)))";
 
-  constructor(private sqlite: SQLite, private platform: Platform, private alertController: AlertController) { }
+  //variables de insertar por defecto
+  registroRolA: string = "INSERT or IGNORE INTO rol(id_rol, nom_rol) VALUES (1, 'Admin')";
+  registroRolU: string = "INSERT or IGNORE INTO rol(id_rol, nom_rol) VALUES (2, 'Usuario')";
+
+  registroEstadoTrue: string = "INSERT or IGNORE INTO estado(id_estado, nom_estado) VALUES (1, 'Completada')";
+  registroEstadoFalse: string = "INSERT or IGNORE INTO estado(id_estado, nom_estado) VALUES (2, 'No completada')";
+
+  registroCatFruta: string = "INSERT or IGNORE INTO categoria(id_categoria, nomb_categoria) VALUES (1, 'Frutas')"
+  registroCatVerdura: string = "INSERT or IGNORE INTO categoria(id_categoria, nomb_categoria) VALUES (2, 'Verduras')"
+  registroCatCarne: string = "INSERT or IGNORE INTO categoria(id_categoria, nomb_categoria) VALUES (3, 'Carnes')"
+  registroCatLacteo: string = "INSERT or IGNORE INTO categoria(id_categoria, nomb_categoria) VALUES (4, 'Lácteos')"
+
+  registroAdmin: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (1, 'Angel', 'Llanos', 'kaifury', 'kaifury@monosql.cl', '12345678Angel@', 1)";
+
+  registroAdmin2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (2, 'Rodrigo', 'Rocabado', 'pntrkllr', 'pntrkllr@monosql.cl', '1234Rodrigo@', 1)";
+
+  registroUsuario: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (3, 'Rodrigo', 'Guzmán', 'rodrigang', 'rodrigang@monosql.cl', 'Holacomoestan123@', 2)";
+
+  registroUsuario2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (4, 'Roberto', 'Leiva', 'robertson', 'robertson@monosql.cl', 'mellamorobertoxd123@', 2)";
+
+  registroProductoFruta: string = "INSERT or IGNORE INTO producto(id_producto, nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria) VALUES (1, 'Manzana Verde', 1, 2390, 10, '../assets/Productos/manzana-verde.png', 'Disponible', 1)";
+
+  //variable observable
+  listaProductos = new BehaviorSubject([]);
+
+  //variable observable para estatus de bd
+  private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  constructor(private sqlite: SQLite, private platform: Platform, private alertController: AlertController) {
+    this.crearBD()
+  }
+
+  crearBD() {
+    //verificar si la plataforma está lista
+    this.platform.ready().then(() => {
+      //crear la base de datos
+      this.sqlite.create({
+        name: 'bdTienda.db',
+        location: 'default'
+      }).then((bd: SQLiteObject) => {
+        //guardar la conexion a la base de datos
+        this.database = bd;
+        //llamar a la creación de las tablas
+
+        this.crearTablas();
+        this.getProductos();
+
+        //modificar el estado de la base de datos
+        this.isDBReady.next(true);
+      }).catch(e => {
+        this.presentAlert('CrearBD', 'Error: ' + JSON.stringify(e));
+      })
+    })
+
+  }
+
+  async crearTablas() {
+    try {
+      //ejecuto la creación de tablas en orden
+
+      //usuario
+      await this.database.executeSql(this.tablaRol, []);
+      await this.database.executeSql(this.tablaUsuario, []);
+
+      //producto
+      await this.database.executeSql(this.tablaProducto, []);
+
+      //ejecuto los insert en caso que existan
+
+      //usuario
+      await this.database.executeSql(this.registroRolA, []);
+      await this.database.executeSql(this.registroRolU, []);
+
+      await this.database.executeSql(this.registroAdmin, []);
+      await this.database.executeSql(this.registroAdmin2, []);
+      await this.database.executeSql(this.registroUsuario, []);
+      await this.database.executeSql(this.registroUsuario2, []);
+
+
+      //prodcuto
+      await this.database.executeSql(this.registroProductoFruta, []);
+
+    } catch (e) {
+      this.presentAlert('CrearTabla', 'Error: ' + JSON.stringify(e));
+    }
+
+  }
+
+  async presentAlert(titulo: string, msj: string) {
+    const alert = await this.alertController.create({
+      header: titulo,
+      message: msj,
+      buttons: ['OK'],
+    });
+
+    await alert.present();
+  }
+
+  fetchProductos(): Observable<Productos[]> {
+    return this.listaProductos.asObservable();
+  }
+
+  dbState() {
+    return this.isDBReady.asObservable();
+  }
+
+  getUsuario(nom_usuario: string, contrasena: string) {
+    return this.database.executeSql('SELECT * FROM usuario WHERE nom_usuario = ? AND contrasena = ?', [nom_usuario, contrasena]).then(res => {
+      let items: Usuario[] = [];
+  
+      if (res.rows.length > 0) {
+        for (let i = 0; i < res.rows.length; i++) {
+          items.push({
+            id_usuario: res.rows.item(i).id_usuario,
+            pnombre: res.rows.item(i).pnombre,
+            apellido: res.rows.item(i).apellido,
+            nom_usuario: res.rows.item(i).nom_usuario,
+            correo: res.rows.item(i).correo,
+            contrasena: res.rows.item(i).contrasena,
+            id_rol: res.rows.item(i).id_rol
+          });
+        }
+      }
+      return items.length > 0 ? items[0] : null; // Devuelve el primer usuario si existe
+    }).catch(e => {
+      console.error('Error al obtener el usuario:', e);
+      return null;
+    });
+  }
+
+  logoutUsuario() {
+    localStorage.removeItem('id_rol');
+    localStorage.removeItem('nom_usuario');
+    console.log('Logout successful, localStorage cleared.');
+  }
+
+  getProductos() {
+    return this.database.executeSql('SELECT * FROM producto', []).then(res => {
+      //variable para almacenar el resultado del select
+      let items: Productos[] = [];
+      //verificar si el select trae mas de 1 registro
+      if (res.rows.length > 0) {
+        //recorremos el resultado de la consulta
+        for (var i = 0; i < res.rows.length; i++) {
+          //ingresar registro a registro en mi variable
+          items.push({
+            id_producto: res.rows.item(i).id_producto,
+            nombre_pr: res.rows.item(i).nombre_pr,
+            cantidad_kg: res.rows.item(i).cantidad_kg,
+            precio: res.rows.item(i).precio,
+            stock: res.rows.item(i).stock,
+            foto: res.rows.item(i).foto,
+            estatus: res.rows.item(i).estatus,
+            id_categoria: res.rows.item(i).id_categoria
+          })
+
+        }
+      }
+      this.listaProductos.next(items as any);
+    })
+  }
+
+  insertarProducto(nombre_pr: string, cantidad_kg: number, precio: number, stock: number, foto: Blob, estatus: string, id_categoria: number) {
+    return this.database.executeSql('INSERT INTO producto(nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria) VALUES (?,?,?,?,?,?,?)', [nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria]).then((res) => {
+      this.presentAlert("Agregar", "Producto agregado correctamente");
+      this.getProductos();
+    }).catch(e => {
+      this.presentAlert('Agregar', 'Error: ' + JSON.stringify(e));
+    })
+  }
+
+  editarProducto(id_producto: number, nombre_pr: string, cantidad_kg: number, precio: number, stock: number, foto: Blob, estatus: string, id_categoria: number) {
+    return this.database.executeSql('UPDATE producto SET nombre_pr = ?, cantidad_kg = ?, precio = ?, stock = ?, foto = ?, status = ?, id_categoria = ? WHERE id_producto = ?', [id_producto, nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria]).then((res) => {
+      this.presentAlert("Modificar", "Producto modificado de manera correcta");
+      this.getProductos();
+    }).catch(e => {
+      this.presentAlert('Modificar', 'Error: ' + JSON.stringify(e));
+    })
+  }
+
+  eliminarProducto(id_producto: string) {
+    return this.database.executeSql('DELETE FROM producto WHERE id_producto = ?', [id_producto]).then((res) => {
+      this.presentAlert("Eliminar", "Producto eliminado de manera correcta");
+      this.getProductos();
+    }).catch(e => {
+      this.presentAlert('Eliminar', 'Error : ' + JSON.stringify(e));
+    })
+  }
 }

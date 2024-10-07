@@ -31,120 +31,36 @@
 
 <ion-content [fullscreen]="true">
 
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="usuario=='admin'">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="rolUsuario=='1'">
     <ion-fab-button color="success" [routerLink]="['/agregar-producto']">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="usuario=='usuario'">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="rolUsuario=='2'">
     <ion-fab-button color="success" [routerLink]="['/carrito']">
       <ion-icon name="cart-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
-  <ion-card>
-    <img class="container-imagen" alt="manzana verde" src="../assets/Productos/manzana-verde.png" />
+  <ion-card *ngFor="let x of arregloProductos">
+    <img class="container-imagen" alt="" src="{{ x.foto }}"/>
 
     <ion-card-header>
-      <ion-card-title>Manzana Verde</ion-card-title>
-      <ion-card-subtitle>1 kg.</ion-card-subtitle>
+      <ion-card-title>{{ x.nombre_pr }}</ion-card-title>
+      <ion-card-subtitle>{{ x.cantidad_kg }}kg.</ion-card-subtitle>
+      <ion-card-subtitle>Stock disponible: {{ x.stock }}</ion-card-subtitle>
     </ion-card-header>
-
     <ion-card-content>
-      Precio : $2.390
+      Precio: {{ x.precio }}
     </ion-card-content>
     <div class="container-boton">
-      <div *ngIf="usuario=='usuario'">
-        <ion-button color="success" (click)="presentAlert()">Agregar al carrito</ion-button>
+      <div *ngIf="rolUsuario=='2'">
+        <ion-button color="success">Agregar al carrito</ion-button>
       </div>
-      <div *ngIf="usuario=='admin'">
-        <ion-button color="warning" [routerLink]="['/editar-producto']">Editar</ion-button>
-        <ion-button color="danger" (click)="alertEliminar()">Eliminar</ion-button>
-      </div>
-    </div>
-  </ion-card>
-
-  <ion-card>
-    <img alt="Silhouette of mountains" src="../assets/Productos/manzana-roja.png" />
-    <ion-card-header>
-      <ion-card-title>Manzana Roja</ion-card-title>
-      <ion-card-subtitle>1 kg.</ion-card-subtitle>
-    </ion-card-header>
-
-    <ion-card-content>
-      Precio : $2.390
-    </ion-card-content>
-    <div class="container-boton">
-      <div *ngIf="usuario=='usuario'">
-        <ion-button color="success" (click)="presentAlert()">Agregar al carrito</ion-button>
-      </div>
-      <div *ngIf="usuario=='admin'">
-        <ion-button color="warning" [routerLink]="['/editar-producto']">Editar</ion-button>
-        <ion-button color="danger" (click)="alertEliminar()">Eliminar</ion-button>
-      </div>
-    </div>
-  </ion-card>
-
-  <ion-card>
-    <img alt="Silhouette of mountains" src="../assets/Productos/arandano.png" />
-    <ion-card-header>
-      <ion-card-title>Arándano</ion-card-title>
-      <ion-card-subtitle>400 g.</ion-card-subtitle>
-    </ion-card-header>
-
-    <ion-card-content>
-      Precio : $3.590
-    </ion-card-content>
-    <div class="container-boton">
-      <div *ngIf="usuario=='usuario'">
-        <ion-button color="success" (click)="presentAlert()">Agregar al carrito</ion-button>
-      </div>
-      <div *ngIf="usuario=='admin'">
-        <ion-button color="warning" [routerLink]="['/editar-producto']">Editar</ion-button>
-        <ion-button color="danger" (click)="alertEliminar()">Eliminar</ion-button>
-      </div>
-    </div>
-  </ion-card>
-
-  <ion-card>
-    <img alt="Silhouette of mountains" src="../assets/Productos/mango.png" />
-    <ion-card-header>
-      <ion-card-title>Mango</ion-card-title>
-      <ion-card-subtitle>1 kg.</ion-card-subtitle>
-    </ion-card-header>
-
-    <ion-card-content>
-      Precio : $4.500
-    </ion-card-content>
-    <div class="container-boton">
-      <div *ngIf="usuario=='usuario'">
-        <ion-button color="success" (click)="presentAlert()">Agregar al carrito</ion-button>
-      </div>
-      <div *ngIf="usuario=='admin'">
-        <ion-button color="warning" [routerLink]="['/editar-producto']">Editar</ion-button>
-        <ion-button color="danger" (click)="alertEliminar()">Eliminar</ion-button>
-      </div>
-    </div>
-  </ion-card>
-
-  <ion-card>
-    <img alt="Silhouette of mountains" src="../assets/Productos/platano.png" />
-    <ion-card-header>
-      <ion-card-title>Plátano</ion-card-title>
-      <ion-card-subtitle>1 kg.</ion-card-subtitle>
-    </ion-card-header>
-
-    <ion-card-content>
-      Precio : $1.590
-    </ion-card-content>
-    <div class="container-boton">
-      <div *ngIf="usuario=='usuario'">
-        <ion-button color="success" (click)="presentAlert()">Agregar al carrito</ion-button>
-      </div>
-      <div *ngIf="usuario=='admin'">
-        <ion-button color="warning" [routerLink]="['/editar-producto']">Editar</ion-button>
-        <ion-button color="danger" (click)="alertEliminar()">Eliminar</ion-button>
+      <div *ngIf="rolUsuario=='1'">
+        <ion-button color="warning" (click)="editar(x)">Editar</ion-button>
+        <ion-button color="danger" (click)="eliminar(x)">Eliminar</ion-button>
       </div>
     </div>
   </ion-card>
@@ -160,12 +76,12 @@
       Productos
     </ion-tab-button>
 
-    <ion-tab-button tab="library" [routerLink]="['/historial-compra']" *ngIf="usuario=='usuario'">
+    <ion-tab-button tab="library" [routerLink]="['/historial-compra']" *ngIf="rolUsuario=='2'">
       <ion-icon name="timer-outline"></ion-icon>
       Historial
     </ion-tab-button>
 
-    <ion-tab-button tab="library" [routerLink]="['/reportes']" *ngIf="usuario=='admin'">
+    <ion-tab-button tab="library" [routerLink]="['/reportes']" *ngIf="rolUsuario=='1'">
       <ion-icon name="document-text-outline"></ion-icon>
       Reportes
     </ion-tab-button>

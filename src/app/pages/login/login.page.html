@@ -18,7 +18,7 @@
       <br />
       <br />
 
-      <ion-input label="Nombre de usuario" label-placement="floating" fill="outline" placeholder="Escriba su nombre de usuario" [(ngModel)]="usuario"></ion-input>
+      <ion-input label="Nombre de usuario" label-placement="floating" fill="outline" placeholder="Escriba su nombre de usuario" [(ngModel)]="nom_usuario"></ion-input>
       <br />
   
       <ion-input label="Contraseña" type="password"  label-placement="floating" fill="outline" placeholder="Introduzca su contraseña"[(ngModel)]="contrasena">
@@ -36,7 +36,7 @@
       </ion-label>
 
       <div class="container-boton">
-        <ion-button class="boton" color="success" (click)="validarUsuario()">Iniciar sesión</ion-button>
+        <ion-button class="boton" color="success" (click)="loginUsuario()">Iniciar sesión</ion-button>
       </div>
       <br />
 

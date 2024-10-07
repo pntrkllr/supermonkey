@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { ServicebdService } from 'src/app/services/servicebd.service';
 
 import { addIcons } from 'ionicons';
 import { library, playCircle, radio, search } from 'ionicons/icons';
+import { Productos } from 'src/app/models/productos';
 
 @Component({
   selector: 'app-productos',
@@ -13,10 +15,19 @@ import { library, playCircle, radio, search } from 'ionicons/icons';
 
 export class ProductosPage implements OnInit {
 
-  usuario: string = "";
+  nom_usuario: string = "";
   contrasena: string = "";
+  rolUsuario: string | null = null;
 
-  constructor(public alertcontroller : AlertController,private router: Router,private activedroute: ActivatedRoute) { 
+  arregloProductos: any = [{
+    nombre_pr: '',
+    cantidad_kg: '',
+    stock: '',
+    foto: '',
+    precio: ''
+  }]
+
+  constructor(private router: Router,private activedroute: ActivatedRoute, private bd: ServicebdService) { 
     addIcons({ library, playCircle, radio, search });
 
     this.activedroute.queryParams.subscribe(param =>{
@@ -24,91 +35,36 @@ export class ProductosPage implements OnInit {
       if(this.router.getCurrentNavigation()?.extras.state){
 
         this.contrasena = this.router.getCurrentNavigation()?.extras?.state?.['con'];
-        this.usuario = this.router.getCurrentNavigation()?.extras?.state?.['user'];
+        this.nom_usuario = this.router.getCurrentNavigation()?.extras?.state?.['user'];
         
       }
     });
    }
 
-  ngOnInit() {
-  }
+   ngOnInit() {
 
-  async presentAlert() {
-    const alert = await this.alertcontroller.create({
-      header: 'Producto agregado correctamente',
-      message: 'Puedes ver este producto en el carrito.',
-      buttons: ['Aceptar'],
-    });
+    this.rolUsuario = localStorage.getItem('id_rol');
 
-    await alert.present();
-  }
-
-  async alertEliminar() {
-    const alert = await this.alertcontroller.create({
-      header: 'Eliminar producto',
-      message: '¿Desea eliminar este producto?',
-      buttons: [{
-        text: 'Cancelar',
-        role: 'cancel',
-      },
-      {
-        text: 'aceptar',
-        handler: () => {
-          this.alertConfEliminar();
-        }
+    //verificar si la BD esta lista
+    this.bd.dbState().subscribe(res=>{
+      if(res){
+        this.bd.fetchProductos().subscribe(data=>{
+          this.arregloProductos = data;
+        })
       }
-    ],
-    });
-    await alert.present();
-
+    })
   }
-
-  async alertConfEliminar() {
-    const alert = await this.alertcontroller.create({
-      header: 'Se ha eliminado el producto',
-      buttons: [{
-        text: 'OK',
+  editar(x:any){
+    let navigationExtras: NavigationExtras = {
+      state: {
+        Productos: x
       }
-    ],
-    });
-    await alert.present();
-
+    }
+    this.router.navigate(['/editar-producto'], navigationExtras);
   }
 
-  agregar(){
-      this.presentAlert4('Agregar producto')
+  eliminar(x:any){
+    this.bd.eliminarProducto(x.id_producto);
   }
 
-  async presentAlert4(titulo:string) {
-    const alert = await this.alertcontroller.create({
-      header: titulo,
-      inputs: [
-        {
-          name: 'nombre producto',
-          type: 'text',
-          placeholder: 'Nombre'
-        },
-        {
-          name: 'cantidad',
-          type: 'number',
-          placeholder: 'Cantidad'
-        },
-        {
-          name: 'Precio',
-          type: 'number',
-          placeholder: 'Precio'
-        },
-      ],
-      buttons: [{
-        text: 'Cancelar',
-        role: 'cancel',
-      },
-      {
-        text: 'Aceptar',
-      }
-    ],
-    });
-    await alert.present();
-
-  }
 }
