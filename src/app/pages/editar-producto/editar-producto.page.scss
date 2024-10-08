@@ -2,3 +2,13 @@
     display: flex;
     justify-content: center;
 }
+
+.estatus_ok{
+    color: red;
+    text-align: center;
+}
+
+.estatus_not{
+    color: #2dd55b;
+    text-align: center;
+}

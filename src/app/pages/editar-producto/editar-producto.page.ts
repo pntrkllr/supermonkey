@@ -8,7 +8,8 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
   styleUrls: ['./editar-producto.page.scss'],
 })
 export class EditarProductoPage implements OnInit {
-  productoM : any;
+  
+  productoM : any = {};
 
   constructor(private router: Router, private activerouter: ActivatedRoute, private bd: ServicebdService) { 
     this.activerouter.queryParams.subscribe(res=>{
@@ -21,6 +22,27 @@ export class EditarProductoPage implements OnInit {
   }
 
   editar(){
+    this.validarEstatus();
     this.bd.editarProducto(this.productoM.id_producto, this.productoM.nombre_pr, this.productoM.cantidad_kg, this.productoM.precio, this.productoM.stock, this.productoM.foto, this.productoM.estatus, this.productoM.id_categoria)
   }
+
+  validarEstatus() {
+    if (!this.productoM.stock || this.productoM.stock <= 0) {
+      this.productoM.estatus = 'No disponible';
+    } else {
+      this.productoM.estatus = 'Disponible';
+    }
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.productoM.foto = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
 }

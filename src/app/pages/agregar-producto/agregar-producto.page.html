@@ -12,7 +12,7 @@
     <ion-card class="bordes">
       <br />
 
-      <input class="centrar-input" type="file" accept="image/jpeg, image/jpg, image/png, image/gif" (change)="onFileSelected($event)" />
+      <ion-input type="file" accept="image/*" fill="outline" [(ngModel)]="foto" (change)="onFileSelected($event)"></ion-input>
 
       <br />
 

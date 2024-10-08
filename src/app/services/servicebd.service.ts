@@ -212,7 +212,7 @@ export class ServicebdService {
   }
 
   editarProducto(id_producto: number, nombre_pr: string, cantidad_kg: number, precio: number, stock: number, foto: Blob, estatus: string, id_categoria: number) {
-    return this.database.executeSql('UPDATE producto SET nombre_pr = ?, cantidad_kg = ?, precio = ?, stock = ?, foto = ?, status = ?, id_categoria = ? WHERE id_producto = ?', [id_producto, nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria]).then((res) => {
+    return this.database.executeSql('UPDATE producto SET nombre_pr = ?, cantidad_kg = ?, precio = ?, stock = ?, foto = ?, estatus = ?, id_categoria = ? WHERE id_producto = ?', [nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria, id_producto]).then((res) => {
       this.presentAlert("Modificar", "Producto modificado de manera correcta");
       this.getProductos();
     }).catch(e => {
