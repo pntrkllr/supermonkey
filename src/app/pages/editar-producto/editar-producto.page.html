@@ -17,18 +17,26 @@
 
       <br />
 
-      <ion-input type="file" accept="image/*" fill="outline"></ion-input>
+      <ion-input type="file" accept="image/*" fill="outline" [(ngModel)]="productoM.foto"></ion-input>
       <br />
-      <ion-input label="Nombre del producto" type="input" label-placement="floating" fill="outline" placeholder="Nombre del producto"></ion-input>
+      <ion-input label="Nombre del producto" type="input" label-placement="floating" fill="outline" placeholder="Nombre del producto" [(ngModel)]="productoM.nombre_pr"></ion-input>
       <br />
-      <ion-input label="Cantidad" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."></ion-input>
+      <ion-input label="Cantidad" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..." [(ngModel)]="productoM.cantidad_kg"></ion-input>
       <br />
-      <ion-input label="Precio" type="input" label-placement="floating" fill="outline" placeholder="Precio del producto"></ion-input>
+      <ion-input label="Stock" type="number" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..." [(ngModel)]="productoM.stock" (ionChange)="validarEstatus()"></ion-input>
+      <p style="text-align: center;">Disponibilidad del producto según stock:</p>
+      <p *ngIf="productoM.stock === undefined || productoM.stock <= 0" class="estatus_ok">No disponible</p>
+      <p *ngIf="productoM.stock > 0" class="estatus_not">Disponible</p>
+      <br /> 
+      <br />
+      <ion-input label="Precio" type="input" label-placement="floating" fill="outline" placeholder="Precio del producto" [(ngModel)]="productoM.precio"></ion-input>
+      <br />
+      <ion-input label="categoria" type="input" label-placement="floating" fill="outline" placeholder="Categoria" [(ngModel)]="productoM.id_categoria"></ion-input>
       <br />
 
       <div class="container-boton">
-        <ion-button type="submit" color="success">Confirmar</ion-button>
-        <ion-button color="danger">Cancelar</ion-button>
+        <ion-button type="submit" color="success" (click)="editar()">Confirmar</ion-button>
+        <ion-button color="danger" [routerLink]="['/Producto']">Cancelar</ion-button>
       </div>
 
       <br />

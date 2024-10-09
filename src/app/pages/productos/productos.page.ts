@@ -5,7 +5,6 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
 
 import { addIcons } from 'ionicons';
 import { library, playCircle, radio, search } from 'ionicons/icons';
-import { Productos } from 'src/app/models/productos';
 
 @Component({
   selector: 'app-productos',
@@ -20,6 +19,7 @@ export class ProductosPage implements OnInit {
   rolUsuario: string | null = null;
 
   arregloProductos: any = [{
+    id_producto: '',
     nombre_pr: '',
     cantidad_kg: '',
     stock: '',
@@ -57,7 +57,7 @@ export class ProductosPage implements OnInit {
   editar(x:any){
     let navigationExtras: NavigationExtras = {
       state: {
-        Productos: x
+        Producto: x
       }
     }
     this.router.navigate(['/editar-producto'], navigationExtras);

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ServicebdService } from 'src/app/services/servicebd.service';
 
 @Component({
@@ -19,7 +20,7 @@ export class AgregarProductoPage implements OnInit {
   estatus!: string;
   id_categoria!: number;
 
-  constructor(private bd: ServicebdService) { }
+  constructor(private bd: ServicebdService, private router: Router) { }
 
   ngOnInit() { }
 
@@ -46,6 +47,7 @@ export class AgregarProductoPage implements OnInit {
         this.fotoUrl = URL.createObjectURL(file);
       };
       reader.readAsArrayBuffer(file);
+      this.router.navigate(['/productos'])
     }
   }
 }
