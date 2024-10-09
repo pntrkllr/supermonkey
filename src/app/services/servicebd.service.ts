@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Categoria } from '../models/categoria';
 import { Productos } from '../models/productos';
 import { Usuario } from '../models/usuario';
-import { NavigationExtras } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -68,7 +68,7 @@ export class ServicebdService {
   //variable observable para estatus de bd
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  constructor(private sqlite: SQLite, private platform: Platform, private alertController: AlertController) {
+  constructor(private router: Router, private sqlite: SQLite, private platform: Platform, private alertController: AlertController) {
     this.crearBD()
   }
 
@@ -173,7 +173,6 @@ export class ServicebdService {
   logoutUsuario() {
     localStorage.removeItem('id_rol');
     localStorage.removeItem('nom_usuario');
-    console.log('Logout successful, localStorage cleared.');
   }
 
   getProductos() {
@@ -202,6 +201,7 @@ export class ServicebdService {
     })
   }
 
+  //producto
   insertarProducto(nombre_pr: string, cantidad_kg: number, precio: number, stock: number, foto: Blob, estatus: string, id_categoria: number) {
     return this.database.executeSql('INSERT INTO producto(nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria) VALUES (?,?,?,?,?,?,?)', [nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria]).then((res) => {
       this.presentAlert("Agregar", "Producto agregado correctamente");
@@ -212,9 +212,9 @@ export class ServicebdService {
   }
 
   editarProducto(id_producto: number, nombre_pr: string, cantidad_kg: number, precio: number, stock: number, foto: Blob, estatus: string, id_categoria: number) {
-    this.presentAlert("modificar","id  " + id_producto)
     return this.database.executeSql('UPDATE producto SET nombre_pr = ?, cantidad_kg = ?, precio = ?, stock = ?, foto = ?, estatus = ?, id_categoria = ? WHERE id_producto = ?', [nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria, id_producto]).then((res) => {
       this.presentAlert("Modificar", "Producto modificado de manera correcta");
+      this.router.navigate(['/productos']);
       this.getProductos();
     }).catch(e => {
       this.presentAlert('Modificar', 'Error: ' + JSON.stringify(e));
@@ -229,4 +229,7 @@ export class ServicebdService {
       this.presentAlert('Eliminar', 'Error : ' + JSON.stringify(e));
     })
   }
+
+
+
 }

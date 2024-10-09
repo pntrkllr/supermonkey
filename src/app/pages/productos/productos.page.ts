@@ -27,7 +27,7 @@ export class ProductosPage implements OnInit {
     precio: ''
   }]
 
-  constructor(private router: Router,private activedroute: ActivatedRoute, private bd: ServicebdService) { 
+  constructor(private router: Router, private activedroute: ActivatedRoute, private bd: ServicebdService) { 
     addIcons({ library, playCircle, radio, search });
 
     this.activedroute.queryParams.subscribe(param =>{
@@ -57,7 +57,7 @@ export class ProductosPage implements OnInit {
   editar(x:any){
     let navigationExtras: NavigationExtras = {
       state: {
-        Producto: x
+        producto: x
       }
     }
     this.router.navigate(['/editar-producto'], navigationExtras);
