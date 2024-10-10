@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ServicebdService } from 'src/app/services/servicebd.service';
+import { Camera, CameraResultType } from '@capacitor/camera';
 
 @Component({
   selector: 'app-agregar-producto',
@@ -16,9 +17,10 @@ export class AgregarProductoPage implements OnInit {
   precio!: number;
   stock!: number;
   foto!: Blob;
-  fotoUrl!: string; // Variable para almacenar la URL de la imagen
   estatus!: string;
   id_categoria!: number;
+
+  imagen: any;
 
   constructor(private bd: ServicebdService, private router: Router) { }
 
@@ -26,7 +28,7 @@ export class AgregarProductoPage implements OnInit {
 
   crear() {
     this.validarEstatus();
-    this.bd.insertarProducto(this.nombre_pr, this.cantidad_kg, this.precio, this.stock, this.foto, this.estatus, this.id_categoria);
+    this.bd.insertarProducto(this.nombre_pr, this.cantidad_kg, this.precio, this.stock, this.imagen, this.estatus, this.id_categoria);
   }
 
   validarEstatus() {
@@ -37,17 +39,20 @@ export class AgregarProductoPage implements OnInit {
     }
   }
 
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
+  takePicture = async () => {
+    const image = await Camera.getPhoto({
+      quality: 100,
+      allowEditing: false,
+      resultType: CameraResultType.Uri
+    });
+  
+    // image.webPath will contain a path that can be set as an image src.
+    // You can access the original file using image.path, which can be
+    // passed to the Filesystem API to read the raw data of the image,
+    // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
+    this.imagen = image.webPath;
+  
+    
+  };
 
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.foto = new Blob([reader.result as ArrayBuffer], { type: file.type });
-        this.fotoUrl = URL.createObjectURL(file);
-      };
-      reader.readAsArrayBuffer(file);
-      this.router.navigate(['/productos'])
-    }
-  }
 }

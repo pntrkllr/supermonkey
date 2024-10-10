@@ -9,45 +9,49 @@
 
 <ion-content [fullscreen]="true">
   <div id="container">
-    <ion-card class="bordes">
+    <ion-card>
+
+      <!-- Input para seleccionar la imagen -->
+      <ion-button (click)="takePicture()">Tomar/Subir Foto</ion-button><br>
+      <img *ngIf="imagen" [src]="imagen" alt="Sin imagen" style="height: 250px;width: 250px;" [(ngModel)]="imagen"/>
       <br />
 
-      <ion-input type="file" accept="image/*" fill="outline" [(ngModel)]="foto" (change)="onFileSelected($event)"></ion-input>
-
+      <!-- Input para el nombre del producto -->
+      <ion-input label="Nombre del producto" type="text" label-placement="floating" fill="outline"
+        placeholder="Nombre del producto" [(ngModel)]="nombre_pr"></ion-input>
       <br />
 
-      <img *ngIf="fotoUrl" [src]="fotoUrl" alt="Vista previa" style="width: 100%; height: auto; border-radius: 8px;" />
-
+      <!-- Input para la cantidad en kilos -->
+      <ion-input label="Peso (kg)" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
+        [(ngModel)]="cantidad_kg"></ion-input>
       <br />
 
-      <ion-input label="Nombre del producto" type="input" label-placement="floating" fill="outline" placeholder="Nombre del producto" [(ngModel)]="nombre_pr"></ion-input>
+      <!-- Input para el stock, y automáticamente se valida el estatus -->
+      <ion-input label="Stock" type="number" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
+        [(ngModel)]="stock"></ion-input>
 
-      <br />
-
-      <ion-input label="Cantidad (en kilos)" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..." [(ngModel)]="cantidad_kg"></ion-input>
-
-      <br />
-
-      <ion-input label="Stock" type="number" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..." [(ngModel)]="stock" (ionChange)="validarEstatus()"></ion-input>
+      <!-- Mostrar estatus según el stock -->
       <p style="text-align: center;">Disponibilidad del producto según stock:</p>
       <p *ngIf="stock === undefined || stock <= 0" class="estatus_ok">No disponible</p>
       <p *ngIf="stock > 0" class="estatus_not">Disponible</p>
 
-      <ion-input label="Precio" type="input" label-placement="floating" fill="outline" placeholder="Precio del producto" [(ngModel)]="precio"></ion-input>
-
+      <!-- Input para el precio -->
+      <ion-input label="Precio" type="input" label-placement="floating" fill="outline" placeholder="Precio del producto"
+        [(ngModel)]="precio"></ion-input>
       <br />
 
-      <ion-input label="Categoría" type="input" label-placement="floating" fill="outline" placeholder="Categoría del producto" [(ngModel)]="id_categoria"></ion-input>
-
+      <!-- Input para la categoría -->
+      <ion-input label="categoria" type="input" label-placement="floating" fill="outline" placeholder="Categoria"
+        [(ngModel)]="id_categoria"></ion-input>
       <br />
 
+      <!-- Botones para confirmar o cancelar -->
       <div class="container-boton">
         <ion-button type="submit" color="success" (click)="crear()">Confirmar</ion-button>
-        <ion-button color="danger">Cancelar</ion-button>
+        <ion-button color="danger" [routerLink]="['/productos']">Cancelar</ion-button>
       </div>
 
       <br />
-
     </ion-card>
   </div>
 </ion-content>

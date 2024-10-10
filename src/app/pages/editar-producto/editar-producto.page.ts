@@ -24,13 +24,13 @@ export class EditarProductoPage implements OnInit {
   ngOnInit() {
   }
 
-  editar(){
+  modificar(){
     this.bd.editarProducto(this.productoM.id_producto, this.productoM.nombre_pr, this.productoM.cantidad_kg, this.productoM.precio, this.productoM.stock, this.foto, this.productoM.estatus, this.productoM.id_categoria)
   }
 
   takePicture = async () => {
     const image = await Camera.getPhoto({
-      quality: 90,
+      quality: 100,
       allowEditing: false,
       resultType: CameraResultType.Uri
     });

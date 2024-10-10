@@ -54,7 +54,7 @@ export class ProductosPage implements OnInit {
       }
     })
   }
-  editar(x:any){
+  modificar(x:any){
     let navigationExtras: NavigationExtras = {
       state: {
         producto: x

@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button default-href="/productos"></ion-back-button>
     </ion-buttons>
-    <ion-title>Editar producto</ion-title>
+    <ion-title>Modificar producto</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -12,7 +12,7 @@
     <ion-card>
 
       <!-- Input para seleccionar la imagen -->
-      <ion-button (click)="takePicture()">Tomar Foto</ion-button><br>
+      <ion-button (click)="takePicture()">Tomar/Subir Foto</ion-button><br>
       <img *ngIf="foto" [src]="foto" alt="Sin imagen" style="height: 250px;width: 250px;" [(ngModel)]="foto"/>
       <br />
 
@@ -22,7 +22,7 @@
       <br />
 
       <!-- Input para la cantidad en kilos -->
-      <ion-input label="Cantidad" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
+      <ion-input label="Peso (kg)" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
         [(ngModel)]="productoM.cantidad_kg"></ion-input>
       <br />
 
@@ -47,7 +47,7 @@
 
       <!-- Botones para confirmar o cancelar -->
       <div class="container-boton">
-        <ion-button type="submit" color="success" (click)="editar()">Confirmar</ion-button>
+        <ion-button type="submit" color="success" (click)="modificar()">Confirmar</ion-button>
         <ion-button color="danger" [routerLink]="['/productos']">Cancelar</ion-button>
       </div>
 

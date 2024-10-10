@@ -201,9 +201,10 @@ export class ServicebdService {
     })
   }
 
-  //producto
+  //productos
   insertarProducto(nombre_pr: string, cantidad_kg: number, precio: number, stock: number, foto: Blob, estatus: string, id_categoria: number) {
     return this.database.executeSql('INSERT INTO producto(nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria) VALUES (?,?,?,?,?,?,?)', [nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria]).then((res) => {
+      this.router.navigate(['/productos']);
       this.presentAlert("Agregar", "Producto agregado correctamente");
       this.getProductos();
     }).catch(e => {
@@ -213,8 +214,8 @@ export class ServicebdService {
 
   editarProducto(id_producto: number, nombre_pr: string, cantidad_kg: number, precio: number, stock: number, foto: Blob, estatus: string, id_categoria: number) {
     return this.database.executeSql('UPDATE producto SET nombre_pr = ?, cantidad_kg = ?, precio = ?, stock = ?, foto = ?, estatus = ?, id_categoria = ? WHERE id_producto = ?', [nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria, id_producto]).then((res) => {
-      this.presentAlert("Modificar", "Producto modificado de manera correcta");
       this.router.navigate(['/productos']);
+      this.presentAlert("Modificar", "Producto modificado de manera correcta");
       this.getProductos();
     }).catch(e => {
       this.presentAlert('Modificar', 'Error: ' + JSON.stringify(e));
@@ -227,6 +228,18 @@ export class ServicebdService {
       this.getProductos();
     }).catch(e => {
       this.presentAlert('Eliminar', 'Error : ' + JSON.stringify(e));
+    })
+  }
+
+
+  //usuarios
+  insertarUsuario(foto_perfil= Blob, pnombre: string, apellido: string, nom_usuario: string, correo: string, contrasena: string, id_rol: number) {
+    return this.database.executeSql('INSERT INTO usuario(foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (?,?,?,?,?,?,?)', [foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol]).then((res) => {
+      this.router.navigate(['/login']);
+      this.presentAlert("Todo listo!", "Inicia sesión en Supermonkey.");
+      this.getProductos();
+    }).catch(e => {
+      this.presentAlert('Registro', 'Error: ' + JSON.stringify(e));
     })
   }
 

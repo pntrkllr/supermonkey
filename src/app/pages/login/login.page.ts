@@ -51,25 +51,4 @@ export class LoginPage implements OnInit {
       .catch(e => console.error('Error en el login', e));
   }
   
-
-  async restablecerContrasena() {
-    const alert = await this.alertcontroller.create({
-      header: 'Restablecer contraseña',
-      message: 'Escribe tu correo electrónico:',
-      inputs: [
-        {
-          name: 'email',
-          type: 'email',
-          placeholder: 'Correo electrónico'
-        },
-      ],
-      buttons: [{
-        text: 'Cancelar',
-        role: 'cancel',
-      },
-      ],
-    });
-
-    await alert.present();
-  }
 }

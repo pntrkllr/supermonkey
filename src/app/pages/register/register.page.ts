@@ -1,177 +1,152 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationExtras } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-import { AlertController, ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { ServicebdService } from 'src/app/services/servicebd.service';
+import { Camera, CameraResultType } from '@capacitor/camera';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
 })
-
 export class RegisterPage implements OnInit {
 
-  form: FormGroup;
+  form!: FormGroup;
+  imagen: any = null;
+  id_rol: number = 2;
 
-  constructor(public alertcontroller: AlertController, private router: Router, private toastController: ToastController, private formBuilder: FormBuilder) { 
+  constructor(private bd: ServicebdService, private router: Router, private fb: FormBuilder) { }
 
-    this.form = this.formBuilder.group({
-      nombre: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s]*$')]],
-      apellido: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s]*$')]],
-      usuario: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [
+  ngOnInit() {
+
+    this.form = this.fb.group({
+      pnombre: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/)]], // Solo letras
+      apellido: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/)]], // Solo letras
+      nom_usuario: ['', [Validators.required]],
+      correo: ['', [Validators.required, Validators.email]],
+      contrasena: ['', [
         Validators.required,
         Validators.minLength(8),
         Validators.maxLength(16),
-        Validators.pattern(/^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,16}$/)
+        this.passwordValidator
       ]],
-      confirmPassword: ['', [Validators.required]],
-    }, { validators: this.passwordsMatch });
-   }
-
-
-  ngOnInit() {
+      confirmar_contrasena: ['', [Validators.required]]
+    });
   }
 
-  //métodos para "nombre"
-  get nombre() {
-    return this.form.get('nombre')!;
+  passwordValidator(control: any) {
+    const password = control.value;
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    const valid = hasLetter && hasNumber && hasSymbol;
+    return valid ? null : { invalidPassword: true };
+  }
+
+  crear() {
+    if (this.form.valid) {
+      const { pnombre, apellido, nom_usuario, correo, contrasena } = this.form.value;
+      const foto = this.imagen || null;
+      this.bd.insertarUsuario(foto, pnombre, apellido, nom_usuario, correo, contrasena, this.id_rol);
+      this.router.navigate(['/login']);
+    }
   }
 
   isNombreInvalid() {
-    return this.nombre?.touched && this.nombre?.invalid;
+    const control = this.form.get('pnombre');
+    return control?.touched && control.invalid;
   }
 
   getNombreError() {
-    if (this.nombre?.errors?.['required']) {
-      return 'El campo "Nombre" está vacío.'
-    } else if (this.nombre?.errors?.['pattern']) {
-      return 'El campo "Nombre" solo puede contener letras.'
+    const control = this.form.get('pnombre');
+    if (control?.hasError('required')) {
+      return 'El nombre no puede estar vacío.';
+    } else if (control?.hasError('pattern')) {
+      return 'El nombre solo debe contener letras.';
     }
     return '';
-  }
-
-  //métodos para "apellido"
-  get apellido() {
-    return this.form.get('apellido')!;
   }
 
   isApellidoInvalid() {
-    return this.apellido?.touched && this.apellido?.invalid;
+    const control = this.form.get('apellido');
+    return control?.touched && control.invalid;
   }
 
   getApellidoError() {
-    if (this.apellido?.errors?.['required']) {
-      return 'El campo "Apellido" está vacío.'
-    } else if (this.apellido?.errors?.['pattern']) {
-      return 'El campo "Apellido" solo puede contener letras.'
+    const control = this.form.get('apellido');
+    if (control?.hasError('required')) {
+      return 'El apellido no puede estar vacío.';
+    } else if (control?.hasError('pattern')) {
+      return 'El apellido solo debe contener letras.';
     }
     return '';
-  }
-
-  //métodos para "usuario"
-  get usuario() {
-    return this.form.get('usuario')!;
   }
 
   isUsuarioInvalid() {
-    return this.usuario.touched && this.usuario.invalid;
+    const control = this.form.get('nom_usuario');
+    return control?.touched && control.invalid;
   }
 
   getUsuarioError() {
-    if (this.usuario.errors?.['required']) {
-      return 'El campo "Nombre de usuario" está vacío.';
+    const control = this.form.get('nom_usuario');
+    if (control?.hasError('required')) {
+      return 'El nombre de usuario no puede estar vacío.';
     }
     return '';
-  }
-
-  //métodos para el correo electrónico
-  get email() {
-    return this.form.get('email')!;
   }
 
   isEmailInvalid() {
-    return this.email.touched && this.email.invalid;
+    const control = this.form.get('correo');
+    return control?.touched && control.invalid;
   }
 
   getEmailError() {
-    if (this.email.errors?.['required']) {
-      return 'El campo "Correo electrónico" está vacío.';
-    } else if (this.email.errors?.['email']) {
-      return 'Ingresa un correo electrónico válido.';
+    const control = this.form.get('correo');
+    if (control?.hasError('required')) {
+      return 'El correo no puede estar vacío.';
+    } else if (control?.hasError('email')) {
+      return 'Correo inválido';
     }
     return '';
   }
 
-  //métodos para la contraseña y confirmar contraseña
-  get password() {
-    return this.form.get('password')!;
-  }
-
-  get confirmPassword() {
-    return this.form.get('confirmPassword')!;
-  }
-
-  markPasswordAsTouched() {
-    this.password.markAsTouched();
-    this.confirmPassword.markAsTouched();
-  }
-
-  //para validar que las 2 contraseñas sean iguales
-  passwordsMatch(control: FormGroup) {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
-
-    return password === confirmPassword ? null : { passwordsNotMatch: true };
-  }
-
   isPasswordInvalid() {
-    return this.password.touched && this.password.invalid;
+    const control = this.form.get('contrasena');
+    return control?.touched && control.invalid;
   }
 
   getPasswordError() {
-    if (this.password.errors?.['required']) {
-      return 'El campo "Contraseña" está vacío.';
-    } else if (this.password.errors?.['pattern']) {
-      return 'La contraseña debe tener entre 8 y 16 caracteres, incluir al menos un número y un símbolo.';
+    const control = this.form.get('contrasena');
+    if (control?.hasError('required')) {
+      return 'La contraseña no puede estar vacía.';
+    } else if (control?.hasError('minlength')) {
+      return 'La contraseña debe tener al menos 8 caracteres.';
+    } else if (control?.hasError('maxlength')) {
+      return 'La contraseña no puede ser más de 16 caracteres.';
+    } else if (control?.hasError('invalidPassword')) {
+      return 'La contraseña debe contener letras, números y símbolos.';
     }
     return '';
   }
 
   arePasswordsDifferent() {
-    return this.confirmPassword.touched && this.form.errors?.['passwordsNotMatch'];
+    const password = this.form.get('contrasena')?.value;
+    const confirmPassword = this.form.get('confirmar_contrasena')?.value;
+    return password && confirmPassword && password !== confirmPassword;
   }
-
 
   getConfirmPasswordError() {
-    if (this.confirmPassword.errors?.['required']) {
-      return 'La confirmación de la contraseña es obligatoria.';
-    } else if (this.arePasswordsDifferent()) {
-      return 'Las contraseñas no coinciden.';
-    }
-    return '';
+    return 'Las contraseñas no coinciden.';
   }
 
-  async presentAlert() {
-    const alert = await this.alertcontroller.create({
-      header: 'Se ha registrado correctamente',
-      message: 'Iniciar sesión para entrar',
-      buttons: ['Aceptar'],
+  takePicture = async () => {
+    const image = await Camera.getPhoto({
+      quality: 100,
+      allowEditing: false,
+      resultType: CameraResultType.Uri
     });
 
-    await alert.present();
-  }
-
-  async presentToast(position: 'middle', texto: string) {
-    const toast = await this.toastController.create({
-      message: texto,
-      duration: 1500,
-      position: position,
-    });
-
-    await toast.present();
-  }
-
+    this.imagen = image.webPath;
+  };
 }

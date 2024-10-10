@@ -1,10 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-
     <ion-buttons slot="start">
       <ion-back-button default-href="/login"></ion-back-button>
     </ion-buttons>
-
     <ion-title>Regístrate en Supermonkey</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -19,51 +17,53 @@
       <br />
       <br />
 
-      <form [formGroup]="form">
+      <form [formGroup]="form" (ngSubmit)="crear()">
 
         <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nombre"
-          formControlName="nombre" (ionBlur)="nombre.markAsTouched()"></ion-input>
+          formControlName="pnombre" (ionBlur)="form.get('pnombre')?.markAsTouched()"></ion-input>
         <p *ngIf="isNombreInvalid()">{{ getNombreError() }}</p>
         <br />
 
         <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Ingrese su apellido"
-          formControlName="apellido" (ionBlur)="apellido.markAsTouched()"></ion-input>
+          formControlName="apellido" (ionBlur)="form.get('apellido')?.markAsTouched()"></ion-input>
         <p *ngIf="isApellidoInvalid()">{{ getApellidoError() }}</p>
         <br />
 
         <ion-input label="Nombre de usuario" label-placement="floating" fill="outline"
-          placeholder="Ingrese su nombre de usuario" formControlName="usuario" (ionBlur)="usuario.markAsTouched()"></ion-input>
+          placeholder="Ingrese su nombre de usuario" formControlName="nom_usuario" (ionBlur)="form.get('nom_usuario')?.markAsTouched()"></ion-input>
         <p *ngIf="isUsuarioInvalid()">{{ getUsuarioError() }}</p>
         <br />
 
         <ion-input label="Correo electrónico" type="email" label-placement="floating" fill="outline"
-          placeholder="Ingrese su correo electrónico" formControlName="email" (ionBlur)="email.markAsTouched()"></ion-input>
+          placeholder="Ingrese su correo electrónico" formControlName="correo" (ionBlur)="form.get('correo')?.markAsTouched()"></ion-input>
         <p *ngIf="isEmailInvalid()">{{ getEmailError() }}</p>
         <br />
 
         <ion-input label="Contraseña" type="password" label-placement="floating" fill="outline"
-          placeholder="Ingrese su contraseña" formControlName="password"
-          (ionBlur)="markPasswordAsTouched()">
+          placeholder="Ingrese su contraseña" formControlName="contrasena" (ionBlur)="form.get('contrasena')?.markAsTouched()">
           <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
         </ion-input>
         <p *ngIf="isPasswordInvalid()">{{ getPasswordError() }}</p>
         <br />
 
         <ion-input label="Confirmar Contraseña" type="password" label-placement="floating" fill="outline"
-          placeholder="Confirme su contraseña" formControlName="confirmPassword"
-          (ionBlur)="markPasswordAsTouched()">
+          placeholder="Confirme su contraseña" formControlName="confirmar_contrasena" (ionBlur)="form.get('confirmar_contrasena')?.markAsTouched()">
           <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
         </ion-input>
         <p *ngIf="arePasswordsDifferent()">{{ getConfirmPasswordError() }}</p>
         <br />
 
         <div class="container-check">
-          <ion-checkbox>Acepto los <a [routerLink]="['/terminos-y-condiciones']" (click)="$event.stopPropagation()">términos y
-              condiciones</a></ion-checkbox>
+          <ion-checkbox>Acepto los <a [routerLink]="['/terminos-y-condiciones']" (click)="$event.stopPropagation()">términos y condiciones</a></ion-checkbox>
+        </div>
+
+        <div class="container-check">
+          <ion-button (click)="takePicture()">Subir Foto (Opcional)</ion-button>
+          <p *ngIf="imagen">Foto seleccionada: <img [src]="imagen" alt="Foto de perfil" style="width: 100px; height: auto;" /></p>
         </div>
 
         <div class="container-boton">
-          <ion-button color="success" [disabled]="form.invalid" (click)="presentAlert()" [routerLink]="['/login']">Crear cuenta</ion-button>
+          <ion-button color="success" type="submit" [disabled]="form.invalid">Crear cuenta</ion-button>
         </div>
 
       </form>
