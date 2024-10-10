@@ -6,6 +6,7 @@ import { Categoria } from '../models/categoria';
 import { Productos } from '../models/productos';
 import { Usuario } from '../models/usuario';
 import { Router } from '@angular/router';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -65,8 +66,10 @@ export class ServicebdService {
   //variable observable
   listaProductos = new BehaviorSubject([]);
 
+
   //variable observable para estatus de bd
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private usuarioBD = new BehaviorSubject<User | null>(null);
 
   constructor(private router: Router, private sqlite: SQLite, private platform: Platform, private alertController: AlertController) {
     this.crearBD()
@@ -169,6 +172,33 @@ export class ServicebdService {
       console.error('Error al obtener el usuario:', e);
       return null;
     });
+  }
+
+  getUserPerfil(nombre: string){
+    return this.database.executeSql('SELECT * FROM usuario WHERE nom_usuario = ?;',[nombre])
+    .then(res=>{
+
+      if(res.rows.length>0){
+
+        const user : User = new User(
+          res.rows.item(0).id_usuario,
+          res.rows.item(0).pnombre,
+          res.rows.item(0).apellido,
+          res.rows.item(0).nom_usuario,
+          res.rows.item(0).correo,
+          res.rows.item(0).id_rol,
+          res.rows.item(0).foto_perfil
+        );
+        this.usuarioBD.next(user);
+
+      }
+    })
+  }
+
+
+  fetchUsuario(): Observable<User| null>{
+    return this.usuarioBD.asObservable();
+
   }
 
   logoutUsuario() {

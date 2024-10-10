@@ -16,22 +16,23 @@
     <br />
   </div>
 
-  <div class="margin-form">
+  <div class="margin-form" *ngIf="usuario">
 
-    <ion-label position="stacked">Nombre</ion-label>
-    <ion-input [readonly]="true" label="" fill="outline"></ion-input>
+
+    <ion-label position="stacked"></ion-label>
+    <ion-input  [readonly]="true" label="{{usuario.pnombre}}" fill="outline"></ion-input>
     <br />
 
-    <ion-label position="stacked">Apellido</ion-label>
-    <ion-input [readonly]="true" label="" fill="outline"></ion-input>
+    <ion-label position="stacked"></ion-label>
+    <ion-input [readonly]="true" label="{{usuario.apellido}}" fill="outline"></ion-input>
     <br />
 
-    <ion-label position="stacked">Nombre de usuario</ion-label>
-    <ion-input [readonly]="true" label="" fill="outline"></ion-input>
+    <ion-label position="stacked"></ion-label>
+    <ion-input [readonly]="true" label="{{usuario.nom_usuario}}" fill="outline"></ion-input>
     <br />
 
     <ion-label position="stacked">Correo electrónico</ion-label>
-    <ion-input [readonly]="true" type="email" label="" fill="outline"></ion-input>
+    <ion-input [readonly]="true" type="email" label="{{usuario.correo}}" fill="outline"></ion-input>
 
     <ion-button class="modificar" color="success" [routerLink]="['/modificar-perfil']">Modificar datos</ion-button>
 

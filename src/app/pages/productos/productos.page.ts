@@ -67,4 +67,14 @@ export class ProductosPage implements OnInit {
     this.bd.eliminarProducto(x.id_producto);
   }
 
+  usuario(){
+    let navigationExtras : NavigationExtras = {
+      state: {
+        user : this.nom_usuario,
+        con : this.contrasena
+      }
+    }
+
+  }
+
 }
