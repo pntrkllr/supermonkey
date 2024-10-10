@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { ServicebdService } from 'src/app/services/servicebd.service';
 
@@ -54,6 +53,7 @@ export class ProductosPage implements OnInit {
       }
     })
   }
+
   modificar(x:any){
     let navigationExtras: NavigationExtras = {
       state: {

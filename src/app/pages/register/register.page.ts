@@ -20,8 +20,8 @@ export class RegisterPage implements OnInit {
   ngOnInit() {
 
     this.form = this.fb.group({
-      pnombre: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/)]], // Solo letras
-      apellido: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/)]], // Solo letras
+      pnombre: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/)]],
+      apellido: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/)]],
       nom_usuario: ['', [Validators.required]],
       correo: ['', [Validators.required, Validators.email]],
       contrasena: ['', [
@@ -123,7 +123,7 @@ export class RegisterPage implements OnInit {
     } else if (control?.hasError('minlength')) {
       return 'La contraseña debe tener al menos 8 caracteres.';
     } else if (control?.hasError('maxlength')) {
-      return 'La contraseña no puede ser más de 16 caracteres.';
+      return 'La contraseña no puede tener más de 16 caracteres.';
     } else if (control?.hasError('invalidPassword')) {
       return 'La contraseña debe contener letras, números y símbolos.';
     }

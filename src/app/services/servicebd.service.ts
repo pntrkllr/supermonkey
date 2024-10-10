@@ -97,6 +97,7 @@ export class ServicebdService {
   }
 
   async crearTablas() {
+
     try {
       //ejecuto la creación de tablas en orden
 
@@ -119,7 +120,7 @@ export class ServicebdService {
       await this.database.executeSql(this.registroUsuario2, []);
 
 
-      //prodcuto
+      //producto
       await this.database.executeSql(this.registroProductoFruta, []);
 
     } catch (e) {
@@ -163,7 +164,7 @@ export class ServicebdService {
           });
         }
       }
-      return items.length > 0 ? items[0] : null; // Devuelve el primer usuario si existe
+      return items.length > 0 ? items[0] : null;
     }).catch(e => {
       console.error('Error al obtener el usuario:', e);
       return null;
@@ -233,7 +234,7 @@ export class ServicebdService {
 
 
   //usuarios
-  insertarUsuario(foto_perfil= Blob, pnombre: string, apellido: string, nom_usuario: string, correo: string, contrasena: string, id_rol: number) {
+  insertarUsuario(foto_perfil: Blob, pnombre: string, apellido: string, nom_usuario: string, correo: string, contrasena: string, id_rol: number) {
     return this.database.executeSql('INSERT INTO usuario(foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (?,?,?,?,?,?,?)', [foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol]).then((res) => {
       this.router.navigate(['/login']);
       this.presentAlert("Todo listo!", "Inicia sesión en Supermonkey.");
@@ -243,6 +244,23 @@ export class ServicebdService {
     })
   }
 
+  editarUsuario(id_usuario: number, foto_perfil: Blob, pnombre: string, apellido: string, correo: string) {
+    return this.database.executeSql('UPDATE usuario SET foto_perfil = ?, pnombre = ?, apellido = ?, correo = ? WHERE id_usuario = ?', [foto_perfil, pnombre, apellido, correo, id_usuario]).then((res) => {
+      this.router.navigate(['/productos']);
+      this.presentAlert("Modificar datos", "Datos modificados de manera correcta");
+      this.getProductos();
+    }).catch(e => {
+      this.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
+    })
+  }
 
+  eliminarUsuario(id_usuario: string) {
+    return this.database.executeSql('DELETE FROM usuario WHERE id_usuario = ?', [id_usuario]).then((res) => {
+      this.presentAlert("Eliminar usuario", "Usuario eliminado de manera correcta");
+      this.getProductos();
+    }).catch(e => {
+      this.presentAlert('Eliminar usuario', 'Error : ' + JSON.stringify(e));
+    })
+  }
 
 }
