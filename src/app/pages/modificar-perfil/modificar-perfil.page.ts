@@ -114,12 +114,27 @@ export class ModificarPerfilPage implements OnInit {
   };
 
   //editar
+
   editar() {
     if (this.form.valid) {
       const { nombre, apellido, email } = this.form.value;
       const iduser = Number(localStorage.getItem('id_usuario'));
-      this.bd.editarUsuario(iduser, nombre, apellido, email);
+  
+      // Si se ha subido una imagen, la pasamos al método editarUsuario
+      this.bd.editarUsuario(iduser, nombre, apellido, email, this.imagen ? this.imagen : null);
       this.router.navigate(['/perfil']);
     }
   }
+  
+  
+  // editar() {
+  //   if (this.form.valid) {
+  //     const { nombre, apellido, email } = this.form.value;
+  //     const iduser = Number(localStorage.getItem('id_usuario'));
+  //     if (this.foto_perfil){
+  //     this.bd.editarUsuario(iduser, nombre, apellido, email, this.foto_perfil);
+  //     } else {
+  //     this.router.navigate(['/perfil']);
+  //   }
+  // }
 }

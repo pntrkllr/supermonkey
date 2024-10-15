@@ -282,17 +282,40 @@ export class ServicebdService {
     })
   }
 
-  editarUsuario(id_usuario: number, pnombre: string, apellido: string, correo: string) {
-    return this.database.executeSql(
-      'UPDATE usuario SET pnombre = ?, apellido = ?, correo = ? WHERE id_usuario = ?',
-      [ pnombre, apellido, correo, id_usuario]
-    ).then((res) => {
+  editarUsuario(id_usuario: number, pnombre: string, apellido: string, correo: string, foto_perfil?: Blob | null) {
+
+    let query = 'UPDATE usuario SET pnombre = ?, apellido = ?, correo = ?';
+    let params: (string | Blob | number)[] = [pnombre, apellido, correo];
+  
+    //si el usuario elige una foto de perfil se ejecuta esto
+    if (foto_perfil) {
+      query += ', foto_perfil = ?';  //campo de la foto
+      params.push(foto_perfil);
+    }
+  
+    query += ' WHERE id_usuario = ?';
+    params.push(id_usuario);
+  
+    // Ejecutamos la consulta SQL con los parámetros
+    return this.database.executeSql(query, params).then((res) => {
       this.presentAlert("Modificar datos", "Datos modificados de manera correcta");
-      this.getUserPerfil(id_usuario)
+      this.getUserPerfil(id_usuario);
     }).catch(e => {
       this.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
     });
-  }
+  }  
+
+  // editarUsuario(id_usuario: number, pnombre: string, apellido: string, correo: string, foto_perfil?: Blob | null) {
+  //   return this.database.executeSql(
+  //     'UPDATE usuario SET pnombre = ?, apellido = ?, correo = ? WHERE id_usuario = ?',
+  //     [ pnombre, apellido, correo, id_usuario]
+  //   ).then((res) => {
+  //     this.presentAlert("Modificar datos", "Datos modificados de manera correcta");
+  //     this.getUserPerfil(id_usuario)
+  //   }).catch(e => {
+  //     this.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
+  //   });
+  // }
   
 
   eliminarUsuario(id_usuario: string) {

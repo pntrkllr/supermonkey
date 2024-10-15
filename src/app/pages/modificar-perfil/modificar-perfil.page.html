@@ -20,7 +20,6 @@
 
       <ion-list>
 
-
         <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nuevo nombre"
           formControlName="nombre"></ion-input>
         <p color="danger" *ngIf="isNombreInvalid()">{{ getNombreError() }}</p>
@@ -38,7 +37,7 @@
         <br />
 
         <div class="container-check">
-          <ion-button (click)="takePicture()">Subir Foto (Opcional)</ion-button>
+          <ion-button (click)="takePicture()">Subir Foto</ion-button>
           <p *ngIf="imagen">Foto seleccionada: <img [src]="imagen" alt="Foto de perfil"
               style="width: 100px; height: auto;" /></p>
         </div>

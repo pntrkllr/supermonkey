@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { User } from 'src/app/models/user';
 import { ServicebdService } from 'src/app/services/servicebd.service';
@@ -9,6 +10,7 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
   templateUrl: './perfil.page.html',
   styleUrls: ['./perfil.page.scss'],
 })
+
 export class PerfilPage implements OnInit {
 
   usuario!: User | null;
@@ -18,29 +20,33 @@ export class PerfilPage implements OnInit {
   pnombre: string = "";
   apellido: string = "";
   correo: string = ""
-  ls1! : any;
+  ls1!: any;
 
   idUsuario: string | null = null;
 
-  constructor(public alertcontroller : AlertController, private router: Router, private activedroute: ActivatedRoute, private bd: ServicebdService) { 
-    this.activedroute.queryParams.subscribe(param =>{
+  constructor(public alertcontroller: AlertController, private router: Router, private activedroute: ActivatedRoute, private bd: ServicebdService) {
 
-      if(this.router.getCurrentNavigation()?.extras.state){
+    this.activedroute.queryParams.subscribe(param => {
+
+      if (this.router.getCurrentNavigation()?.extras.state) {
 
         this.nom_usuario = this.router.getCurrentNavigation()?.extras?.state?.['user'];
 
       }
     });
-   }
+  }
 
-   ngOnInit() {
+  ngOnInit() {
 
-    this.bd.fetchUsuario().subscribe((data)=>{
-      this.usuario = data;
-    })
     const iduser2 = Number(this.idUsuario = localStorage.getItem('id_usuario'));
     this.ls1 = localStorage.getItem('nom_usuario');
+
+    this.bd.fetchUsuario().subscribe((data) => {
+      this.usuario = data;
+    });
+
     this.bd.getUserPerfil(iduser2);
-  }
+    
+}
 
 }

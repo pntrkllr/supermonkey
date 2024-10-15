@@ -9,14 +9,23 @@
 
 <ion-content [fullscreen]="true">
 
-  <div class="avatar">
-    <ion-avatar>
-      <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
-    </ion-avatar>
-    <br />
-  </div>
-
   <div class="margin-form" *ngIf="usuario">
+
+    <div class="avatar">
+      <ion-avatar>
+        <img *ngIf="usuario.foto; else noImage" [src]="usuario.foto" alt="Foto de perfil"/>
+      </ion-avatar>
+      <br />
+    </div>
+
+    <ng-template #noImage>
+      <div class="avatar">
+        <ion-avatar>
+          <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+        </ion-avatar>
+        <br />
+      </div>
+    </ng-template>
 
     <ion-label position="stacked">Nombre</ion-label>
     <ion-input [readonly]="true" label="{{usuario.pnombre}}" fill="outline"></ion-input>
