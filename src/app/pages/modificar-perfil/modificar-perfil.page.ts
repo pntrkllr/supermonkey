@@ -22,9 +22,9 @@ export class ModificarPerfilPage implements OnInit {
   nom_usuario: string = "";
   idUsuario: string | null = null;
   imagen: any;
-  ls1! : any;
+  ls1!: any;
 
-  constructor(private router : Router, private activerouter : ActivatedRoute, public alertcontroller: AlertController, private formBuilder: FormBuilder, private bd: ServicebdService) {
+  constructor(private router: Router, private activerouter: ActivatedRoute, public alertcontroller: AlertController, private formBuilder: FormBuilder, private bd: ServicebdService) {
 
     this.form = this.formBuilder.group({
       nombre: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s]*$')]],
@@ -32,9 +32,9 @@ export class ModificarPerfilPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
     });
 
-    this.activerouter.queryParams.subscribe(param =>{
+    this.activerouter.queryParams.subscribe(param => {
 
-      if(this.router.getCurrentNavigation()?.extras.state){
+      if (this.router.getCurrentNavigation()?.extras.state) {
 
         this.nom_usuario = this.router.getCurrentNavigation()?.extras?.state?.['user'];
 
@@ -43,7 +43,7 @@ export class ModificarPerfilPage implements OnInit {
   }
 
   ngOnInit() {
-    this.bd.fetchUsuario().subscribe((data)=>{
+    this.bd.fetchUsuario().subscribe((data) => {
       this.usuario = data;
     })
     this.bd.getUserPerfil(this.ls1);
@@ -117,8 +117,7 @@ export class ModificarPerfilPage implements OnInit {
   editar() {
     if (this.form.valid) {
       const { nombre, apellido, email } = this.form.value;
-      /* const foto = this.imagen || null; */
-    const iduser = Number(localStorage.getItem('id_usuario'));
+      const iduser = Number(localStorage.getItem('id_usuario'));
       this.bd.editarUsuario(iduser, nombre, apellido, email);
       this.router.navigate(['/perfil']);
     }

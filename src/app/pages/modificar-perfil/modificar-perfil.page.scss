@@ -48,3 +48,36 @@ img {
 ion-input {
     margin-top: 5px;
 }
+
+p {
+    color: #c5000f;
+    text-align: center;
+}
+
+.container-check {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.container-boton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.bordes {
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.div-titulo {
+    margin-top: 25px;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: normal;
+}
+  
