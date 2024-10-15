@@ -160,7 +160,7 @@ export class ServicebdService {
         const idstring = localStorage.getItem('id_usuario')
 
         const idpaver = Number(idstring)
-        this.presentAlert('id en el local storage ', ' : '+ idpaver)
+        // this.presentAlert('id en el local storage ', ' : '+ idpaver)
 
         for (let i = 0; i < res.rows.length; i++) {
           items.push({
