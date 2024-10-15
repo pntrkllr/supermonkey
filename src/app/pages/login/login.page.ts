@@ -12,7 +12,7 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
 export class LoginPage implements OnInit {
   nom_usuario: string = "";
   contrasena: string = "";
-  rolUsuario: string | null = null; // Aquí se declara la propiedad para almacenar el rol del usuario
+  rolUsuario: string | null = null;
 
   constructor(
     public alertcontroller: AlertController,

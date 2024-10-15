@@ -1,58 +1,49 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="success">
-    <ion-buttons slot="start">
-      <ion-back-button default-href="/perfil"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Modificar perfil</ion-title>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Modificar Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="editar()">
+    <ion-list>
+      
+      <ion-item>
+        <ion-label position="stacked">Nombre</ion-label>
+        <ion-input formControlName="nombre"></ion-input>
+      </ion-item>
+      <ion-text color="danger" *ngIf="isNombreInvalid()">
+        {{ getNombreError() }}
+      </ion-text>
 
-  <div class="avatar">
-    <ion-avatar>
-      <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-      <ion-button color="success" class="foto-perfil" (click)="triggerFileInput()">Editar foto
-        <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" hidden>
-      </ion-button>
-    </ion-avatar>
-    <br />
-  </div>
 
-  <br />
-  <br />
+      <ion-item>
+        <ion-label position="stacked">Apellido</ion-label>
+        <ion-input formControlName="apellido"></ion-input>
+      </ion-item>
+      <ion-text color="danger" *ngIf="isApellidoInvalid()">
+        {{ getApellidoError() }}
+      </ion-text>
 
-  <div id="nota">
-    <h3>Nota: El nombre de usuario no es modificable.</h3>
-    <br />
-  </div>
 
-  <div id="container">
+      <ion-item>
+        <ion-label position="stacked">Correo electrónico</ion-label>
+        <ion-input formControlName="email"></ion-input>
+      </ion-item>
+      <ion-text color="danger" *ngIf="isEmailInvalid()">
+        {{ getEmailError() }}
+      </ion-text>
 
-    <form class="margin-form" [formGroup]="form">
 
-      <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nombre"
-        formControlName="nombre" (ionBlur)="nombre.markAsTouched()"></ion-input>
-      <p *ngIf="isNombreInvalid()">{{ getNombreError() }}</p>
-      <br />
-
-      <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Ingrese su apellido"
-        formControlName="apellido" (ionBlur)="apellido.markAsTouched()"></ion-input>
-      <p *ngIf="isApellidoInvalid()">{{ getApellidoError() }}</p>
-      <br />
-
-      <ion-input label="Correo electrónico" type="email" label-placement="floating" fill="outline"
-        placeholder="Ingrese su correo electrónico" formControlName="email"
-        (ionBlur)="email.markAsTouched()"></ion-input>
-      <p *ngIf="isEmailInvalid()">{{ getEmailError() }}</p>
-      <br />
-
-      <div class="container-boton">
-        <ion-button class="modificar" color="success" [disabled]="form.invalid">Modificar</ion-button>
+      <div class="container-check">
+        <ion-button (click)="takePicture()">Subir Foto (Opcional)</ion-button>
+        <p *ngIf="imagen">Foto seleccionada: <img [src]="imagen" alt="Foto de perfil" style="width: 100px; height: auto;" /></p>
       </div>
 
-    </form>
 
-  </div>
-
+      <ion-item lines="none">
+        <ion-button expand="block" type="submit" [disabled]="form.invalid">Guardar Cambios</ion-button>
+      </ion-item>
+    </ion-list>
+  </form>
 </ion-content>

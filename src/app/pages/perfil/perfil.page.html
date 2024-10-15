@@ -18,16 +18,15 @@
 
   <div class="margin-form" *ngIf="usuario">
 
-
-    <ion-label position="stacked"></ion-label>
-    <ion-input  [readonly]="true" label="{{usuario.pnombre}}" fill="outline"></ion-input>
+    <ion-label position="stacked">Nombre</ion-label>
+    <ion-input [readonly]="true" label="{{usuario.pnombre}}" fill="outline"></ion-input>
     <br />
 
-    <ion-label position="stacked"></ion-label>
+    <ion-label position="stacked">Apellido</ion-label>
     <ion-input [readonly]="true" label="{{usuario.apellido}}" fill="outline"></ion-input>
     <br />
 
-    <ion-label position="stacked"></ion-label>
+    <ion-label position="stacked">Nombre de usuario</ion-label>
     <ion-input [readonly]="true" label="{{usuario.nom_usuario}}" fill="outline"></ion-input>
     <br />
 

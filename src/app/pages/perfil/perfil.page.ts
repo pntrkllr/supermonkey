@@ -38,9 +38,9 @@ export class PerfilPage implements OnInit {
     this.bd.fetchUsuario().subscribe((data)=>{
       this.usuario = data;
     })
-    this.idUsuario = localStorage.getItem('id_usuario');
+    const iduser2 = Number(this.idUsuario = localStorage.getItem('id_usuario'));
     this.ls1 = localStorage.getItem('nom_usuario');
-    this.bd.getUserPerfil(this.ls1);
+    this.bd.getUserPerfil(iduser2);
   }
 
 }

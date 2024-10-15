@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { User } from 'src/app/models/user';
+import { ServicebdService } from 'src/app/services/servicebd.service';
+import { Camera, CameraResultType } from '@capacitor/camera';
 
 @Component({
   selector: 'app-modificar-perfil',
@@ -10,18 +14,39 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export class ModificarPerfilPage implements OnInit {
 
-  form: FormGroup;
+  usuario!: User | null;
 
-  constructor(public alertcontroller: AlertController, private formBuilder: FormBuilder) {
+  idUsuario2!: number;
+  form: FormGroup;
+  foto_perfil!: Blob;
+  nom_usuario: string = "";
+  idUsuario: string | null = null;
+  imagen: any;
+  ls1! : any;
+
+  constructor(private router : Router, private activerouter : ActivatedRoute, public alertcontroller: AlertController, private formBuilder: FormBuilder, private bd: ServicebdService) {
+
     this.form = this.formBuilder.group({
       nombre: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s]*$')]],
       apellido: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s]*$')]],
-      usuario: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
+    });
+
+    this.activerouter.queryParams.subscribe(param =>{
+
+      if(this.router.getCurrentNavigation()?.extras.state){
+
+        this.nom_usuario = this.router.getCurrentNavigation()?.extras?.state?.['user'];
+
+      }
     });
   }
 
   ngOnInit() {
+    this.bd.fetchUsuario().subscribe((data)=>{
+      this.usuario = data;
+    })
+    this.bd.getUserPerfil(this.ls1);
   }
 
   //métodos para "nombre"
@@ -78,16 +103,24 @@ export class ModificarPerfilPage implements OnInit {
     return '';
   }
 
-  triggerFileInput() {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    fileInput.click();
-  }
+  takePicture = async () => {
+    const image = await Camera.getPhoto({
+      quality: 100,
+      allowEditing: false,
+      resultType: CameraResultType.Uri
+    });
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      console.log('Archivo seleccionado:', file);
+    this.imagen = image.webPath;
+  };
+
+  //editar
+  editar() {
+    if (this.form.valid) {
+      const { nombre, apellido, email } = this.form.value;
+      /* const foto = this.imagen || null; */
+    const iduser = Number(localStorage.getItem('id_usuario'));
+      this.bd.editarUsuario(iduser, nombre, apellido, email);
+      this.router.navigate(['/perfil']);
     }
   }
-
 }

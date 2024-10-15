@@ -122,7 +122,6 @@ export class ServicebdService {
       await this.database.executeSql(this.registroUsuario, []);
       await this.database.executeSql(this.registroUsuario2, []);
 
-
       //producto
       await this.database.executeSql(this.registroProductoFruta, []);
 
@@ -155,6 +154,14 @@ export class ServicebdService {
       let items: Usuario[] = [];
   
       if (res.rows.length > 0) {
+        const usuario = res.rows.item(0)
+  
+        localStorage.setItem('id_usuario',usuario.id_usuario)
+        const idstring = localStorage.getItem('id_usuario')
+
+        const idpaver = Number(idstring)
+        this.presentAlert('id en el local storage ', ' : '+ idpaver)
+
         for (let i = 0; i < res.rows.length; i++) {
           items.push({
             id_usuario: res.rows.item(i).id_usuario,
@@ -174,8 +181,8 @@ export class ServicebdService {
     });
   }
 
-  getUserPerfil(nombre: string){
-    return this.database.executeSql('SELECT * FROM usuario WHERE nom_usuario = ?;',[nombre])
+  getUserPerfil(id : number){
+    return this.database.executeSql('SELECT * FROM usuario WHERE id_usuario = ?;',[id])
     .then(res=>{
 
       if(res.rows.length>0){
@@ -268,26 +275,29 @@ export class ServicebdService {
     return this.database.executeSql('INSERT INTO usuario(foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (?,?,?,?,?,?,?)', [foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol]).then((res) => {
       this.router.navigate(['/login']);
       this.presentAlert("Todo listo!", "Inicia sesión en Supermonkey.");
-      this.getProductos();
+      const iduser = Number(localStorage.getItem('id_usuario'))
+      this.getUserPerfil(iduser);
     }).catch(e => {
       this.presentAlert('Registro', 'Error: ' + JSON.stringify(e));
     })
   }
 
-  editarUsuario(id_usuario: number, foto_perfil: Blob, pnombre: string, apellido: string, correo: string) {
-    return this.database.executeSql('UPDATE usuario SET foto_perfil = ?, pnombre = ?, apellido = ?, correo = ? WHERE id_usuario = ?', [foto_perfil, pnombre, apellido, correo, id_usuario]).then((res) => {
-      this.router.navigate(['/productos']);
+  editarUsuario(id_usuario: number, pnombre: string, apellido: string, correo: string) {
+    return this.database.executeSql(
+      'UPDATE usuario SET pnombre = ?, apellido = ?, correo = ? WHERE id_usuario = ?',
+      [ pnombre, apellido, correo, id_usuario]
+    ).then((res) => {
       this.presentAlert("Modificar datos", "Datos modificados de manera correcta");
-      this.getProductos();
+      this.getUserPerfil(id_usuario)
     }).catch(e => {
       this.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
-    })
+    });
   }
+  
 
   eliminarUsuario(id_usuario: string) {
     return this.database.executeSql('DELETE FROM usuario WHERE id_usuario = ?', [id_usuario]).then((res) => {
       this.presentAlert("Eliminar usuario", "Usuario eliminado de manera correcta");
-      this.getProductos();
     }).catch(e => {
       this.presentAlert('Eliminar usuario', 'Error : ' + JSON.stringify(e));
     })
