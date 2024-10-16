@@ -11,16 +11,21 @@
   <div id="container">
     <ion-card>
 
-      <ion-button (click)="takePicture()">Tomar/Subir Foto</ion-button><br>
-      <img *ngIf="foto" [src]="foto" alt="Sin imagen" style="height: 250px;width: 250px;" [(ngModel)]="foto"/>
+      <br>
+
+      <ion-button class="botonFoto" color="success" (click)="takePicture()">Tomar/Subir Foto</ion-button><br>
+      <img *ngIf="foto" [src]="foto" alt="Sin imagen" style="height: 250px; width: 250px;" [(ngModel)]="foto"/>
+      <p *ngIf="!foto" style="text-align: center;">*Es obligatorio subir una imagen.</p>
       <br />
 
       <ion-input label="Nombre del producto" type="text" label-placement="floating" fill="outline"
-        placeholder="Nombre del producto" [(ngModel)]="productoM.nombre_pr"></ion-input>
+        placeholder="Nombre del producto" [(ngModel)]="productoM.nombre_pr" (ionBlur)="nombrePrTocado = true"></ion-input>
+      <p class="pRojos" *ngIf="!productoM.nombre_pr && nombrePrTocado">El nombre del producto no puede estar vacío.</p>
       <br />
 
       <ion-input label="Peso (kg)" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
-        [(ngModel)]="productoM.cantidad_kg"></ion-input>
+        [(ngModel)]="productoM.cantidad_kg" (ionBlur)="pesoTocado = true"></ion-input>
+      <p class="pRojos" *ngIf="!productoM.cantidad_kg && pesoTocado">El peso (kg) del producto no puede estar vacío.</p>
       <br />
 
       <ion-input label="Stock" type="number" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
@@ -31,21 +36,23 @@
       <p *ngIf="productoM.stock > 0" class="estatus_not">Disponible</p>
 
       <ion-input label="Precio" type="input" label-placement="floating" fill="outline" placeholder="Precio del producto"
-        [(ngModel)]="productoM.precio"></ion-input>
+        [(ngModel)]="productoM.precio" (ionBlur)="precioTocado = true"></ion-input>
+      <p class="pRojos" *ngIf="!productoM.precio && precioTocado">El precio es obligatorio para continuar.</p>
       <br />
 
       <ion-item>
-        <ion-select label="Categoría" label-placement="floating" [(ngModel)]="productoM.id_categoria">
+        <ion-select label="Categoría" label-placement="floating" [(ngModel)]="productoM.id_categoria" (ionBlur)="categoriaTocada = true">
           <ion-select-option value="1">Frutas</ion-select-option>
           <ion-select-option value="2">Verduras</ion-select-option>
           <ion-select-option value="3">Lácteos</ion-select-option>
           <ion-select-option value="4">Carnes</ion-select-option>
         </ion-select>
       </ion-item>
+      <p class="pRojos" *ngIf="!productoM.id_categoria && categoriaTocada">La categoría del producto es obligatoria.</p>
       <br />
 
       <div class="container-boton">
-        <ion-button type="submit" color="success" (click)="modificar()">Confirmar</ion-button>
+        <ion-button type="submit" color="success" (click)="modificar()" [disabled]="!foto || !productoM.nombre_pr || !productoM.cantidad_kg || !productoM.precio || !productoM.id_categoria">Confirmar</ion-button>
         <ion-button color="danger" [routerLink]="['/productos']">Cancelar</ion-button>
       </div>
 

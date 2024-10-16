@@ -13,6 +13,11 @@ export class EditarProductoPage implements OnInit {
   productoM : any;
   foto : any;
 
+  nombrePrTocado: boolean = false;
+  pesoTocado: boolean = false;
+  precioTocado: boolean = false;
+  categoriaTocada: boolean = false;
+
   constructor(private router: Router, private activerouter: ActivatedRoute, private bd: ServicebdService) { 
     this.activerouter.queryParams.subscribe(res=>{
       if(this.router.getCurrentNavigation()?.extras.state){
