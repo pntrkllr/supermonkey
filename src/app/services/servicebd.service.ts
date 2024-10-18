@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
-import { AlertController, Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Categoria } from '../models/categoria';
 import { Productos } from '../models/productos';
-import { Usuario } from '../models/usuario';
 import { Router } from '@angular/router';
 import { User } from '../models/user';
+import { ServicealertService } from './servicealert.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,13 +32,13 @@ export class ServicebdService {
   tablaUsuario: string = "CREATE TABLE IF NOT EXISTS usuario(id_usuario INTEGER PRIMARY KEY autoincrement NOT NULL, foto_perfil BLOB, pnombre VARCHAR(20) NOT NULL, apellido VARCHAR(30) NOT NULL, nom_usuario VARCHAR(30) NOT NULL, correo VARCHAR(40) NOT NULL, contrasena VARCHAR(16), id_rol INTEGER, FOREIGN KEY (id_rol) REFERENCES rol(id_rol))";
 
   //5.
-  tablaVenta: string = "CREATE TABLE IF NOT EXISTS venta(id_venta INTEGER PRIMARY KEY autoincrement NOT NULL, cant_venta INTEGER, total INTEGER, id_usuario INTEGER, id_estado INTEGER, FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario), FOREIGN KEY (id_estado) REFERENCES estado(id_estado)))";
+  tablaVenta: string = "CREATE TABLE IF NOT EXISTS venta (id_venta INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cant_venta INTEGER, total INTEGER, id_usuario INTEGER, id_estado INTEGER,FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario), FOREIGN KEY (id_estado) REFERENCES estado(id_estado))";
 
   //6.
   tablaProducto: string = "CREATE TABLE IF NOT EXISTS producto(id_producto INTEGER PRIMARY KEY autoincrement NOT NULL, nombre_pr VARCHAR(30) NOT NULL, cantidad_kg INTEGER NOT NULL, precio INTEGER NOT NULL, stock INTEGER, foto BLOB NOT NULL, estatus VARCHAR(20) NOT NULL, id_categoria INTEGER, FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria))";
 
   //7.
-  tablaDetalle: string = "CREATE TABLE IF NOT EXISTS detalle(id_detalle INTEGER PRIMARY KEY autoincrement NOT NULL, cantidad INTEGER, sub_total INTEGER, id_venta INTEGER, id_producto INTEGER, FOREIGN KEY (id_venta) REFERENCES venta(id_venta), FOREIGN KEY (id_producto) REFERENCES producto(id_producto)))";
+  tablaDetalle: string = "CREATE TABLE IF NOT EXISTS detalle (id_detalle INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cantidad INTEGER, sub_total INTEGER, id_venta INTEGER, id_producto INTEGER, FOREIGN KEY (id_venta) REFERENCES venta(id_venta), FOREIGN KEY (id_producto) REFERENCES producto(id_producto))";
 
   //variables de insertar por defecto
   registroRolA: string = "INSERT or IGNORE INTO rol(id_rol, nom_rol) VALUES (1, 'Admin')";
@@ -71,7 +70,7 @@ export class ServicebdService {
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private usuarioBD = new BehaviorSubject<User | null>(null);
 
-  constructor(private router: Router, private sqlite: SQLite, private platform: Platform, private alertController: AlertController) {
+  constructor(private router: Router, private sqlite: SQLite, private platform: Platform, private alert: ServicealertService) {
     this.crearBD()
   }
 
@@ -93,7 +92,7 @@ export class ServicebdService {
         //modificar el estado de la base de datos
         this.isDBReady.next(true);
       }).catch(e => {
-        this.presentAlert('CrearBD', 'Error: ' + JSON.stringify(e));
+        this.alert.presentAlert('CrearBD', 'Error: ' + JSON.stringify(e));
       })
     })
 
@@ -103,42 +102,50 @@ export class ServicebdService {
 
     try {
       //ejecuto la creación de tablas en orden
+      //no fk
+      await this.database.executeSql(this.tablaRol, []);
+      await this.database.executeSql(this.tablaEstado, []);
+      await this.database.executeSql(this.tablaCategoria, []);
 
       //usuario
-      await this.database.executeSql(this.tablaRol, []);
       await this.database.executeSql(this.tablaUsuario, []);
+
+      //venta y detalle
+      await this.database.executeSql(this.tablaVenta, []);
+      await this.database.executeSql(this.tablaDetalle, []);
 
       //producto
       await this.database.executeSql(this.tablaProducto, []);
 
-      //ejecuto los insert en caso que existan
 
-      //usuario
+      //ejecuto los insert en caso que existan
+      //estado de producto
+      await this.database.executeSql(this.registroEstadoTrue, []);
+      await this.database.executeSql(this.registroEstadoFalse, []);
+
+      //roles
       await this.database.executeSql(this.registroRolA, []);
       await this.database.executeSql(this.registroRolU, []);
 
+      //usuarios admin y normales
       await this.database.executeSql(this.registroAdmin, []);
       await this.database.executeSql(this.registroAdmin2, []);
       await this.database.executeSql(this.registroUsuario, []);
       await this.database.executeSql(this.registroUsuario2, []);
 
-      //producto
+      //categorias
+      await this.database.executeSql(this.registroCatFruta, []);
+      await this.database.executeSql(this.registroCatVerdura, []);
+      await this.database.executeSql(this.registroCatLacteo, []);
+      await this.database.executeSql(this.registroCatCarne, []);
+
+      //producto (fruta)
       await this.database.executeSql(this.registroProductoFruta, []);
 
     } catch (e) {
-      this.presentAlert('CrearTabla', 'Error: ' + JSON.stringify(e));
+      this.alert.presentAlert('CrearTabla', 'Error: ' + JSON.stringify(e));
     }
 
-  }
-
-  async presentAlert(titulo: string, msj: string) {
-    const alert = await this.alertController.create({
-      header: titulo,
-      message: msj,
-      buttons: ['OK'],
-    });
-
-    await alert.present();
   }
 
   fetchProductos(): Observable<Productos[]> {
@@ -151,7 +158,7 @@ export class ServicebdService {
 
   getUsuario(nom_usuario: string, contrasena: string) {
     return this.database.executeSql('SELECT * FROM usuario WHERE nom_usuario = ? AND contrasena = ?', [nom_usuario, contrasena]).then(res => {
-      let items: Usuario[] = [];
+      let items: any[] = [];
   
       if (res.rows.length > 0) {
         const usuario = res.rows.item(0)
@@ -243,29 +250,29 @@ export class ServicebdService {
   insertarProducto(nombre_pr: string, cantidad_kg: number, precio: number, stock: number, foto: Blob, estatus: string, id_categoria: number) {
     return this.database.executeSql('INSERT INTO producto(nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria) VALUES (?,?,?,?,?,?,?)', [nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria]).then((res) => {
       this.router.navigate(['/productos']);
-      this.presentAlert("Agregar", "Producto agregado correctamente");
+      this.alert.presentAlert("Agregar", "Producto agregado correctamente");
       this.getProductos();
     }).catch(e => {
-      this.presentAlert('Agregar', 'Error: ' + JSON.stringify(e));
+      this.alert.presentAlert('Agregar', 'Error: ' + JSON.stringify(e));
     })
   }
 
   editarProducto(id_producto: number, nombre_pr: string, cantidad_kg: number, precio: number, stock: number, foto: Blob, estatus: string, id_categoria: number) {
     return this.database.executeSql('UPDATE producto SET nombre_pr = ?, cantidad_kg = ?, precio = ?, stock = ?, foto = ?, estatus = ?, id_categoria = ? WHERE id_producto = ?', [nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria, id_producto]).then((res) => {
       this.router.navigate(['/productos']);
-      this.presentAlert("Modificar", "Producto modificado de manera correcta");
+      this.alert.presentAlert("Modificar", "Producto modificado de manera correcta");
       this.getProductos();
     }).catch(e => {
-      this.presentAlert('Modificar', 'Error: ' + JSON.stringify(e));
+      this.alert.presentAlert('Modificar', 'Error: ' + JSON.stringify(e));
     })
   }
 
   eliminarProducto(id_producto: string) {
     return this.database.executeSql('DELETE FROM producto WHERE id_producto = ?', [id_producto]).then((res) => {
-      this.presentAlert("Eliminar", "Producto eliminado de manera correcta");
+      this.alert.presentAlert("Eliminar", "Producto eliminado de manera correcta");
       this.getProductos();
     }).catch(e => {
-      this.presentAlert('Eliminar', 'Error : ' + JSON.stringify(e));
+      this.alert.presentAlert('Eliminar', 'Error : ' + JSON.stringify(e));
     })
   }
 
@@ -274,11 +281,11 @@ export class ServicebdService {
   insertarUsuario(foto_perfil: Blob, pnombre: string, apellido: string, nom_usuario: string, correo: string, contrasena: string, id_rol: number) {
     return this.database.executeSql('INSERT INTO usuario(foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (?,?,?,?,?,?,?)', [foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol]).then((res) => {
       this.router.navigate(['/login']);
-      this.presentAlert("Todo listo!", "Inicia sesión en Supermonkey.");
+      this.alert.presentAlert("Todo listo!", "Inicia sesión en Supermonkey.");
       const iduser = Number(localStorage.getItem('id_usuario'))
       this.getUserPerfil(iduser);
     }).catch(e => {
-      this.presentAlert('Registro', 'Error: ' + JSON.stringify(e));
+      this.alert.presentAlert('Registro', 'Error: ' + JSON.stringify(e));
     })
   }
 
@@ -298,31 +305,80 @@ export class ServicebdService {
   
     // Ejecutamos la consulta SQL con los parámetros
     return this.database.executeSql(query, params).then((res) => {
-      this.presentAlert("Modificar datos", "Datos modificados de manera correcta");
+      this.alert.presentAlert("Modificar datos", "Datos modificados de manera correcta");
       this.getUserPerfil(id_usuario);
     }).catch(e => {
-      this.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
+      this.alert.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
     });
-  }  
+  }
 
-  // editarUsuario(id_usuario: number, pnombre: string, apellido: string, correo: string, foto_perfil?: Blob | null) {
-  //   return this.database.executeSql(
-  //     'UPDATE usuario SET pnombre = ?, apellido = ?, correo = ? WHERE id_usuario = ?',
-  //     [ pnombre, apellido, correo, id_usuario]
-  //   ).then((res) => {
-  //     this.presentAlert("Modificar datos", "Datos modificados de manera correcta");
-  //     this.getUserPerfil(id_usuario)
-  //   }).catch(e => {
-  //     this.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
-  //   });
-  // }
-  
+  carrito(id_usuario: Number,id_producto : number){
+    return this.database.executeSql("SELECT * FROM venta WHERE id_usuario = ? AND id_estado = 2",[id_usuario])
+    .then((res)=>{
 
-  eliminarUsuario(id_usuario: string) {
-    return this.database.executeSql('DELETE FROM usuario WHERE id_usuario = ?', [id_usuario]).then((res) => {
-      this.presentAlert("Eliminar usuario", "Usuario eliminado de manera correcta");
-    }).catch(e => {
-      this.presentAlert('Eliminar usuario', 'Error : ' + JSON.stringify(e));
+      let id_venta : number;
+
+      if(res.rows.length > 0){
+        id_venta = res.rows.item(0).id_venta
+      }
+      else{
+        
+        return this.database.executeSql("INSERT INTO venta (id_usuario, total, id_estado) VALUES (?, 0, 2);",[id_usuario])
+        .then((res)=>{
+          id_venta = res.insertId;
+        });
+      }
+
+      return this.database.executeSql("select * from detalle join venta where id_usuario = ?", [id_usuario])
+      .then((res) => {
+        let cantidad: number = 1;
+
+        // Verificar si hay resultados antes de acceder a res.rows.item(0)
+        if (res.rows.length > 0 && id_producto === res.rows.item(0).id_producto) {
+          this.alert.presentAlert('Carro', 'El producto ya se añadió al carrito');
+          return Promise.resolve(); // Retornar una promesa resuelta para mantener la consistencia.
+        } else {
+            // Insertar el nuevo producto si no se encontró
+            return this.database.executeSql(
+              `INSERT INTO detalle(id_venta, id_producto, sub_total, cantidad)
+              VALUES (?, ?, (SELECT precio FROM producto WHERE id_producto = ?), ?)`,
+              [id_venta, id_producto, id_producto, cantidad]
+            ).then(() => {
+              this.router.navigate(['/carrito']);
+              this.alert.presentAlert('Carro', 'Producto añadido!');
+            }).catch((error) => {
+              this.alert.presentAlert('Error al insertar detalle en la BD', ': ' + JSON.stringify(error));
+              return Promise.reject(error); // Retornar el error para manejarlo en caso de que sea necesario.
+            });
+          }
+        })
+      .catch((error) => {
+        // Manejar errores en la consulta inicial
+        this.alert.presentAlert('Error al consultar la BD', ': ' + JSON.stringify(error));
+        return Promise.reject(error);
+      });
+      // return this.database.executeSql("select * from detalle join venta where id_usuario = ?",[id_usuario]).then((res)=>{
+
+      //   let cantidad : number = 1;
+
+      //   if(id_producto !== res.rows.item(0).id_producto){
+      //     return this.database.executeSql(`INSERT INTO detalle(id_venta, id_producto, sub_total, cantidad)
+      //      VALUES (?, ?, (SELECT precio FROM producto WHERE id_producto = ?), ?)`,[id_venta, id_producto,id_producto, cantidad])
+      //      .then((res)=>{
+      //       this.router.navigate(['/carrito'])
+      //       this.alert.presentAlert('Carro','Producto añadido!')
+      //      }).catch((error)=>{
+      //       this.alert.presentAlert('error insert detalle bd',': '+JSON.stringify(error))
+      //      })
+      //   }
+      //   else{
+      //     this.alert.presentAlert('carro', 'el producto ya se añadio al carrito')
+      //     return;
+      //   }
+      // })
+      
+    }).catch((error)=>{
+      this.alert.presentAlert('error select venta',': '+JSON.stringify(error))
     })
   }
 

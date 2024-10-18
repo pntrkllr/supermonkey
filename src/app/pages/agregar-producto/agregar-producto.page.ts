@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ServicebdService } from 'src/app/services/servicebd.service';
 import { Camera, CameraResultType } from '@capacitor/camera';
 
@@ -11,8 +9,6 @@ import { Camera, CameraResultType } from '@capacitor/camera';
 })
 
 export class AgregarProductoPage implements OnInit {
-
-  form!: FormGroup;
 
   nombre_pr!: string;
   cantidad_kg!: number;
@@ -29,17 +25,9 @@ export class AgregarProductoPage implements OnInit {
   precioTocado: boolean = false;
   categoriaTocada: boolean = false;
 
-  constructor(private bd: ServicebdService, private fb: FormBuilder) { }
+  constructor(private bd: ServicebdService) { }
 
-  ngOnInit() {
-    // this.form = this.fb.group({
-    //   nombre_pr: [this.nombre_pr, [Validators.required]],
-    //   cantidad_kg: [this.cantidad_kg, [Validators.required]],
-    //   precio: [this.precio, [Validators.required]],
-    //   foto: [this.foto, [Validators.required]],
-    //   id_categoria: [this.id_categoria, [Validators.required]]
-    // });
-   }
+  ngOnInit() { }
 
    validarEstatus() {
     if (this.stock === undefined || this.stock <= 0) {
@@ -53,79 +41,6 @@ export class AgregarProductoPage implements OnInit {
     this.validarEstatus();
     this.bd.insertarProducto(this.nombre_pr, this.cantidad_kg, this.precio, this.stock, this.imagen, this.estatus, this.id_categoria);
   }
-
-  //metodos para evaluar los inputs del formulario
-
-  //nombre producto
-
-  // isNombrePrInvalid() {
-  //   const control = this.form.get('nombre_pr');
-  //   return control?.touched && control.invalid;
-  // }
-
-  // getNombrePrError() {
-  //   const control = this.form.get('nombre_pr');
-  //   if (control?.hasError('required')) {
-  //     return 'El nombre no puede estar vacío.';
-  //   }
-  //   return '';
-  // }
-
-  // //peso
-  // isPesoInvalid() {
-  //   const control = this.form.get('cantidad_kg');
-  //   return control?.touched && control.invalid;
-  // }
-
-  // getPesoError() {
-  //   const control = this.form.get('cantidad_kg');
-  //   if (control?.hasError('required')) {
-  //     return 'El peso (kg) no puede estar vacío.';
-  //   }
-  //   return '';
-  // }
-
-  //precio
-  // isPrecioInvalid() {
-  //   const control = this.form.get('precio');
-  //   return control?.touched && control.invalid;
-  // }
-
-  // getPrecioError() {
-  //   const control = this.form.get('precio');
-  //   if (control?.hasError('required')) {
-  //     return 'El precio no puede estar vacío.';
-  //   }
-  //   return '';
-  // }
-
-  // //categoria
-  // isCategoriaInvalid() {
-  //   const control = this.form.get('id_categoria');
-  //   return control?.touched && control.invalid;
-  // }
-
-  // getCategoriaError() {
-  //   const control = this.form.get('id_categoria');
-  //   if (control?.hasError('required')) {
-  //     return 'Debe escoger la categoría del producto.';
-  //   }
-  //   return '';
-  // }
-
-  //foto
-  // isFotoInvalid() {
-  //   const control = this.form.get('imagen');
-  //   return control?.touched && control.invalid;
-  // }
-
-  // getFotoError() {
-  //   const control = this.form.get('imagen');
-  //   if (control?.hasError('required')) {
-  //     return 'Debe seleccionar una foto.';
-  //   }
-  //   return '';
-  // }
 
   takePicture = async () => {
     const image = await Camera.getPhoto({

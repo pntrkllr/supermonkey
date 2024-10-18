@@ -11,7 +11,7 @@
   <ion-card class="bordes">
 
     <div class="div-titulo">
-      <ion-title style="word-wrap: break-word; white-space: normal;">Nota: No se puede modificar el nombre de usuario.</ion-title>
+      <h3>Importante: No se puede modificar el nombre de usuario.</h3>
     </div>
     <br>
     <br>
@@ -19,6 +19,9 @@
     <form [formGroup]="form" (ngSubmit)="editar()">
 
       <ion-list>
+
+        <p *ngIf="imagen">Foto seleccionada: <img [src]="imagen" alt="Foto de perfil"
+            style="width: 100px; height: auto;" /></p>
 
         <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nuevo nombre"
           formControlName="nombre"></ion-input>
@@ -38,8 +41,6 @@
 
         <div class="container-check">
           <ion-button (click)="takePicture()">Subir Foto</ion-button>
-          <p *ngIf="imagen">Foto seleccionada: <img [src]="imagen" alt="Foto de perfil"
-              style="width: 100px; height: auto;" /></p>
         </div>
 
         <div class="container-boton">

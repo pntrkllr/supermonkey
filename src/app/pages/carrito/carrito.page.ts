@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
+import { ServicealertService } from 'src/app/services/servicealert.service';
+import { ServicebdService } from 'src/app/services/servicebd.service';
 
 @Component({
   selector: 'app-carrito',
@@ -8,18 +10,16 @@ import { AlertController } from '@ionic/angular';
 })
 export class CarritoPage implements OnInit {
 
-  constructor(public alertcontroller : AlertController) { }
+  constructor(public alertcontroller : AlertController, private alert: ServicealertService,private bd : ServicebdService) { }
 
   ngOnInit() {
-  }
-  async presentAlert() {
-    const alert = await this.alertcontroller.create({
-      header: 'Su compra ha sido exitosa.',
-      message: 'Gracias por comprar en Supermonkey!',
-      buttons: ['Aceptar'],
-    });
 
-    await alert.present();
+
+
+  }
+
+  mensaje() {
+    this.alert.presentAlert('mono klooo', 'Usted es un mono kuliao feo')
   }
 
 }

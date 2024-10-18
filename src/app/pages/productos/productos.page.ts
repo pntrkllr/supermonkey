@@ -26,6 +26,9 @@ export class ProductosPage implements OnInit {
     precio: ''
   }]
 
+  //arreglo de filtros
+  productosFiltrados: any = [];
+
   constructor(private router: Router, private activedroute: ActivatedRoute, private bd: ServicebdService) { 
     addIcons({ library, playCircle, radio, search });
 
@@ -49,9 +52,28 @@ export class ProductosPage implements OnInit {
       if(res){
         this.bd.fetchProductos().subscribe(data=>{
           this.arregloProductos = data;
+          this.productosFiltrados = this.arregloProductos;
         })
       }
     })
+  }
+
+  //filtrar productos
+  filtrarProductos(event: any) {
+    const categoriaSeleccionada = event.detail.value;
+  
+    if (categoriaSeleccionada === 'todos') {
+      this.productosFiltrados = this.arregloProductos;
+    } else {
+      this.productosFiltrados = this.arregloProductos.filter((producto: any) => 
+        producto.id_producto === Number(categoriaSeleccionada)
+      );
+    }
+  }
+
+  agregarCarrito(id_producto : number){
+    const id_usuario = Number(localStorage.getItem('id_usuario'))
+    this.bd.carrito(id_usuario,id_producto)
   }
 
   modificar(x:any){

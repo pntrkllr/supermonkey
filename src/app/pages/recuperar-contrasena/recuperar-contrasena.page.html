@@ -8,5 +8,26 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  
+
+  <div id="container">
+    <form [formGroup]="form">
+      <ion-card>
+
+        <br>
+        <p class="p-recuperacion">Ingrese su correo electrónico para efectuar la recuperación:</p>
+        <ion-input label="Ingrese su correo" type="text" label-placement="floating" fill="outline"
+          placeholder="Correo electrónico" formControlName="correo"></ion-input>
+        <p class="advertencia" *ngIf="isEmailInvalid()">{{ getEmailError() }}</p>
+        <br />
+
+        <div class="container-boton">
+          <ion-button color="success">Continuar</ion-button>
+        </div>
+
+        <br />
+
+      </ion-card>
+    </form>
+  </div>
+
 </ion-content>

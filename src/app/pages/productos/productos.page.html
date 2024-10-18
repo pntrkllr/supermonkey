@@ -10,20 +10,20 @@
         </ion-title>
       </ion-toolbar>
       <ion-toolbar>
-        <ion-segment scrollable color="success">
-          <ion-segment-button value="categoria0">
+        <ion-segment scrollable color="success" (ionChange)="filtrarProductos($event)" value="todos">
+          <ion-segment-button value="todos">
             <ion-label>Todos los productos</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="categoria1">
+          <ion-segment-button value="1">
             <ion-label>Frutas</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="categoria2">
+          <ion-segment-button value="2">
             <ion-label>Verduras</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="categoria3">
+          <ion-segment-button value="3">
             <ion-label>Carnes</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="categoria4">
+          <ion-segment-button value="4">
             <ion-label>Lácteos</ion-label>
           </ion-segment-button>
         </ion-segment>
@@ -33,7 +33,7 @@
 </div>
 
 <ion-content [fullscreen]="true">
-
+  
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="rolUsuario=='1'">
     <ion-fab-button color="success" [routerLink]="['/agregar-producto']">
       <ion-icon name="add"></ion-icon>
@@ -46,7 +46,7 @@
     </ion-fab-button>
   </ion-fab>
 
-  <ion-card *ngFor="let x of arregloProductos">
+  <ion-card *ngFor="let x of productosFiltrados">
     <img class="container-imagen" alt="" src="{{ x.foto }}"/>
 
     <ion-card-header>
@@ -59,7 +59,7 @@
     </ion-card-content>
     <div class="container-boton">
       <div *ngIf="rolUsuario=='2'">
-        <ion-button color="success">Agregar al carrito</ion-button>
+        <ion-button color="success" (click)="agregarCarrito(x.id_producto)">Agregar al carrito</ion-button>
       </div>
       <div *ngIf="rolUsuario=='1'">
         <ion-button color="warning" (click)="modificar(x)">Modificar</ion-button>
@@ -68,13 +68,10 @@
     </div>
   </ion-card>
 
-
 </ion-content>
 
 <ion-footer [translucent]="true">
-
   <ion-tab-bar color="success" slot="bottom">
-
     <ion-tab-button tab="home" [routerLink]="['/productos']">
       <ion-icon name="bag-check-outline"></ion-icon>
       Productos
@@ -94,7 +91,5 @@
       <ion-icon name="person-circle-outline"></ion-icon>
       Perfil
     </ion-tab-button>
-
   </ion-tab-bar>
-
 </ion-footer>

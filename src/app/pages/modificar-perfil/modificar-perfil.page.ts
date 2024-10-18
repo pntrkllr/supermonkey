@@ -126,15 +126,4 @@ export class ModificarPerfilPage implements OnInit {
     }
   }
   
-  
-  // editar() {
-  //   if (this.form.valid) {
-  //     const { nombre, apellido, email } = this.form.value;
-  //     const iduser = Number(localStorage.getItem('id_usuario'));
-  //     if (this.foto_perfil){
-  //     this.bd.editarUsuario(iduser, nombre, apellido, email, this.foto_perfil);
-  //     } else {
-  //     this.router.navigate(['/perfil']);
-  //   }
-  // }
 }

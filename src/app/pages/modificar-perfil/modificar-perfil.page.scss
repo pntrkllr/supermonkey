@@ -1,38 +1,9 @@
-//scss avatar principal
-ion-avatar {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-}
-
-img {
-    object-fit: cover;
-}
-
-.foto-perfil {
-    display: flex;
-    place-items: center;
-}
-
 #container p {
     font-size: 14px;
     line-height: 22px;
     color: #c5000f;
     margin: 0;
     text-align: center;
-}
-
-#nota h3 {
-    text-align: center;
-    font-style: italic;
-    opacity: 0.3;
-}
-
-//scss para el div del avatar, hace que se muestre enmedio de la página
-.avatar {
-    display: grid;
-    place-items: center;
-    margin-top: 10%;
 }
 
 .margin-form {
@@ -75,7 +46,25 @@ p {
 }
 
 .div-titulo {
-    margin-top: 25px;
+    margin-top: 40px;
     text-align: center;
+}
+
+h3 {
+    word-wrap: break-word;
+    white-space: normal;
+    font-style: italic;
+}
+
+.fotoPerfil {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+.avatar {
+    display: grid;
+    place-items: center;
+    margin-top: 10%;
 }
   
