@@ -10,16 +10,11 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
 })
 export class CarritoPage implements OnInit {
 
-  constructor(public alertcontroller : AlertController, private alert: ServicealertService,private bd : ServicebdService) { }
+  constructor( private alert: ServicealertService,private bd : ServicebdService) { }
 
   ngOnInit() {
-
-
-
   }
 
-  mensaje() {
-    this.alert.presentAlert('mono klooo', 'Usted es un mono kuliao feo')
-  }
+  
 
 }

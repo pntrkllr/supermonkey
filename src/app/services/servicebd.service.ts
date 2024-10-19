@@ -65,7 +65,6 @@ export class ServicebdService {
   //variable observable
   listaProductos = new BehaviorSubject([]);
 
-
   //variable observable para estatus de bd
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private usuarioBD = new BehaviorSubject<User | null>(null);
@@ -322,23 +321,31 @@ export class ServicebdService {
         id_venta = res.rows.item(0).id_venta
       }
       else{
-        
         return this.database.executeSql("INSERT INTO venta (id_usuario, total, id_estado) VALUES (?, 0, 2);",[id_usuario])
         .then((res)=>{
           id_venta = res.insertId;
         });
       }
 
-      return this.database.executeSql("select * from detalle join venta where id_usuario = ?", [id_usuario])
-      .then((res) => {
-        let cantidad: number = 1;
+      return this.database.executeSql(
+        "SELECT * FROM detalle join venta WHERE id_usuario = ?",
+        [id_usuario]
+      ).then((res) => {
+          let cantidad: number = 1;
+          let productoYaEnCarrito = false;
+      
+          for (let i = 0; i < res.rows.length; i++) {
+            if (res.rows.item(i).id_producto === id_producto) {
+              productoYaEnCarrito = true;
+              break;
 
-        // Verificar si hay resultados antes de acceder a res.rows.item(0)
-        if (res.rows.length > 0 && id_producto === res.rows.item(0).id_producto) {
-          this.alert.presentAlert('Carro', 'El producto ya se añadió al carrito');
-          return Promise.resolve(); // Retornar una promesa resuelta para mantener la consistencia.
-        } else {
-            // Insertar el nuevo producto si no se encontró
+            }
+          }
+      
+          if (productoYaEnCarrito) {
+            return this.alert.presentAlert('Carro', 'El producto ya se añadió al carrito');
+          }
+          else {
             return this.database.executeSql(
               `INSERT INTO detalle(id_venta, id_producto, sub_total, cantidad)
               VALUES (?, ?, (SELECT precio FROM producto WHERE id_producto = ?), ?)`,
@@ -347,39 +354,19 @@ export class ServicebdService {
               this.router.navigate(['/carrito']);
               this.alert.presentAlert('Carro', 'Producto añadido!');
             }).catch((error) => {
-              this.alert.presentAlert('Error al insertar detalle en la BD', ': ' + JSON.stringify(error));
-              return Promise.reject(error); // Retornar el error para manejarlo en caso de que sea necesario.
+               return this.alert.presentAlert('Error Detalle', 'Error : ' + JSON.stringify(error));
             });
           }
         })
-      .catch((error) => {
-        // Manejar errores en la consulta inicial
-        this.alert.presentAlert('Error al consultar la BD', ': ' + JSON.stringify(error));
-        return Promise.reject(error);
-      });
-      // return this.database.executeSql("select * from detalle join venta where id_usuario = ?",[id_usuario]).then((res)=>{
+        .catch((error) => {
+          // Manejar errores en la consulta inicial
+          this.alert.presentAlert('Error al consultar la BD', ': ' + JSON.stringify(error));
+        });
 
-      //   let cantidad : number = 1;
-
-      //   if(id_producto !== res.rows.item(0).id_producto){
-      //     return this.database.executeSql(`INSERT INTO detalle(id_venta, id_producto, sub_total, cantidad)
-      //      VALUES (?, ?, (SELECT precio FROM producto WHERE id_producto = ?), ?)`,[id_venta, id_producto,id_producto, cantidad])
-      //      .then((res)=>{
-      //       this.router.navigate(['/carrito'])
-      //       this.alert.presentAlert('Carro','Producto añadido!')
-      //      }).catch((error)=>{
-      //       this.alert.presentAlert('error insert detalle bd',': '+JSON.stringify(error))
-      //      })
-      //   }
-      //   else{
-      //     this.alert.presentAlert('carro', 'el producto ya se añadio al carrito')
-      //     return;
-      //   }
-      // })
-      
     }).catch((error)=>{
-      this.alert.presentAlert('error select venta',': '+JSON.stringify(error))
+      return this.alert.presentAlert('error select venta',': '+JSON.stringify(error))
     })
   }
+
 
 }
