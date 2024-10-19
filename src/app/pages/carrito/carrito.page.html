@@ -22,29 +22,27 @@
   </ion-row>
 
  <div *ngFor="let x of arregloCarrito">
-    <div *ngIf="x.id_estado == 2">
-      <ion-item>
-        <ion-thumbnail slot="start">
-          <img alt="{{x.foto}}" src="{{x.foto}}" />
-        </ion-thumbnail>
-        <ion-label>{{x.nombre_pr}}</ion-label>
-        <ion-button color="success" (click)="menos(x.id_producto)"> - </ion-button>
-        <ion-label>{{x.cantidad}}</ion-label>
-        <ion-button color="success" (click)="mas(x.id_producto)"> + </ion-button>
-        <ion-label class="precio">{{x.subtotal}}</ion-label>
+    <ion-item>
+      <ion-thumbnail slot="start">
+        <img alt="{{x.foto}}" src="{{x.foto}}" />
+      </ion-thumbnail>
+      <ion-label>{{x.nombre_pr}}</ion-label>
+      <ion-button color="success" (click)="menos(x.id_producto)"> - </ion-button>
+      <ion-label>{{x.cantidad}}</ion-label>
+      <ion-button color="success" (click)="mas(x.id_producto)"> + </ion-button>
+      <ion-label class="precio">{{x.subtotal}}</ion-label>
   
-        <ion-button color="danger" (click)="eliminar(x.id_producto)">
-          <mat-icon>close</mat-icon>
-        </ion-button>
-      </ion-item>
-    </div>
+      <ion-button color="danger" (click)="eliminar(x.id_producto)">
+        <mat-icon>close</mat-icon>
+      </ion-button>
+    </ion-item>
  </div>
 
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
-    <ion-button class="boton-pagar" color="success" [routerLink]="['/productos']">Pagar</ion-button>
-    <ion-label class="total-pagar">Total: $42.980</ion-label>
+    <ion-button class="boton-pagar" color="success" (click)="pagar()">Pagar</ion-button>
+    <ion-label class="total-pagar">Total : $ {{totalCarro}}</ion-label>
   </ion-toolbar>
 </ion-footer>

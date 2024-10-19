@@ -65,6 +65,7 @@ export class ServicebdService {
   //variable observable
   listaProductos = new BehaviorSubject([]);
   listaCarrito = new BehaviorSubject([]);
+  totalCompra = new BehaviorSubject<any>(0);
 
   //variable observable para estatus de bd
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -154,6 +155,10 @@ export class ServicebdService {
 
   fetchCarrito(): Observable<any[]> {
     return this.listaCarrito.asObservable();
+  }
+
+  fetchTotal(): Observable<number>{
+    return this.totalCompra.asObservable();
   }
 
   dbState() {
@@ -341,8 +346,7 @@ export class ServicebdService {
           for (let i = 0; i < res.rows.length; i++) {
             if (res.rows.item(i).id_producto === id_producto) {
               productoYaEnCarrito = true;
-              return;
-
+              
             }
           }
 
@@ -393,8 +397,7 @@ export class ServicebdService {
             estatus: res.rows.item(i).estatus,
             id_categoria: res.rows.item(i).id_categoria,
             subtotal: res.rows.item(i).subtotal,
-            cantidad: res.rows.item(i).cantidad,
-            id_estado: res.rows.item(i).id_estado
+            cantidad: res.rows.item(i).cantidad
           })
         }
       }
@@ -426,9 +429,9 @@ export class ServicebdService {
           'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ?',
           [nuevaCantidad, nuevoSubtotal, id_producto]
         ).then(() => {
-          this.alert.presentAlert('Carro', 'Cantidad actualizada correctamente!');
           const id_usuario = Number(localStorage.getItem('id_usuario'))
           this.verCarrito(id_usuario)
+          this.getTotal(id_usuario)
         }).catch((error) => {
           return this.alert.presentAlert('Error cantidad', 'Error : ' + JSON.stringify(error));
         });
@@ -461,9 +464,9 @@ export class ServicebdService {
           'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ?',
           [nuevaCantidad, nuevoSubtotal, id_producto]
         ).then(() => {
-          this.alert.presentAlert('Carro', 'Cantidad actualizada correctamente!');
           const id_usuario = Number(localStorage.getItem('id_usuario'))
           this.verCarrito(id_usuario)
+          this.getTotal(id_usuario)
         }).catch((error) => {
           return this.alert.presentAlert('Error cantidad', 'Error : ' + JSON.stringify(error));
         });
@@ -479,16 +482,104 @@ export class ServicebdService {
       this.alert.presentAlert("Eliminar", "Producto eliminado del carrito");
       const id_usuario = Number(localStorage.getItem('id_usuario'))
       this.verCarrito(id_usuario)
+      this.getTotal(id_usuario)
     }).catch(e => {
       this.alert.presentAlert('Eliminar', 'Error : ' + JSON.stringify(e));
     })
 
   }
 
-  // verHistorial(id_usuario) {
-  //   return 
+  getTotal(id_usuario : number){
+    // Paso 1: Consultar los productos en el carrito del usuario (id_estado = 2)
+    return this.database.executeSql(
+      `SELECT d.cantidad, d.sub_total 
+       FROM detalle d
+       JOIN venta v ON d.id_venta = v.id_venta 
+       WHERE v.id_usuario = ? AND v.id_estado = 2`,
+      [id_usuario]
+    )
+    .then((res) => {
+      let total = 0;
+  
+      // Paso 2: Calcular el total sumando los subtotales de los productos
+      for (let i = 0; i < res.rows.length; i++) {
+        total += res.rows.item(i).sub_total;
+      }
+      return this.totalCompra.next(total);
+    }).catch((error) => {
+      return this.alert.presentAlert('Error al obtener los productos del carrito', 'Error: ' + JSON.stringify(error));
+    });
+  }
 
-  // }
+  pagarProductos(id_usuario: number) {
+    // Paso 1: Consultar los productos en el carrito del usuario (id_estado = 2)
+    return this.database.executeSql(
+      `SELECT d.cantidad, d.sub_total 
+       FROM detalle d
+       JOIN venta v ON d.id_venta = v.id_venta 
+       WHERE v.id_usuario = ? AND v.id_estado = 2`,
+      [id_usuario]
+    )
+    .then((res) => {
+      let total = 0;
+  
+      // Paso 2: Calcular el total sumando los subtotales de los productos
+      for (let i = 0; i < res.rows.length; i++) {
+        total += res.rows.item(i).sub_total;
+      }
+      
+      // Vrerificar si hay productos en el carrito antes de proceder
+      if (total > 0) {
+        // Paso 3: Actualizar el estado de la venta para marcarla como pagada (por ejemplo, id_estado = 1)
+        return this.database.executeSql(
+          `UPDATE venta 
+           SET total = ?, id_estado = 1 
+           WHERE id_usuario = ? AND id_estado = 2`,
+          [total, id_usuario]
+        )
+        .then(() => {
+          this.alert.presentAlert('Pago', 'El pago ha sido procesado exitosamente por un total de: ' + total);
+          this.router.navigate(['/productos']); // Redirigir a la página del historial de compras si es necesario
+        })
+        .catch((error) => {
+          return this.alert.presentAlert('Error pago', 'Error: ' + JSON.stringify(error));
+        });
+      } else {
+        return this.alert.presentAlert('Carro vacío', 'No hay productos en el carrito para pagar.');
+      }
+    })
+    .catch((error) => {
+      return this.alert.presentAlert('Error al obtener los productos del carrito', 'Error: ' + JSON.stringify(error));
+    });
+  }
+
+  verHistorial(id_usuario: number) {
+    // Consulta para obtener las compras del usuario, excluyendo aquellas en estado de carrito (id_estado = 2)
+    return this.database.executeSql(
+      `SELECT * FROM venta 
+       WHERE id_usuario = ? AND id_estado = 1`,
+      [id_usuario]
+    )
+    .then((res) => {
+      let items : any[] = [];
+  
+      // Recorrer las ventas y agregarlas al historial
+      for (let i = 0; i < res.rows.length; i++) {
+        let venta = res.rows.item(i);
+        items.push({
+          id_venta: venta.id_venta,
+          total: venta.total,
+          fecha: venta.fecha, // Asegúrate de que la tabla tenga una columna 'fecha' o similar
+          id_estado: venta.id_estado,
+        });
+      }
+    })
+    .catch((error) => {
+      console.error('Error al consultar el historial de compras:', error);
+      this.alert.presentAlert('Error al obtener el historial de compras', 'Error: ' + JSON.stringify(error));
+      return Promise.reject(error);
+    });
+  }
 
   verUsuarios() {
 

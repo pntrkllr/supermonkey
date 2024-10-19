@@ -9,6 +9,8 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
 })
 export class CarritoPage implements OnInit {
 
+  totalCarro !: number;
+
   arregloCarrito: any = [{
     id_producto: '',
     nombre_pr: '',
@@ -17,8 +19,7 @@ export class CarritoPage implements OnInit {
     foto: '',
     precio: '',
     subtotal: '',
-    cantidad: '',
-    id_estado: ''
+    cantidad: ''
   }]
 
   constructor( private alert: ServicealertService, private bd : ServicebdService) { }
@@ -30,12 +31,16 @@ export class CarritoPage implements OnInit {
         this.bd.fetchCarrito().subscribe(data=>{
           this.arregloCarrito = data;
         })
+        this.bd.fetchTotal().subscribe(data=>{
+          this.totalCarro = data;
+        })
       }
       
     })
 
     const id_usuario = Number(localStorage.getItem('id_usuario'))
     this.bd.verCarrito(id_usuario);
+    this.bd.getTotal(id_usuario);
 
   }
 
@@ -47,5 +52,9 @@ export class CarritoPage implements OnInit {
   }
   eliminar(id_producto : number){
     this.bd.eliminarPcarrito(id_producto);
+  }
+  pagar(){
+    const id_usuario = Number(localStorage.getItem('id_usuario'));
+    this.bd.pagarProductos(id_usuario);
   }
 }
