@@ -30,6 +30,7 @@
 
       <ion-input label="Stock" type="number" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
         [(ngModel)]="stock"></ion-input>
+      <p class="pRojos" *ngIf="stock < 0">El stock no puede ser menor a 0.</p>
 
       <p style="text-align: center;">Disponibilidad del producto según stock:</p>
       <p *ngIf="stock === undefined || stock <= 0" class="estatus_not">No disponible</p>

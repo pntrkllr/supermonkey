@@ -59,7 +59,8 @@
     </ion-card-content>
     <div class="container-boton">
       <div *ngIf="rolUsuario=='2'">
-        <ion-button color="success" (click)="agregarCarrito(x.id_producto)">Agregar al carrito</ion-button>
+        <ion-button *ngIf="x.stock > 0" color="success" (click)="agregarCarrito(x.id_producto)">Agregar al carrito</ion-button>
+        <ion-button *ngIf="x.stock <= 0" disabled color="success">Agotado</ion-button>
       </div>
       <div *ngIf="rolUsuario=='1'">
         <ion-button color="warning" (click)="modificar(x)">Modificar</ion-button>

@@ -64,6 +64,7 @@ export class ServicebdService {
 
   //variable observable
   listaProductos = new BehaviorSubject([]);
+  listaCarrito = new BehaviorSubject([]);
 
   //variable observable para estatus de bd
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -151,6 +152,10 @@ export class ServicebdService {
     return this.listaProductos.asObservable();
   }
 
+  fetchCarrito(): Observable<any[]> {
+    return this.listaCarrito.asObservable();
+  }
+
   dbState() {
     return this.isDBReady.asObservable();
   }
@@ -158,11 +163,11 @@ export class ServicebdService {
   getUsuario(nom_usuario: string, contrasena: string) {
     return this.database.executeSql('SELECT * FROM usuario WHERE nom_usuario = ? AND contrasena = ?', [nom_usuario, contrasena]).then(res => {
       let items: any[] = [];
-  
+
       if (res.rows.length > 0) {
         const usuario = res.rows.item(0)
-  
-        localStorage.setItem('id_usuario',usuario.id_usuario)
+
+        localStorage.setItem('id_usuario', usuario.id_usuario)
         const idstring = localStorage.getItem('id_usuario')
 
         const idpaver = Number(idstring)
@@ -182,34 +187,33 @@ export class ServicebdService {
       }
       return items.length > 0 ? items[0] : null;
     }).catch(e => {
-      console.error('Error al obtener el usuario:', e);
-      return null;
+      return this.alert.presentAlert('Error usuario', 'Error : ' + JSON.stringify(e));
     });
   }
 
-  getUserPerfil(id : number){
-    return this.database.executeSql('SELECT * FROM usuario WHERE id_usuario = ?;',[id])
-    .then(res=>{
+  getUserPerfil(id: number) {
+    return this.database.executeSql('SELECT * FROM usuario WHERE id_usuario = ?;', [id])
+      .then(res => {
 
-      if(res.rows.length>0){
+        if (res.rows.length > 0) {
 
-        const user : User = new User(
-          res.rows.item(0).id_usuario,
-          res.rows.item(0).pnombre,
-          res.rows.item(0).apellido,
-          res.rows.item(0).nom_usuario,
-          res.rows.item(0).correo,
-          res.rows.item(0).id_rol,
-          res.rows.item(0).foto_perfil
-        );
-        this.usuarioBD.next(user);
+          const user: User = new User(
+            res.rows.item(0).id_usuario,
+            res.rows.item(0).pnombre,
+            res.rows.item(0).apellido,
+            res.rows.item(0).nom_usuario,
+            res.rows.item(0).correo,
+            res.rows.item(0).id_rol,
+            res.rows.item(0).foto_perfil
+          );
+          this.usuarioBD.next(user);
 
-      }
-    })
+        }
+      })
   }
 
 
-  fetchUsuario(): Observable<User| null>{
+  fetchUsuario(): Observable<User | null> {
     return this.usuarioBD.asObservable();
 
   }
@@ -292,16 +296,16 @@ export class ServicebdService {
 
     let query = 'UPDATE usuario SET pnombre = ?, apellido = ?, correo = ?';
     let params: (string | Blob | number)[] = [pnombre, apellido, correo];
-  
+
     //si el usuario elige una foto de perfil se ejecuta esto
     if (foto_perfil) {
       query += ', foto_perfil = ?';  //campo de la foto
       params.push(foto_perfil);
     }
-  
+
     query += ' WHERE id_usuario = ?';
     params.push(id_usuario);
-  
+
     // Ejecutamos la consulta SQL con los parámetros
     return this.database.executeSql(query, params).then((res) => {
       this.alert.presentAlert("Modificar datos", "Datos modificados de manera correcta");
@@ -311,37 +315,37 @@ export class ServicebdService {
     });
   }
 
-  carrito(id_usuario: Number,id_producto : number){
-    return this.database.executeSql("SELECT * FROM venta WHERE id_usuario = ? AND id_estado = 2",[id_usuario])
-    .then((res)=>{
+  carrito(id_usuario: Number, id_producto: number) {
+    return this.database.executeSql("SELECT * FROM venta WHERE id_usuario = ? AND id_estado = 2", [id_usuario])
+      .then((res) => {
 
-      let id_venta : number;
+        let id_venta: number;
 
-      if(res.rows.length > 0){
-        id_venta = res.rows.item(0).id_venta
-      }
-      else{
-        return this.database.executeSql("INSERT INTO venta (id_usuario, total, id_estado) VALUES (?, 0, 2);",[id_usuario])
-        .then((res)=>{
-          id_venta = res.insertId;
-        });
-      }
+        if (res.rows.length > 0) {
+          id_venta = res.rows.item(0).id_venta
+        }
+        else {
+          return this.database.executeSql("INSERT INTO venta (id_usuario, total, id_estado) VALUES (?, 0, 2);", [id_usuario])
+            .then((res) => {
+              id_venta = res.insertId;
+            });
+        }
 
-      return this.database.executeSql(
-        "SELECT * FROM detalle join venta WHERE id_usuario = ?",
-        [id_usuario]
-      ).then((res) => {
+        return this.database.executeSql(
+          "SELECT * FROM detalle join venta WHERE id_usuario = ?",
+          [id_usuario]
+        ).then((res) => {
           let cantidad: number = 1;
           let productoYaEnCarrito = false;
-      
+
           for (let i = 0; i < res.rows.length; i++) {
             if (res.rows.item(i).id_producto === id_producto) {
               productoYaEnCarrito = true;
-              break;
+              return;
 
             }
           }
-      
+
           if (productoYaEnCarrito) {
             return this.alert.presentAlert('Carro', 'El producto ya se añadió al carrito');
           }
@@ -353,20 +357,140 @@ export class ServicebdService {
             ).then(() => {
               this.router.navigate(['/carrito']);
               this.alert.presentAlert('Carro', 'Producto añadido!');
+              const id_usuario = Number(localStorage.getItem('id_usuario'))
+              this.verCarrito(id_usuario)
             }).catch((error) => {
-               return this.alert.presentAlert('Error Detalle', 'Error : ' + JSON.stringify(error));
+              return this.alert.presentAlert('Error Detalle', 'Error : ' + JSON.stringify(error));
             });
           }
         })
-        .catch((error) => {
-          // Manejar errores en la consulta inicial
-          this.alert.presentAlert('Error al consultar la BD', ': ' + JSON.stringify(error));
-        });
+          .catch((error) => {
+            // Manejar errores en la consulta inicial
+            this.alert.presentAlert('Error al consultar la BD', ': ' + JSON.stringify(error));
+          });
 
-    }).catch((error)=>{
-      return this.alert.presentAlert('error select venta',': '+JSON.stringify(error))
-    })
+      }).catch((error) => {
+        return this.alert.presentAlert('error select venta', ': ' + JSON.stringify(error))
+      })
   }
 
+  verCarrito(id_usuario: number) {
+    return this.database.executeSql("SELECT producto.*, detalle.sub_total AS subtotal, detalle.cantidad AS cantidad FROM producto JOIN detalle ON detalle.id_producto = producto.id_producto JOIN venta ON venta.id_venta = detalle.id_venta WHERE venta.id_usuario = ? AND venta.id_estado = 2", [id_usuario]).then(res => {
+      //variable para almacenar el resultado del select
+      let items: any[] = [];
+      //verificar si el select trae mas de 1 registro
+      if (res.rows.length > 0) {
+        //recorremos el resultado de la consulta
+        for (var i = 0; i < res.rows.length; i++) {
+          //ingresar registro a registro en mi variable
+          items.push({
+            id_producto: res.rows.item(i).id_producto,
+            nombre_pr: res.rows.item(i).nombre_pr,
+            cantidad_kg: res.rows.item(i).cantidad_kg,
+            precio: res.rows.item(i).precio,
+            stock: res.rows.item(i).stock,
+            foto: res.rows.item(i).foto,
+            estatus: res.rows.item(i).estatus,
+            id_categoria: res.rows.item(i).id_categoria,
+            subtotal: res.rows.item(i).subtotal,
+            cantidad: res.rows.item(i).cantidad,
+            id_estado: res.rows.item(i).id_estado
+          })
+        }
+      }
+      this.listaCarrito.next(items as any);
+    }).catch(e => {
+      return this.alert.presentAlert('Error mostrar Carrito', 'Error : ' + JSON.stringify(e));
 
+    });
+  }
+
+  masProducto(id_producto: number) {
+    // Obtener el precio del producto
+    return this.database.executeSql(
+      `SELECT producto.*, detalle.sub_total AS subtotal, detalle.cantidad AS cantidad
+      FROM producto 
+      JOIN detalle ON detalle.id_producto = producto.id_producto 
+      JOIN venta ON venta.id_venta = detalle.id_venta
+      WHERE producto.id_producto = ? AND venta.id_estado = 2`,
+      [id_producto]
+    ).then((res) => {
+      if (res.rows.length > 0) {
+        const cantidadActual = res.rows.item(0).cantidad
+        const precioActual = res.rows.item(0).precio;
+        const nuevaCantidad = cantidadActual + 1;
+        const nuevoSubtotal = nuevaCantidad * precioActual;
+
+        // Actualizar la cantidad y el subtotal en la tabla detalle
+        return this.database.executeSql(
+          'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ?',
+          [nuevaCantidad, nuevoSubtotal, id_producto]
+        ).then(() => {
+          this.alert.presentAlert('Carro', 'Cantidad actualizada correctamente!');
+          const id_usuario = Number(localStorage.getItem('id_usuario'))
+          this.verCarrito(id_usuario)
+        }).catch((error) => {
+          return this.alert.presentAlert('Error cantidad', 'Error : ' + JSON.stringify(error));
+        });
+      } else {
+        return this.alert.presentAlert('Error', 'Producto no encontrado.');
+      }
+    }).catch((error) => {
+      return this.alert.presentAlert('Error al consultar precio', 'Error : ' + JSON.stringify(error));
+    });
+  }
+
+  menosProducto(id_producto: number) {
+    // Obtener el precio del producto
+    return this.database.executeSql(
+      `SELECT producto.*, detalle.sub_total AS subtotal, detalle.cantidad AS cantidad
+      FROM producto 
+      JOIN detalle ON detalle.id_producto = producto.id_producto 
+      JOIN venta ON venta.id_venta = detalle.id_venta
+      WHERE producto.id_producto = ? AND venta.id_estado = 2`,
+      [id_producto]
+    ).then((res) => {
+      if (res.rows.length > 0) {
+        const cantidadActual = res.rows.item(0).cantidad
+        const precioActual = res.rows.item(0).precio;
+        const nuevaCantidad = cantidadActual - 1;
+        const nuevoSubtotal = nuevaCantidad * precioActual;
+
+        // Actualizar la cantidad y el subtotal en la tabla detalle
+        return this.database.executeSql(
+          'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ?',
+          [nuevaCantidad, nuevoSubtotal, id_producto]
+        ).then(() => {
+          this.alert.presentAlert('Carro', 'Cantidad actualizada correctamente!');
+          const id_usuario = Number(localStorage.getItem('id_usuario'))
+          this.verCarrito(id_usuario)
+        }).catch((error) => {
+          return this.alert.presentAlert('Error cantidad', 'Error : ' + JSON.stringify(error));
+        });
+      } else {
+        return this.alert.presentAlert('Error', 'Producto no encontrado.');
+      }
+    }).catch((error) => {
+      return this.alert.presentAlert('Error al consultar precio', 'Error : ' + JSON.stringify(error));
+    });
+  }
+  eliminarPcarrito(id_producto: number) {
+    return this.database.executeSql('DELETE FROM detalle WHERE id_producto= ?', [id_producto]).then((res) => {
+      this.alert.presentAlert("Eliminar", "Producto eliminado del carrito");
+      const id_usuario = Number(localStorage.getItem('id_usuario'))
+      this.verCarrito(id_usuario)
+    }).catch(e => {
+      this.alert.presentAlert('Eliminar', 'Error : ' + JSON.stringify(e));
+    })
+
+  }
+
+  // verHistorial(id_usuario) {
+  //   return 
+
+  // }
+
+  verUsuarios() {
+
+  }
 }
