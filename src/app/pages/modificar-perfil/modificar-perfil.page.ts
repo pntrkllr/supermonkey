@@ -27,9 +27,9 @@ export class ModificarPerfilPage implements OnInit {
   constructor(private router: Router, private activerouter: ActivatedRoute, public alertcontroller: AlertController, private formBuilder: FormBuilder, private bd: ServicebdService) {
 
     this.form = this.formBuilder.group({
-      nombre: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s]*$')]],
-      apellido: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s]*$')]],
-      email: ['', [Validators.required, Validators.email]],
+      nombre: ['', [Validators.pattern('^[a-zA-Z\\s]*$')]],
+      apellido: ['', [Validators.pattern('^[a-zA-Z\\s]*$')]],
+      email: ['', [Validators.email]],
     });
 
     this.activerouter.queryParams.subscribe(param => {
@@ -59,9 +59,7 @@ export class ModificarPerfilPage implements OnInit {
   }
 
   getNombreError() {
-    if (this.nombre?.errors?.['required']) {
-      return 'El campo "Nombre" está vacío.'
-    } else if (this.nombre?.errors?.['pattern']) {
+    if (this.nombre?.errors?.['pattern']) {
       return 'El campo "Nombre" solo puede contener letras.'
     }
     return '';
@@ -77,9 +75,7 @@ export class ModificarPerfilPage implements OnInit {
   }
 
   getApellidoError() {
-    if (this.apellido?.errors?.['required']) {
-      return 'El campo "Apellido" está vacío.'
-    } else if (this.apellido?.errors?.['pattern']) {
+    if (this.apellido?.errors?.['pattern']) {
       return 'El campo "Apellido" solo puede contener letras.'
     }
     return '';
@@ -95,9 +91,7 @@ export class ModificarPerfilPage implements OnInit {
   }
 
   getEmailError() {
-    if (this.email.errors?.['required']) {
-      return 'El campo "Correo electrónico" está vacío.';
-    } else if (this.email.errors?.['email']) {
+    if (this.email.errors?.['email']) {
       return 'Ingresa un correo electrónico válido.';
     }
     return '';

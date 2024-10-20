@@ -66,6 +66,8 @@ export class ServicebdService {
   listaProductos = new BehaviorSubject([]);
   listaCarrito = new BehaviorSubject([]);
   totalCompra = new BehaviorSubject<any>(0);
+  listaHistorial = new BehaviorSubject([]);
+  listaUsuarios = new BehaviorSubject([]);
 
   //variable observable para estatus de bd
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -159,6 +161,14 @@ export class ServicebdService {
 
   fetchTotal(): Observable<number>{
     return this.totalCompra.asObservable();
+  }
+  
+  fetchHistorial(): Observable<any[]>{
+    return this.listaHistorial.asObservable();
+  }
+
+  fetchUsuarios(): Observable<any[]>{
+    return this.listaUsuarios.asObservable();
   }
 
   dbState() {
@@ -297,27 +307,71 @@ export class ServicebdService {
     })
   }
 
-  editarUsuario(id_usuario: number, pnombre: string, apellido: string, correo: string, foto_perfil?: Blob | null) {
+  editarUsuario(id_usuario: number, pnombre?: string, apellido?: string, correo?: string, foto_perfil?: Blob | null) {
 
-    let query = 'UPDATE usuario SET pnombre = ?, apellido = ?, correo = ?';
-    let params: (string | Blob | number)[] = [pnombre, apellido, correo];
+    let query = 'UPDATE usuario SET';
+    let params: (any)[] = [];
 
+    if (pnombre) {
+      query += ' pnombre = ?';
+      params.push(pnombre);
+    }
+    if (apellido) {
+      query += params.length ? ', apellido = ?': ' apellido = ?';
+      params.push(apellido);
+    }
+    if (correo) {
+      query += params.length ? ', correo = ?': ' correo = ?';  //campo de la foto
+      params.push(correo);
+    }
     //si el usuario elige una foto de perfil se ejecuta esto
     if (foto_perfil) {
-      query += ', foto_perfil = ?';  //campo de la foto
+      query += params.length ? ', foto_perfil = ?': ' foto_perfil = ?';  //campo de la foto
       params.push(foto_perfil);
     }
 
-    query += ' WHERE id_usuario = ?';
-    params.push(id_usuario);
+    if(params.length > 0){
 
-    // Ejecutamos la consulta SQL con los parámetros
-    return this.database.executeSql(query, params).then((res) => {
-      this.alert.presentAlert("Modificar datos", "Datos modificados de manera correcta");
-      this.getUserPerfil(id_usuario);
-    }).catch(e => {
-      this.alert.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
-    });
+      query += ' WHERE id_usuario = ?';
+      params.push(id_usuario);
+      // Ejecutamos la consulta SQL con los parámetros
+      return this.database.executeSql(query, params).then((res) => {
+        this.alert.presentAlert("Modificar datos", "Datos modificados de manera correcta");
+        this.getUserPerfil(id_usuario);
+      }).catch(e => {
+        this.alert.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
+      });
+    }else{
+      return this.alert.presentAlert('Modificar Perfil','no se encontraron datos que modificar');
+    }
+   
+  }
+  getContrasena(id_usuario: number, contrasena : number){
+
+    let query = 'UPDATE usuario SET';
+    let params: (any)[] = [];
+
+    if (contrasena) {
+      query += ' contrasena = ?';
+      params.push(contrasena);
+    }
+
+    if(params.length > 0){
+
+      query += ' WHERE id_usuario = ?';
+      params.push(id_usuario);
+      // Ejecutamos la consulta SQL con los parámetros
+      return this.database.executeSql(query, params).then((res) => {
+        this.alert.presentAlert("Modificar datos", "Datos modificados de manera correcta");
+        this.getUserPerfil(id_usuario);
+      }).catch(e => {
+        this.alert.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
+      });
+    }else{
+      return this.alert.presentAlert('Modificar Perfil','no se encontraron datos que modificar');
+    }
+   
+
   }
 
   carrito(id_usuario: Number, id_producto: number) {
@@ -534,7 +588,7 @@ export class ServicebdService {
         return this.database.executeSql(
           `UPDATE venta 
            SET total = ?, id_estado = 1 
-           WHERE id_usuario = ? AND id_estado = 2`,
+           WHERE id_usuario = ?`,
           [total, id_usuario]
         )
         .then(() => {
@@ -556,32 +610,75 @@ export class ServicebdService {
   verHistorial(id_usuario: number) {
     // Consulta para obtener las compras del usuario, excluyendo aquellas en estado de carrito (id_estado = 2)
     return this.database.executeSql(
-      `SELECT * FROM venta 
-       WHERE id_usuario = ? AND id_estado = 1`,
+      `SELECT v.id_venta, v.total, v.cant_venta, v.id_estado, v.id_usuario, 
+        d.id_producto, d.cantidad, d.sub_total, p.nombre_pr AS producto_nombre, p.foto AS foto
+       FROM venta v
+       JOIN detalle d ON v.id_venta = d.id_venta
+       JOIN producto p ON d.id_producto = p.id_producto
+       WHERE v.id_usuario = ? AND v.id_estado = 1`,
       [id_usuario]
     )
     .then((res) => {
-      let items : any[] = [];
+      
+      let items: any[] = [];
   
       // Recorrer las ventas y agregarlas al historial
       for (let i = 0; i < res.rows.length; i++) {
         let venta = res.rows.item(i);
+  
         items.push({
           id_venta: venta.id_venta,
+          cant_venta : venta.cant_venta,
           total: venta.total,
-          fecha: venta.fecha, // Asegúrate de que la tabla tenga una columna 'fecha' o similar
           id_estado: venta.id_estado,
+          id_usuario: venta.id_usuario,
+          id_producto: venta.id_producto,
+          cantidad: venta.cantidad,
+          sub_total: venta.sub_total,
+          producto_nombre: venta.producto_nombre,
+          foto: venta.foto
         });
       }
+      this.listaHistorial.next(items as any);
     })
     .catch((error) => {
-      console.error('Error al consultar el historial de compras:', error);
-      this.alert.presentAlert('Error al obtener el historial de compras', 'Error: ' + JSON.stringify(error));
-      return Promise.reject(error);
+      return this.alert.presentAlert('Error al obtener el historial de compras', 'Error: ' + JSON.stringify(error));
     });
   }
 
   verUsuarios() {
+    // Consulta para obtener todos los usuarios de la tabla usuario
+    return this.database.executeSql(
+      `SELECT usuario.* , IFNULL(SUM(venta.cant_venta), 0) AS total_ventas
+      FROM usuario left join venta on venta.id_usuario = usuario.id_usuario
+      WHERE usuario.id_rol = 2
+      GROUP BY usuario.id_usuario`,
+      []
+    )
+    .then((res) => {
+      let usuarios: any[] = [];
+
+      // Recorrer los usuarios y agregarlos a la lista
+      for (let i = 0; i < res.rows.length; i++) {
+        /* let usuario = res.rows.item(i); */
+
+        usuarios.push({
+          id_usuario: res.rows.item(i).id_usuario,
+          nombre: res.rows.item(i).nombre,
+          apellido: res.rows.item(i).apellido,
+          nom_usuario: res.rows.item(i).nom_usuario,
+          correo: res.rows.item(i).correo,
+          foto_perfil: res.rows.item(i).foto_perfil,
+          id_rol: res.rows.item(i).id_rol,
+          total_ventas : res.rows.item(i).total_ventas,
+          
+        });
+      }
+      this.listaUsuarios.next(usuarios as any)
+    })
+    .catch((error) => {
+      return this.alert.presentAlert('Error al obtener los usuarios', 'Error: ' + JSON.stringify(error));
+    });
 
   }
 }

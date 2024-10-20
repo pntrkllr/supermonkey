@@ -72,10 +72,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/terminos-y-condiciones/terminos-y-condiciones.module').then( m => m.TerminosYCondicionesPageModule)
   },
   {
-    path: 'validacion-codigo',
-    loadChildren: () => import('./pages/validacion-codigo/validacion-codigo.module').then( m => m.ValidacionCodigoPageModule)
-  },
-  {
     path: '**',
     loadChildren: () => import('./pages/notfound/notfound.module').then( m => m.NotfoundPageModule)
   },

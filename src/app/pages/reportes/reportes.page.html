@@ -9,12 +9,27 @@
 
 <ion-content [fullscreen]="true" padding>
 
-  <ion-item>
-    <ion-thumbnail slot="start">
-      <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
-    </ion-thumbnail>
-    <ion-label>Usuario</ion-label>
-    <ion-button color="success" [routerLink]="['/historial-compra']">Ver más</ion-button>
-  </ion-item>
+  <ion-row>
+
+    <ion-col col-6>
+      <ion-label>usuarios</ion-label>
+    </ion-col>
+
+    <ion-col col-6>
+      <ion-label>compras total</ion-label>
+    </ion-col>
+
+  </ion-row>
+
+  <div *ngFor="let x of usuarios">
+    <ion-item>
+      <ion-thumbnail slot="start">
+        <img alt="{{x.foto_perfil}}" src="{{x.foto_perfil}}"/>
+      </ion-thumbnail>
+      <ion-label>{{x.nom_usuario}}</ion-label>
+      <ion-label>{{x.total_ventas}}</ion-label>
+      <ion-button color="success" [routerLink]="['/historial-compra']">Ver más</ion-button>
+    </ion-item>
+  </div>
 
 </ion-content>

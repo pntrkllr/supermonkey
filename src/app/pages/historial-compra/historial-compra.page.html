@@ -23,44 +23,15 @@
 
   </ion-row>
 
-  <ion-item>
-    <ion-thumbnail slot="start">
-      <img alt="Silhouette of mountains" src="../assets/Productos/manzana-verde.png" />
-    </ion-thumbnail>
-    <ion-label>Manzana verde</ion-label>
-    <ion-label class="precio">2x $2.390</ion-label>
-  </ion-item>
-
-  <ion-item>
-    <ion-thumbnail slot="start">
-      <img alt="Silhouette of mountains" src="../assets/Productos/manzana-roja.png" />
-    </ion-thumbnail>
-    <ion-label>Manzana roja</ion-label>
-    <ion-label class="precio">1x $2.390</ion-label>
-  </ion-item>
-
-  <ion-item>
-    <ion-thumbnail slot="start">
-      <img alt="Silhouette of mountains" src="../assets/Productos/arandano.png" />
-    </ion-thumbnail>
-    <ion-label>Arándano</ion-label>
-    <ion-label class="precio">4x $3.590</ion-label>
-  </ion-item>
-
-  <ion-item>
-    <ion-thumbnail slot="start">
-      <img alt="Silhouette of mountains" src="../assets/Productos/platano.png" />
-    </ion-thumbnail>
-    <ion-label>Plátano</ion-label>
-    <ion-label class="precio">5x $1.590</ion-label>
-  </ion-item>
-
-  <ion-item>
-    <ion-thumbnail slot="start">
-      <img alt="Silhouette of mountains" src="../assets/Productos/mango.png" />
-    </ion-thumbnail>
-    <ion-label>Mango</ion-label>
-    <ion-label class="precio">3x $4.500</ion-label>
-  </ion-item>
+  <div *ngFor="let x of historial">
+    <ion-item>
+      <ion-thumbnail slot="start">
+        <img alt="x.foto" src="{{x.foto}}" />
+      </ion-thumbnail>
+      <ion-label>{{x.producto_nombre}}</ion-label>
+      <ion-label>{{x.cantidad}}</ion-label>
+      <ion-label class="precio">{{x.sub_total}}</ion-label>
+    </ion-item>
+  </div>
 
 </ion-content>
