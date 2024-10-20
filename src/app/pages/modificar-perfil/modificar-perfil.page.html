@@ -9,25 +9,37 @@
 
 <ion-content [fullscreen]="true">
   <ion-card class="bordes">
-
     <div class="div-titulo">
       <h3>Importante: No se puede modificar el nombre de usuario.</h3>
     </div>
-    <br>
+
     <br>
 
     <form [formGroup]="form" (ngSubmit)="editar()">
-
       <ion-list>
 
-        <p *ngIf="imagen">Foto seleccionada: <img [src]="imagen" alt="Foto de perfil"
-            style="width: 100px; height: auto;" /></p>
+        <div class="avatar">
+          <ion-avatar>
+            <img *ngIf="imagen; else noImage" [src]="imagen" alt="Foto de perfil" />
+          </ion-avatar>
+          <br />
+        </div>
+
+        <ng-template #noImage>
+          <div class="avatar">
+            <ion-avatar>
+              <img alt="" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+            </ion-avatar>
+            <br />
+          </div>
+        </ng-template>
+
+        <br>
 
         <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nuevo nombre"
           formControlName="nombre"></ion-input>
         <p color="danger" *ngIf="isNombreInvalid()">{{ getNombreError() }}</p>
         <br />
-
 
         <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Ingrese su nuevo apellido"
           formControlName="apellido"></ion-input>
@@ -44,11 +56,9 @@
         </div>
 
         <div class="container-boton">
-          <ion-button color="success" type="submit" >Guardar cambios</ion-button>
+          <ion-button color="success" type="submit">Guardar cambios</ion-button>
         </div>
-
       </ion-list>
-
     </form>
   </ion-card>
 </ion-content>

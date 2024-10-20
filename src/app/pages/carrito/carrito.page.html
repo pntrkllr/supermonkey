@@ -21,7 +21,11 @@
 
   </ion-row>
 
- <div *ngFor="let x of arregloCarrito">
+  <div *ngIf="arregloCarrito.length === 0" class="carrito-vacio">
+    <ion-label class="mensaje-vacio">No hay nada en el carrito :/</ion-label>
+  </div>
+
+  <div *ngFor="let x of arregloCarrito">
     <ion-item>
       <ion-thumbnail slot="start">
         <img alt="{{x.foto}}" src="{{x.foto}}" />
@@ -31,18 +35,18 @@
       <ion-label>{{x.cantidad}}</ion-label>
       <ion-button color="success" (click)="mas(x.id_producto)"> + </ion-button>
       <ion-label class="precio">{{x.subtotal}}</ion-label>
-  
+
       <ion-button color="danger" (click)="eliminar(x.id_producto)">
         <mat-icon>close</mat-icon>
       </ion-button>
     </ion-item>
- </div>
+  </div>
 
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
     <ion-button class="boton-pagar" color="success" (click)="pagar()">Pagar</ion-button>
-    <ion-label class="total-pagar">Total : $ {{totalCarro}}</ion-label>
+    <ion-label class="total-pagar">Total: ${{totalCarro}}</ion-label>
   </ion-toolbar>
 </ion-footer>

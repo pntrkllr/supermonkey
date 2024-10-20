@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/models/user';
@@ -16,80 +15,89 @@ export class ModificarPerfilPage implements OnInit {
 
   usuario!: User | null;
 
-  idUsuario2!: number;
-  form: FormGroup;
-  foto_perfil!: Blob;
-  nom_usuario: string = "";
   idUsuario: string | null = null;
+  nom_usuario: string = "";
+  form: FormGroup;
   imagen: any;
-  ls1!: any;
 
-  constructor(private router: Router, private activerouter: ActivatedRoute, public alertcontroller: AlertController, private formBuilder: FormBuilder, private bd: ServicebdService) {
+  constructor(private router: Router, private activerouter: ActivatedRoute, private formBuilder: FormBuilder, private bd: ServicebdService) {
 
     this.form = this.formBuilder.group({
-      nombre: ['', [Validators.pattern('^[a-zA-Z\\s]*$')]],
-      apellido: ['', [Validators.pattern('^[a-zA-Z\\s]*$')]],
+      nombre: ['', [Validators.pattern('^[A-Za-zÀ-ÿÑñ\\s]*$')]],
+      apellido: ['', [Validators.pattern('^[A-Za-zÀ-ÿÑñ\\s]*$')]],
       email: ['', [Validators.email]],
     });
 
     this.activerouter.queryParams.subscribe(param => {
-
       if (this.router.getCurrentNavigation()?.extras.state) {
-
         this.nom_usuario = this.router.getCurrentNavigation()?.extras?.state?.['user'];
-
       }
     });
   }
 
   ngOnInit() {
-    this.bd.fetchUsuario().subscribe((data) => {
-      this.usuario = data;
-    })
-    this.bd.getUserPerfil(this.ls1);
+    const iduser = Number(localStorage.getItem('id_usuario')); // Obtener ID del usuario desde localStorage
+
+    // Traer los datos del usuario
+    this.bd.getUserPerfil(iduser).then(() => {
+      this.bd.fetchUsuario().subscribe((data) => {
+        this.usuario = data;
+
+        if (this.usuario) {
+          // Rellenar el formulario con los datos del usuario
+          this.form.patchValue({
+            nombre: this.usuario.pnombre || '',
+            apellido: this.usuario.apellido || '',
+            email: this.usuario.correo || '',
+          });
+        }
+      });
+    }).catch(error => {
+      console.error('Error al obtener los datos del perfil:', error);
+    });
   }
 
-  //métodos para "nombre"
+  // Métodos para "nombre"
   get nombre() {
     return this.form.get('nombre')!;
   }
-
+  
   isNombreInvalid() {
     return this.nombre?.touched && this.nombre?.invalid;
   }
-
+  
   getNombreError() {
     if (this.nombre?.errors?.['pattern']) {
-      return 'El campo "Nombre" solo puede contener letras.'
+      return 'El campo "Nombre" solo puede contener letras.';
     }
     return '';
   }
-
-  //métodos para "apellido"
+  
+  // Métodos para "apellido"
   get apellido() {
     return this.form.get('apellido')!;
   }
-
+  
   isApellidoInvalid() {
     return this.apellido?.touched && this.apellido?.invalid;
   }
-
+  
   getApellidoError() {
     if (this.apellido?.errors?.['pattern']) {
-      return 'El campo "Apellido" solo puede contener letras.'
+      return 'El campo "Apellido" solo puede contener letras.';
     }
     return '';
   }
-
-  //métodos para el correo electrónico
+  
+  // Métodos para el correo electrónico
   get email() {
     return this.form.get('email')!;
   }
-
+  
   isEmailInvalid() {
     return this.email.touched && this.email.invalid;
   }
-
+  
   getEmailError() {
     if (this.email.errors?.['email']) {
       return 'Ingresa un correo electrónico válido.';
@@ -107,16 +115,18 @@ export class ModificarPerfilPage implements OnInit {
     this.imagen = image.webPath;
   };
 
-  //editar
-
+  // Editar
   editar() {
     if (this.form.valid) {
       const { nombre, apellido, email } = this.form.value;
       const iduser = Number(localStorage.getItem('id_usuario'));
   
       // Si se ha subido una imagen, la pasamos al método editarUsuario
-      this.bd.editarUsuario(iduser, nombre, apellido, email, this.imagen ? this.imagen : null);
-      this.router.navigate(['/perfil']);
+      this.bd.editarUsuario(iduser, nombre, apellido, email, this.imagen ? this.imagen : null)
+        .then(() => {
+          // Navegar de vuelta a la página de perfil después de la edición
+          this.router.navigate(['/perfil']);
+        });
     }
   }
   

@@ -6,9 +6,8 @@ ion-card img {
 }
 
 .propiedades {
-    margin-left: 40px;
+    margin-left: 70px;
 }
-
 //sass boton pagar
 .boton-pagar {
     margin-left: 35px;
@@ -30,4 +29,21 @@ mat-icon {
 ion-row {
     margin-top: 2%;
     margin-bottom: 2%;
+}
+
+.carrito-vacio {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+}
+
+.mensaje-vacio {
+    font-style: italic;
+    color: gray;
 }

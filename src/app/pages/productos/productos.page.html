@@ -33,7 +33,7 @@
 </div>
 
 <ion-content [fullscreen]="true">
-  
+
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="rolUsuario=='1'">
     <ion-fab-button color="success" [routerLink]="['/agregar-producto']">
       <ion-icon name="add"></ion-icon>
@@ -46,8 +46,12 @@
     </ion-fab-button>
   </ion-fab>
 
+  <div *ngIf="productosFiltrados.length === 0" class="categoria-vacia">
+    <ion-label class="mensaje-vacio">Categoría vacía :/</ion-label>
+  </div>
+
   <ion-card *ngFor="let x of productosFiltrados">
-    <img class="container-imagen" alt="" src="{{ x.foto }}"/>
+    <img class="container-imagen" alt="" src="{{ x.foto }}" />
 
     <ion-card-header>
       <ion-card-title>{{ x.nombre_pr }}</ion-card-title>
@@ -59,7 +63,8 @@
     </ion-card-content>
     <div class="container-boton">
       <div *ngIf="rolUsuario=='2'">
-        <ion-button *ngIf="x.stock > 0" color="success" (click)="agregarCarrito(x.id_producto)">Agregar al carrito</ion-button>
+        <ion-button *ngIf="x.stock > 0" color="success" (click)="agregarCarrito(x.id_producto)">Agregar al
+          carrito</ion-button>
         <ion-button *ngIf="x.stock <= 0" disabled color="success">Agotado</ion-button>
       </div>
       <div *ngIf="rolUsuario=='1'">
@@ -85,7 +90,7 @@
 
     <ion-tab-button tab="library" [routerLink]="['/reportes']" *ngIf="rolUsuario=='1'">
       <ion-icon name="document-text-outline"></ion-icon>
-      Lista usuarios
+      Lista de usuarios
     </ion-tab-button>
 
     <ion-tab-button tab="home" [routerLink]="['/perfil']">

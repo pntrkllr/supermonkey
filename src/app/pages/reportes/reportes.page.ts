@@ -32,8 +32,7 @@ export class ReportesPage implements OnInit {
         })
       }
     })
-
-    this.alert.presentAlert('mono qlooo','datos : '+JSON.stringify(this.usuarios))
+    // this.alert.presentAlert('aaaaaa','datos : '+JSON.stringify(this.usuarios))
     this.bd.verUsuarios();
 
   }

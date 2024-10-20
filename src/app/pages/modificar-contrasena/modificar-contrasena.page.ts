@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ServicealertService } from 'src/app/services/servicealert.service';
+import { ServicebdService } from 'src/app/services/servicebd.service';
 
 @Component({
   selector: 'app-modificar-contrasena',
@@ -10,73 +10,70 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class ModificarContrasenaPage implements OnInit {
 
-  contrasena: string = "";
-  contrasena2: string = "";
-  contrasena3: string = "";
+  contrasenaActual: string = "";
+  nuevaContrasena: string = "";
+  confirmarContrasena: string = "";
 
-  constructor(public alertcontroller: AlertController, private router: Router, private toastController: ToastController, private formBuilder: FormBuilder) { }
+  contrasenaActualTocado: boolean = false;
+  nuevaContrasenaTocado: boolean = false;
+  confirmarContrasenaTocado: boolean = false;
+  contrasenaActualIncorrecta: boolean = false; // Variable para controlar el error
 
-  ngOnInit() {
+  constructor (private bd: ServicebdService, private router: Router, private alert: ServicealertService) {}
+
+  ngOnInit() {}
+
+  patternContrasena() {
+    const simbolos = /[!@#$%^&*(),.?":{}|<>]/.test(this.nuevaContrasena);
+    return simbolos;
   }
 
-  async presentAlert() {
-    const alert = await this.alertcontroller.create({
-      header: 'Se ha registrado correctamente',
-      message: 'Iniciar sesión para entrar',
-      buttons: ['Aceptar'],
-    });
-
-    await alert.present();
+  numerosContrasena() {
+    const numeros = /\d/.test(this.nuevaContrasena);
+    return numeros;
   }
 
-  async presentToast(position: 'middle', texto: string) {
-    const toast = await this.toastController.create({
-      message: texto,
-      duration: 1500,
-      position: position,
-    });
-
-    await toast.present();
+  letrasContrasena() {
+    const letras = /[a-zA-Z]/.test(this.nuevaContrasena)
+    return letras;
   }
 
-  validarContrasena() {
-
-    const formatoPassword = /^(?=.[A-Z])(?=.\d)(?=.[!@#$%^&(),.?":{}|<>]).*$/;
-
-    if (this.contrasena === "") {
-
-      this.presentToast('middle', 'El campo "Contraseña actual" está vacío.');
-      return;
-
-    } if (this.contrasena2 === "") {
-
-      this.presentToast('middle', 'El campo "Nueva contraseña" está vacío.');
-      return;
-
-    } if (this.contrasena3 === "") {
-
-      this.presentToast('middle', 'El campo "Confirmar contraseña" está vacío.');
-      return;
-
-    } if (this.contrasena2 !== this.contrasena3) {
-
-      this.presentToast('middle', 'Las contraseñas no coinciden.');
-      return;
-
-    } if (this.contrasena.length < 8 || this.contrasena.length > 16) {
-
-      this.presentToast('middle', 'La contraseña es menor a 8 o mayor a 16 caracteres.');
-      return;
-
-    } if (!formatoPassword.test(this.contrasena2)) {
-
-      this.presentToast('middle', 'La contraseña debe contener como mínimo una mayúscula, un número y un simbolo.')
-      return;
-      
-    } else {
-      this.presentAlert;
-      this.router.navigate(['/login']);
+  modificar() {
+    // Obtener el id_usuario almacenado en el local storage
+    const id_usuario_string = localStorage.getItem('id_usuario');
+  
+    // Verificar si id_usuario_string es null
+    if (!id_usuario_string) {
+      this.alert.presentAlert('Error', 'No se ha encontrado el id del usuario.');
+      return; // Salir de la función si no se encuentra el id
     }
+  
+    const id_usuario = Number(id_usuario_string); // Convertir a número
+  
+    // Verificar si la contraseña actual es correcta
+    this.bd.validarContrasena(id_usuario, this.contrasenaActual)
+      .then(esValida => {
+        if (esValida) {
+          // Si la contraseña actual es correcta, continuar con la modificación
+          if (this.nuevaContrasena === this.confirmarContrasena) {
+            // Lógica para modificar la contraseña
+            this.bd.editarContrasena(id_usuario, this.nuevaContrasena)
+              .then(() => {
+                this.router.navigate(['/perfil']); // Redirigir después de la modificación
+              });
+          } else {
+            // Si las nuevas contraseñas no coinciden, manejar error
+            this.alert.presentAlert('Modificar contraseña', 'Las nuevas contraseñas no coinciden.');
+          }
+        } else {
+          // La contraseña actual es incorrecta
+          this.contrasenaActualIncorrecta = true;
+          this.alert.presentAlert('Modificar contraseña', 'La contraseña actual es errónea.');
+        }
+      })
+      .catch(e => {
+        this.alert.presentAlert('Error', 'Error al validar la contraseña: ' + e);
+      });
   }
-
+  
 }

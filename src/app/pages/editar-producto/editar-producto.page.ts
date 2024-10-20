@@ -10,8 +10,8 @@ import { Camera, CameraResultType } from '@capacitor/camera';
 })
 export class EditarProductoPage implements OnInit {
   
-  productoM : any;
-  foto : any;
+  productoM: any;
+  foto: any | null = null;
 
   nombrePrTocado: boolean = false;
   pesoTocado: boolean = false;
@@ -19,18 +19,30 @@ export class EditarProductoPage implements OnInit {
   categoriaTocada: boolean = false;
 
   constructor(private router: Router, private activerouter: ActivatedRoute, private bd: ServicebdService) { 
-    this.activerouter.queryParams.subscribe(res=>{
-      if(this.router.getCurrentNavigation()?.extras.state){
+    this.activerouter.queryParams.subscribe(res => {
+      if (this.router.getCurrentNavigation()?.extras.state) {
         this.productoM = this.router.getCurrentNavigation()?.extras?.state?.['producto'];
+        this.foto = this.productoM.foto; // Inicializa con la foto existente
       }
-    })
+    });
   }
 
   ngOnInit() {
+
   }
 
-  modificar(){
-    this.bd.editarProducto(this.productoM.id_producto, this.productoM.nombre_pr, this.productoM.cantidad_kg, this.productoM.precio, this.productoM.stock, this.foto, this.productoM.estatus, this.productoM.id_categoria)
+  modificar() {
+
+    this.bd.editarProducto(
+      this.productoM.id_producto,
+      this.productoM.nombre_pr,
+      this.productoM.cantidad_kg,
+      this.productoM.precio,
+      this.productoM.stock,
+      this.foto,
+      this.productoM.estatus,
+      this.productoM.id_categoria
+    );
   }
 
   takePicture = async () => {
@@ -39,14 +51,8 @@ export class EditarProductoPage implements OnInit {
       allowEditing: false,
       resultType: CameraResultType.Uri
     });
-  
-    // image.webPath will contain a path that can be set as an image src.
-    // You can access the original file using image.path, which can be
-    // passed to the Filesystem API to read the raw data of the image,
-    // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    this.foto = image.webPath;
-  
-    
-  };
 
+    this.foto = image.webPath;
+  };
 }
+

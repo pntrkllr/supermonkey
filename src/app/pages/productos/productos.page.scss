@@ -29,3 +29,20 @@ ion-card-title {
 ion-card-subtitle {
     color: #7b7d7c;
 }
+
+.categoria-vacia {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+}
+
+.mensaje-vacio {
+    font-style: italic;
+    color: gray;
+}

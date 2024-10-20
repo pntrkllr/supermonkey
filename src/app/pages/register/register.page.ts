@@ -20,8 +20,8 @@ export class RegisterPage implements OnInit {
   ngOnInit() {
 
     this.form = this.fb.group({
-      pnombre: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/)]],
-      apellido: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/)]],
+      pnombre: ['', [Validators.required, Validators.pattern('^[A-Za-zÀ-ÿÑñ\\s]*$')]],
+      apellido: ['', [Validators.required, Validators.pattern('^[A-Za-zÀ-ÿÑñ\\s]*$')]],
       nom_usuario: ['', [Validators.required]],
       correo: ['', [Validators.required, Validators.email]],
       contrasena: ['', [

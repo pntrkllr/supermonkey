@@ -29,28 +29,28 @@ export class ProductosPage implements OnInit {
   //arreglo de filtros
   productosFiltrados: any = [];
 
-  constructor(private router: Router, private activedroute: ActivatedRoute, private bd: ServicebdService) { 
+  constructor(private router: Router, private activedroute: ActivatedRoute, private bd: ServicebdService) {
     addIcons({ library, playCircle, radio, search });
 
-    this.activedroute.queryParams.subscribe(param =>{
+    this.activedroute.queryParams.subscribe(param => {
 
-      if(this.router.getCurrentNavigation()?.extras.state){
+      if (this.router.getCurrentNavigation()?.extras.state) {
 
         this.contrasena = this.router.getCurrentNavigation()?.extras?.state?.['con'];
         this.nom_usuario = this.router.getCurrentNavigation()?.extras?.state?.['user'];
-        
+
       }
     });
-   }
+  }
 
-   ngOnInit() {
+  ngOnInit() {
 
     this.rolUsuario = localStorage.getItem('id_rol');
 
     //verificar si la BD esta lista
-    this.bd.dbState().subscribe(res=>{
-      if(res){
-        this.bd.fetchProductos().subscribe(data=>{
+    this.bd.dbState().subscribe(res => {
+      if (res) {
+        this.bd.fetchProductos().subscribe(data => {
           this.arregloProductos = data;
           this.productosFiltrados = this.arregloProductos;
         })
@@ -61,22 +61,23 @@ export class ProductosPage implements OnInit {
   //filtrar productos
   filtrarProductos(event: any) {
     const categoriaSeleccionada = event.detail.value;
-  
+
     if (categoriaSeleccionada === 'todos') {
       this.productosFiltrados = this.arregloProductos;
     } else {
-      this.productosFiltrados = this.arregloProductos.filter((producto: any) => 
-        producto.id_producto === Number(categoriaSeleccionada)
+      this.productosFiltrados = this.arregloProductos.filter((producto: any) =>
+        producto.id_categoria === Number(categoriaSeleccionada) // Comparar id_categoria
       );
     }
   }
 
-  agregarCarrito(id_producto : number){
+
+  agregarCarrito(id_producto: number) {
     const id_usuario = Number(localStorage.getItem('id_usuario'))
-    this.bd.carrito(id_usuario,id_producto)
+    this.bd.carrito(id_usuario, id_producto)
   }
 
-  modificar(x:any){
+  modificar(x: any) {
     let navigationExtras: NavigationExtras = {
       state: {
         producto: x
@@ -85,15 +86,15 @@ export class ProductosPage implements OnInit {
     this.router.navigate(['/editar-producto'], navigationExtras);
   }
 
-  eliminar(x:any){
+  eliminar(x: any) {
     this.bd.eliminarProducto(x.id_producto);
   }
 
-  usuario(){
-    let navigationExtras : NavigationExtras = {
+  usuario() {
+    let navigationExtras: NavigationExtras = {
       state: {
-        user : this.nom_usuario,
-        con : this.contrasena
+        user: this.nom_usuario,
+        con: this.contrasena
       }
     }
 

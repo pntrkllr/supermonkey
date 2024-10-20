@@ -29,7 +29,7 @@ export class ServicebdService {
   //tablas con fk
 
   //4.
-  tablaUsuario: string = "CREATE TABLE IF NOT EXISTS usuario(id_usuario INTEGER PRIMARY KEY autoincrement NOT NULL, foto_perfil BLOB, pnombre VARCHAR(20) NOT NULL, apellido VARCHAR(30) NOT NULL, nom_usuario VARCHAR(30) NOT NULL, correo VARCHAR(40) NOT NULL, contrasena VARCHAR(16), id_rol INTEGER, FOREIGN KEY (id_rol) REFERENCES rol(id_rol))";
+  tablaUsuario: string = "CREATE TABLE IF NOT EXISTS usuario(id_usuario INTEGER PRIMARY KEY autoincrement NOT NULL, foto_perfil BLOB, pnombre VARCHAR(20) NOT NULL, apellido VARCHAR(30) NOT NULL, nom_usuario VARCHAR(30) NOT NULL UNIQUE, correo VARCHAR(40) NOT NULL, contrasena VARCHAR(16), id_rol INTEGER, FOREIGN KEY (id_rol) REFERENCES rol(id_rol))";
 
   //5.
   tablaVenta: string = "CREATE TABLE IF NOT EXISTS venta (id_venta INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cant_venta INTEGER, total INTEGER, id_usuario INTEGER, id_estado INTEGER,FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario), FOREIGN KEY (id_estado) REFERENCES estado(id_estado))";
@@ -139,8 +139,8 @@ export class ServicebdService {
       //categorias
       await this.database.executeSql(this.registroCatFruta, []);
       await this.database.executeSql(this.registroCatVerdura, []);
-      await this.database.executeSql(this.registroCatLacteo, []);
       await this.database.executeSql(this.registroCatCarne, []);
+      await this.database.executeSql(this.registroCatLacteo, []);
 
       //producto (fruta)
       await this.database.executeSql(this.registroProductoFruta, []);
@@ -159,15 +159,15 @@ export class ServicebdService {
     return this.listaCarrito.asObservable();
   }
 
-  fetchTotal(): Observable<number>{
+  fetchTotal(): Observable<number> {
     return this.totalCompra.asObservable();
   }
-  
-  fetchHistorial(): Observable<any[]>{
+
+  fetchHistorial(): Observable<any[]> {
     return this.listaHistorial.asObservable();
   }
 
-  fetchUsuarios(): Observable<any[]>{
+  fetchUsuarios(): Observable<any[]> {
     return this.listaUsuarios.asObservable();
   }
 
@@ -317,119 +317,109 @@ export class ServicebdService {
       params.push(pnombre);
     }
     if (apellido) {
-      query += params.length ? ', apellido = ?': ' apellido = ?';
+      query += params.length ? ', apellido = ?' : ' apellido = ?';
       params.push(apellido);
     }
     if (correo) {
-      query += params.length ? ', correo = ?': ' correo = ?';  //campo de la foto
+      query += params.length ? ', correo = ?' : ' correo = ?';  //campo de la foto
       params.push(correo);
     }
     //si el usuario elige una foto de perfil se ejecuta esto
     if (foto_perfil) {
-      query += params.length ? ', foto_perfil = ?': ' foto_perfil = ?';  //campo de la foto
+      query += params.length ? ', foto_perfil = ?' : ' foto_perfil = ?';  //campo de la foto
       params.push(foto_perfil);
     }
 
-    if(params.length > 0){
+    if (params.length > 0) {
 
       query += ' WHERE id_usuario = ?';
       params.push(id_usuario);
       // Ejecutamos la consulta SQL con los parámetros
       return this.database.executeSql(query, params).then((res) => {
-        this.alert.presentAlert("Modificar datos", "Datos modificados de manera correcta");
+        this.alert.presentAlert("Modificar datos", "Datos modificados correctamente.");
         this.getUserPerfil(id_usuario);
       }).catch(e => {
         this.alert.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
       });
-    }else{
-      return this.alert.presentAlert('Modificar Perfil','no se encontraron datos que modificar');
+    } else {
+      return this.alert.presentAlert('Modificar Perfil', 'No hay datos para modificar.');
     }
-   
-  }
-  getContrasena(id_usuario: number, contrasena : number){
-
-    let query = 'UPDATE usuario SET';
-    let params: (any)[] = [];
-
-    if (contrasena) {
-      query += ' contrasena = ?';
-      params.push(contrasena);
-    }
-
-    if(params.length > 0){
-
-      query += ' WHERE id_usuario = ?';
-      params.push(id_usuario);
-      // Ejecutamos la consulta SQL con los parámetros
-      return this.database.executeSql(query, params).then((res) => {
-        this.alert.presentAlert("Modificar datos", "Datos modificados de manera correcta");
-        this.getUserPerfil(id_usuario);
-      }).catch(e => {
-        this.alert.presentAlert('Modificar datos', 'Error: ' + JSON.stringify(e));
-      });
-    }else{
-      return this.alert.presentAlert('Modificar Perfil','no se encontraron datos que modificar');
-    }
-   
 
   }
 
-  carrito(id_usuario: Number, id_producto: number) {
+  carrito(id_usuario: number, id_producto: number) {
+    // Paso 1: Consultar si hay una venta activa para el usuario
     return this.database.executeSql("SELECT * FROM venta WHERE id_usuario = ? AND id_estado = 2", [id_usuario])
       .then((res) => {
-
         let id_venta: number;
 
+        // Si hay una venta activa, obtener el id_venta
         if (res.rows.length > 0) {
-          id_venta = res.rows.item(0).id_venta
-        }
-        else {
+          id_venta = res.rows.item(0).id_venta;
+        } else {
+          // Si no hay una venta activa, crear una nueva venta
           return this.database.executeSql("INSERT INTO venta (id_usuario, total, id_estado) VALUES (?, 0, 2);", [id_usuario])
             .then((res) => {
-              id_venta = res.insertId;
+              id_venta = res.insertId; // Guardar el id de la nueva venta
             });
         }
 
-        return this.database.executeSql(
-          "SELECT * FROM detalle join venta WHERE id_usuario = ?",
-          [id_usuario]
-        ).then((res) => {
-          let cantidad: number = 1;
-          let productoYaEnCarrito = false;
+        // Paso 2: Verificar si el producto ya está en el carrito
+        return this.database.executeSql("SELECT * FROM detalle WHERE id_venta = ?", [id_venta])
+          .then((res) => {
+            let productoYaEnCarrito = false;
 
-          for (let i = 0; i < res.rows.length; i++) {
-            if (res.rows.item(i).id_producto === id_producto) {
-              productoYaEnCarrito = true;
-              
+            for (let i = 0; i < res.rows.length; i++) {
+              if (res.rows.item(i).id_producto === id_producto) {
+                productoYaEnCarrito = true;
+                break; // Salir del bucle si se encuentra el producto
+              }
             }
-          }
 
-          if (productoYaEnCarrito) {
-            return this.alert.presentAlert('Carro', 'El producto ya se añadió al carrito');
-          }
-          else {
-            return this.database.executeSql(
-              `INSERT INTO detalle(id_venta, id_producto, sub_total, cantidad)
-              VALUES (?, ?, (SELECT precio FROM producto WHERE id_producto = ?), ?)`,
-              [id_venta, id_producto, id_producto, cantidad]
-            ).then(() => {
-              this.router.navigate(['/carrito']);
-              this.alert.presentAlert('Carro', 'Producto añadido!');
-              const id_usuario = Number(localStorage.getItem('id_usuario'))
-              this.verCarrito(id_usuario)
-            }).catch((error) => {
-              return this.alert.presentAlert('Error Detalle', 'Error : ' + JSON.stringify(error));
-            });
-          }
-        })
+            // Paso 3: Si el producto ya está en el carrito, mostrar un mensaje
+            if (productoYaEnCarrito) {
+              return this.alert.presentAlert('Carro', 'El producto ya se agregó al carrito');
+            } else {
+              // Si el producto no está en el carrito, agregarlo
+              return this.database.executeSql(
+                `INSERT INTO detalle(id_venta, id_producto, sub_total, cantidad)
+                 VALUES (?, ?, (SELECT precio FROM producto WHERE id_producto = ?), 1)`,
+                [id_venta, id_producto, id_producto]
+              ).then(() => {
+                this.router.navigate(['/carrito']);
+                this.alert.presentAlert('Carro', 'Producto añadido!');
+                const id_usuario = Number(localStorage.getItem('id_usuario'));
+                this.verCarrito(id_usuario);
+              }).catch((error) => {
+                return this.alert.presentAlert('Error Detalle', 'Error: ' + JSON.stringify(error));
+              });
+            }
+          })
           .catch((error) => {
             // Manejar errores en la consulta inicial
             this.alert.presentAlert('Error al consultar la BD', ': ' + JSON.stringify(error));
           });
-
-      }).catch((error) => {
-        return this.alert.presentAlert('error select venta', ': ' + JSON.stringify(error))
       })
+      .catch((error) => {
+        return this.alert.presentAlert('Error select venta', ': ' + JSON.stringify(error));
+      });
+  }
+
+  // Método para limpiar el carrito después de una compra
+  limpiarCarrito(id_usuario: number) {
+    return this.database.executeSql("DELETE FROM detalle WHERE id_venta IN (SELECT id_venta FROM venta WHERE id_usuario = ? AND id_estado = 2)", [id_usuario])
+      .then(() => {
+        return this.database.executeSql("DELETE FROM venta WHERE id_usuario = ? AND id_estado = 2", [id_usuario]);
+      })
+      .catch((error) => {
+        return this.alert.presentAlert('Error al limpiar el carrito', ': ' + JSON.stringify(error));
+      });
+  }
+
+  // Método que llama a limpiarCarrito después de completar una compra
+  comprarProductos(id_usuario: number) {
+    // Lógica para procesar la compra
+    this.limpiarCarrito(id_usuario);
   }
 
   verCarrito(id_usuario: number) {
@@ -463,7 +453,7 @@ export class ServicebdService {
   }
 
   masProducto(id_producto: number) {
-    // Obtener el precio del producto
+    // Obtener el precio y el stock del producto
     return this.database.executeSql(
       `SELECT producto.*, detalle.sub_total AS subtotal, detalle.cantidad AS cantidad
       FROM producto 
@@ -473,9 +463,16 @@ export class ServicebdService {
       [id_producto]
     ).then((res) => {
       if (res.rows.length > 0) {
-        const cantidadActual = res.rows.item(0).cantidad
+        const cantidadActual = res.rows.item(0).cantidad;
         const precioActual = res.rows.item(0).precio;
+        const stockDisponible = res.rows.item(0).stock; // Asegúrate de que el campo stock esté presente en tu consulta
         const nuevaCantidad = cantidadActual + 1;
+
+        // Verificar si la nueva cantidad no supera el stock disponible
+        if (nuevaCantidad > stockDisponible) {
+          return this.alert.presentAlert('Fuera de stock', 'No puedes agregar más unidades de este producto.');
+        }
+
         const nuevoSubtotal = nuevaCantidad * precioActual;
 
         // Actualizar la cantidad y el subtotal en la tabla detalle
@@ -483,9 +480,9 @@ export class ServicebdService {
           'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ?',
           [nuevaCantidad, nuevoSubtotal, id_producto]
         ).then(() => {
-          const id_usuario = Number(localStorage.getItem('id_usuario'))
-          this.verCarrito(id_usuario)
-          this.getTotal(id_usuario)
+          const id_usuario = Number(localStorage.getItem('id_usuario'));
+          this.verCarrito(id_usuario);
+          this.getTotal(id_usuario);
         }).catch((error) => {
           return this.alert.presentAlert('Error cantidad', 'Error : ' + JSON.stringify(error));
         });
@@ -498,7 +495,7 @@ export class ServicebdService {
   }
 
   menosProducto(id_producto: number) {
-    // Obtener el precio del producto
+    // Obtener el precio y la cantidad actual del producto
     return this.database.executeSql(
       `SELECT producto.*, detalle.sub_total AS subtotal, detalle.cantidad AS cantidad
       FROM producto 
@@ -508,8 +505,14 @@ export class ServicebdService {
       [id_producto]
     ).then((res) => {
       if (res.rows.length > 0) {
-        const cantidadActual = res.rows.item(0).cantidad
+        const cantidadActual = res.rows.item(0).cantidad;
         const precioActual = res.rows.item(0).precio;
+
+        // Verificar si la cantidad actual es mayor a 1
+        if (cantidadActual <= 1) {
+          return this.alert.presentAlert('Cantidad mínima alcanzada', 'No puede reducir más la cantidad del producto.');
+        }
+
         const nuevaCantidad = cantidadActual - 1;
         const nuevoSubtotal = nuevaCantidad * precioActual;
 
@@ -518,9 +521,9 @@ export class ServicebdService {
           'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ?',
           [nuevaCantidad, nuevoSubtotal, id_producto]
         ).then(() => {
-          const id_usuario = Number(localStorage.getItem('id_usuario'))
-          this.verCarrito(id_usuario)
-          this.getTotal(id_usuario)
+          const id_usuario = Number(localStorage.getItem('id_usuario'));
+          this.verCarrito(id_usuario);
+          this.getTotal(id_usuario);
         }).catch((error) => {
           return this.alert.presentAlert('Error cantidad', 'Error : ' + JSON.stringify(error));
         });
@@ -531,9 +534,10 @@ export class ServicebdService {
       return this.alert.presentAlert('Error al consultar precio', 'Error : ' + JSON.stringify(error));
     });
   }
+
   eliminarPcarrito(id_producto: number) {
     return this.database.executeSql('DELETE FROM detalle WHERE id_producto= ?', [id_producto]).then((res) => {
-      this.alert.presentAlert("Eliminar", "Producto eliminado del carrito");
+      this.alert.presentAlert("Eliminado", "Producto borrado del carrito");
       const id_usuario = Number(localStorage.getItem('id_usuario'))
       this.verCarrito(id_usuario)
       this.getTotal(id_usuario)
@@ -543,7 +547,7 @@ export class ServicebdService {
 
   }
 
-  getTotal(id_usuario : number){
+  getTotal(id_usuario: number) {
     // Paso 1: Consultar los productos en el carrito del usuario (id_estado = 2)
     return this.database.executeSql(
       `SELECT d.cantidad, d.sub_total 
@@ -552,59 +556,75 @@ export class ServicebdService {
        WHERE v.id_usuario = ? AND v.id_estado = 2`,
       [id_usuario]
     )
-    .then((res) => {
-      let total = 0;
-  
-      // Paso 2: Calcular el total sumando los subtotales de los productos
-      for (let i = 0; i < res.rows.length; i++) {
-        total += res.rows.item(i).sub_total;
-      }
-      return this.totalCompra.next(total);
-    }).catch((error) => {
-      return this.alert.presentAlert('Error al obtener los productos del carrito', 'Error: ' + JSON.stringify(error));
-    });
+      .then((res) => {
+        let total = 0;
+
+        // Paso 2: Calcular el total sumando los subtotales de los productos
+        for (let i = 0; i < res.rows.length; i++) {
+          total += res.rows.item(i).sub_total;
+        }
+        return this.totalCompra.next(total);
+      }).catch((error) => {
+        return this.alert.presentAlert('Error al obtener los productos del carrito', 'Error: ' + JSON.stringify(error));
+      });
   }
 
   pagarProductos(id_usuario: number) {
     // Paso 1: Consultar los productos en el carrito del usuario (id_estado = 2)
     return this.database.executeSql(
-      `SELECT d.cantidad, d.sub_total 
+      `SELECT d.id_producto, d.cantidad, d.sub_total, p.stock 
        FROM detalle d
        JOIN venta v ON d.id_venta = v.id_venta 
+       JOIN producto p ON d.id_producto = p.id_producto
        WHERE v.id_usuario = ? AND v.id_estado = 2`,
       [id_usuario]
     )
-    .then((res) => {
-      let total = 0;
-  
-      // Paso 2: Calcular el total sumando los subtotales de los productos
-      for (let i = 0; i < res.rows.length; i++) {
-        total += res.rows.item(i).sub_total;
-      }
-      
-      // Vrerificar si hay productos en el carrito antes de proceder
-      if (total > 0) {
-        // Paso 3: Actualizar el estado de la venta para marcarla como pagada (por ejemplo, id_estado = 1)
-        return this.database.executeSql(
-          `UPDATE venta 
-           SET total = ?, id_estado = 1 
-           WHERE id_usuario = ?`,
-          [total, id_usuario]
-        )
-        .then(() => {
-          this.alert.presentAlert('Pago', 'El pago ha sido procesado exitosamente por un total de: ' + total);
-          this.router.navigate(['/productos']); // Redirigir a la página del historial de compras si es necesario
-        })
-        .catch((error) => {
-          return this.alert.presentAlert('Error pago', 'Error: ' + JSON.stringify(error));
-        });
-      } else {
-        return this.alert.presentAlert('Carro vacío', 'No hay productos en el carrito para pagar.');
-      }
-    })
-    .catch((error) => {
-      return this.alert.presentAlert('Error al obtener los productos del carrito', 'Error: ' + JSON.stringify(error));
-    });
+      .then((res) => {
+        let total = 0;
+        let productosActualizados = [];
+
+        // Paso 2: Calcular el total sumando los subtotales de los productos
+        for (let i = 0; i < res.rows.length; i++) {
+          total += res.rows.item(i).sub_total;
+
+          // Guardar la información para actualizar el stock de cada producto
+          let id_producto = res.rows.item(i).id_producto;
+          let cantidadComprada = res.rows.item(i).cantidad;
+          let stockActual = res.rows.item(i).stock;
+
+          // Actualizar el stock de cada producto
+          productosActualizados.push(this.database.executeSql(
+            `UPDATE producto SET stock = ? WHERE id_producto = ?`,
+            [stockActual - cantidadComprada, id_producto]
+          ));
+        }
+
+        // Verificar si hay productos en el carrito antes de proceder
+        if (total > 0) {
+          // Paso 3: Actualizar el estado de la venta para marcarla como pagada (por ejemplo, id_estado = 1)
+          return Promise.all(productosActualizados) // Descontar stock de los productos
+            .then(() => {
+              return this.database.executeSql(
+                `UPDATE venta 
+               SET total = ?, id_estado = 1 
+               WHERE id_usuario = ?`,
+                [total, id_usuario]
+              );
+            })
+            .then(() => {
+              this.alert.presentAlert('Pago', 'El pago ha sido procesado exitosamente por un total de: ' + total);
+              this.router.navigate(['/productos']); // Redirigir a la página del historial de compras si es necesario
+            })
+            .catch((error) => {
+              return this.alert.presentAlert('Error pago', 'Error: ' + JSON.stringify(error));
+            });
+        } else {
+          return this.alert.presentAlert('Carro vacío', 'No hay productos en el carrito para pagar.');
+        }
+      })
+      .catch((error) => {
+        return this.alert.presentAlert('Error al obtener los productos del carrito', 'Error: ' + JSON.stringify(error));
+      });
   }
 
   verHistorial(id_usuario: number) {
@@ -618,32 +638,32 @@ export class ServicebdService {
        WHERE v.id_usuario = ? AND v.id_estado = 1`,
       [id_usuario]
     )
-    .then((res) => {
-      
-      let items: any[] = [];
-  
-      // Recorrer las ventas y agregarlas al historial
-      for (let i = 0; i < res.rows.length; i++) {
-        let venta = res.rows.item(i);
-  
-        items.push({
-          id_venta: venta.id_venta,
-          cant_venta : venta.cant_venta,
-          total: venta.total,
-          id_estado: venta.id_estado,
-          id_usuario: venta.id_usuario,
-          id_producto: venta.id_producto,
-          cantidad: venta.cantidad,
-          sub_total: venta.sub_total,
-          producto_nombre: venta.producto_nombre,
-          foto: venta.foto
-        });
-      }
-      this.listaHistorial.next(items as any);
-    })
-    .catch((error) => {
-      return this.alert.presentAlert('Error al obtener el historial de compras', 'Error: ' + JSON.stringify(error));
-    });
+      .then((res) => {
+
+        let items: any[] = [];
+
+        // Recorrer las ventas y agregarlas al historial
+        for (let i = 0; i < res.rows.length; i++) {
+          let venta = res.rows.item(i);
+
+          items.push({
+            id_venta: venta.id_venta,
+            cant_venta: venta.cant_venta,
+            total: venta.total,
+            id_estado: venta.id_estado,
+            id_usuario: venta.id_usuario,
+            id_producto: venta.id_producto,
+            cantidad: venta.cantidad,
+            sub_total: venta.sub_total,
+            producto_nombre: venta.producto_nombre,
+            foto: venta.foto
+          });
+        }
+        this.listaHistorial.next(items as any);
+      })
+      .catch((error) => {
+        return this.alert.presentAlert('Error al obtener el historial de compras', 'Error: ' + JSON.stringify(error));
+      });
   }
 
   verUsuarios() {
@@ -655,30 +675,68 @@ export class ServicebdService {
       GROUP BY usuario.id_usuario`,
       []
     )
-    .then((res) => {
-      let usuarios: any[] = [];
+      .then((res) => {
+        let usuarios: any[] = [];
 
-      // Recorrer los usuarios y agregarlos a la lista
-      for (let i = 0; i < res.rows.length; i++) {
-        /* let usuario = res.rows.item(i); */
+        // Recorrer los usuarios y agregarlos a la lista
+        for (let i = 0; i < res.rows.length; i++) {
+          /* let usuario = res.rows.item(i); */
 
-        usuarios.push({
-          id_usuario: res.rows.item(i).id_usuario,
-          nombre: res.rows.item(i).nombre,
-          apellido: res.rows.item(i).apellido,
-          nom_usuario: res.rows.item(i).nom_usuario,
-          correo: res.rows.item(i).correo,
-          foto_perfil: res.rows.item(i).foto_perfil,
-          id_rol: res.rows.item(i).id_rol,
-          total_ventas : res.rows.item(i).total_ventas,
-          
-        });
-      }
-      this.listaUsuarios.next(usuarios as any)
-    })
-    .catch((error) => {
-      return this.alert.presentAlert('Error al obtener los usuarios', 'Error: ' + JSON.stringify(error));
-    });
+          usuarios.push({
+            id_usuario: res.rows.item(i).id_usuario,
+            nombre: res.rows.item(i).nombre,
+            apellido: res.rows.item(i).apellido,
+            nom_usuario: res.rows.item(i).nom_usuario,
+            correo: res.rows.item(i).correo,
+            foto_perfil: res.rows.item(i).foto_perfil,
+            id_rol: res.rows.item(i).id_rol,
+            total_ventas: res.rows.item(i).total_ventas,
+
+          });
+        }
+        this.listaUsuarios.next(usuarios as any)
+      })
+      .catch((error) => {
+        return this.alert.presentAlert('Error al obtener los usuarios', 'Error: ' + JSON.stringify(error));
+      });
 
   }
+
+  validarContrasena(id_usuario: number, contrasenaActual: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT contrasena FROM usuario WHERE id_usuario = ?';
+      const params = [id_usuario];
+
+      this.database.executeSql(query, params)
+        .then(res => {
+          if (res.rows.length > 0) {
+            const storedPassword = res.rows.item(0).contrasena; // Obtener la contraseña almacenada
+            resolve(storedPassword === contrasenaActual); // Compara y resuelve
+          } else {
+            resolve(false); // Usuario no encontrado
+          }
+        })
+        .catch(e => {
+          console.error('Error al validar la contraseña:', e);
+          reject(e);
+        });
+    });
+  }
+
+  editarContrasena(id_usuario: number, nuevaContrasena: string) {
+    const query = 'UPDATE usuario SET contrasena = ? WHERE id_usuario = ?';
+    const params = [nuevaContrasena, id_usuario];
+
+    return this.database.executeSql(query, params)
+      .then(res => {
+        this.alert.presentAlert("Todo listo!", "Contraseña modificada de manera correcta");
+      })
+      .catch(e => {
+        this.alert.presentAlert('Modificar contraseña', 'Error: ' + JSON.stringify(e));
+      });
+  }
+
+  
+
+
 }

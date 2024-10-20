@@ -13,8 +13,11 @@
 
       <br>
 
-      <ion-button class="botonFoto" color="success" (click)="takePicture()">Tomar/Subir Foto</ion-button><br>
-      <img *ngIf="foto" [src]="foto" alt="Sin imagen" style="height: 250px; width: 250px;" [(ngModel)]="foto"/>
+      <ion-button *ngIf="foto" class="botonFoto" color="success" (click)="takePicture()">Cambiar Foto</ion-button>
+      <ion-button *ngIf="!foto" class="botonFoto" color="success" (click)="takePicture()">Subir Foto</ion-button>
+      <p *ngIf="foto" style="text-align: center; justify-content: center; place-items: center; align-items: center; display: grid;">
+        <img [src]="foto" alt="Sin imagen" style="width: 100px; height: auto; display: grid; place-items: center; align-items: center;" [(ngModel)]="foto"/>
+      </p>
       <p *ngIf="!foto" style="text-align: center;">*Es obligatorio subir una imagen.</p>
       <br />
 
@@ -42,10 +45,10 @@
 
       <ion-item>
         <ion-select label="Categoría" label-placement="floating" [(ngModel)]="productoM.id_categoria" (ionBlur)="categoriaTocada = true">
-          <ion-select-option value="1">Frutas</ion-select-option>
-          <ion-select-option value="2">Verduras</ion-select-option>
-          <ion-select-option value="3">Lácteos</ion-select-option>
-          <ion-select-option value="4">Carnes</ion-select-option>
+          <ion-select-option [value]="1">Frutas</ion-select-option>
+          <ion-select-option [value]="2">Verduras</ion-select-option>
+          <ion-select-option [value]="3">Carnes</ion-select-option>
+          <ion-select-option [value]="4">Lácteos</ion-select-option>
         </ion-select>
       </ion-item>
       <p class="pRojos" *ngIf="!productoM.id_categoria && categoriaTocada">La categoría del producto es obligatoria.</p>
