@@ -34,13 +34,13 @@
 
 <ion-content [fullscreen]="true">
 
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="rolUsuario=='1'">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" (click)="triggerHeavyHaptic()" *ngIf="rolUsuario=='1'">
     <ion-fab-button color="success" [routerLink]="['/agregar-producto']">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="rolUsuario=='2'">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" (click)="triggerHeavyHaptic()" *ngIf="rolUsuario=='2'">
     <ion-fab-button color="success" [routerLink]="['/carrito']">
       <ion-icon name="cart-outline"></ion-icon>
     </ion-fab-button>
@@ -63,13 +63,13 @@
     </ion-card-content>
     <div class="container-boton">
       <div *ngIf="rolUsuario=='2'">
-        <ion-button *ngIf="x.stock > 0" color="success" (click)="agregarCarrito(x.id_producto)">Agregar al
+        <ion-button *ngIf="x.stock > 0" color="success" (click)="agregarCarrito(x.id_producto)" (click)="triggerHeavyHaptic()">Agregar al
           carrito</ion-button>
         <ion-button *ngIf="x.stock <= 0" disabled color="success">Agotado</ion-button>
       </div>
       <div *ngIf="rolUsuario=='1'">
-        <ion-button color="warning" (click)="modificar(x)">Modificar</ion-button>
-        <ion-button color="danger" (click)="eliminar(x)">Eliminar</ion-button>
+        <ion-button color="warning" (click)="modificar(x)" (click)="triggerHeavyHaptic()">Modificar</ion-button>
+        <ion-button color="danger" (click)="eliminar(x)" (click)="triggerHeavyHaptic()">Eliminar</ion-button>
       </div>
     </div>
   </ion-card>
@@ -78,22 +78,22 @@
 
 <ion-footer [translucent]="true">
   <ion-tab-bar color="success" slot="bottom">
-    <ion-tab-button tab="home" [routerLink]="['/productos']">
+    <ion-tab-button tab="home" [routerLink]="['/productos']" (click)="triggerHeavyHaptic()">
       <ion-icon name="bag-check-outline"></ion-icon>
       Productos
     </ion-tab-button>
 
-    <ion-tab-button tab="library" [routerLink]="['/historial-compra']" *ngIf="rolUsuario=='2'">
+    <ion-tab-button tab="library" [routerLink]="['/historial-compra']" (click)="triggerHeavyHaptic()" *ngIf="rolUsuario=='2'">
       <ion-icon name="timer-outline"></ion-icon>
       Historial
     </ion-tab-button>
 
-    <ion-tab-button tab="library" [routerLink]="['/reportes']" *ngIf="rolUsuario=='1'">
+    <ion-tab-button tab="library" [routerLink]="['/reportes']" (click)="triggerHeavyHaptic()" *ngIf="rolUsuario=='1'">
       <ion-icon name="document-text-outline"></ion-icon>
       Lista de usuarios
     </ion-tab-button>
 
-    <ion-tab-button tab="home" [routerLink]="['/perfil']">
+    <ion-tab-button tab="home" [routerLink]="['/perfil']" (click)="triggerHeavyHaptic()">
       <ion-icon name="person-circle-outline"></ion-icon>
       Perfil
     </ion-tab-button>

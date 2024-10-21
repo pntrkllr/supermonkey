@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ServicealertService } from 'src/app/services/servicealert.service';
 import { ServicebdService } from 'src/app/services/servicebd.service';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 @Component({
   selector: 'app-carrito',
@@ -42,6 +43,11 @@ export class CarritoPage implements OnInit {
     this.bd.verCarrito(id_usuario);
     this.bd.getTotal(id_usuario);
 
+  }
+
+  //vibración para botones del carrito
+  async triggerHeavyHaptic() {
+    await Haptics.impact({ style: ImpactStyle.Heavy });
   }
 
   mas(id_producto : number){

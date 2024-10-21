@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServicealertService } from 'src/app/services/servicealert.service';
 import { ServicebdService } from 'src/app/services/servicebd.service';
 
@@ -8,6 +9,7 @@ import { ServicebdService } from 'src/app/services/servicebd.service';
   styleUrls: ['./historial-compra.page.scss'],
 })
 export class HistorialCompraPage implements OnInit {
+
 
   historial : any = [{
     id_venta: '',
@@ -20,9 +22,19 @@ export class HistorialCompraPage implements OnInit {
     producto_nombre: '',
     foto : ''
   }];
+  id! : number;
 
 
-  constructor(private alert : ServicealertService,private bd : ServicebdService) { }
+  constructor(private alert : ServicealertService,private bd : ServicebdService, private router: Router, private activedroute: ActivatedRoute) { 
+    this.activedroute.queryParams.subscribe(param => {
+
+      if (this.router.getCurrentNavigation()?.extras.state) {
+  
+        this.id = this.router.getCurrentNavigation()?.extras?.state?.['id'];
+  
+      }
+    });
+  }
 
   ngOnInit() {
     this.bd.dbState().subscribe(res=>{
@@ -32,8 +44,12 @@ export class HistorialCompraPage implements OnInit {
         })
       }
     })
-
-    const id_usuario = Number(localStorage.getItem('id_usuario'))
-    this.bd.verHistorial(id_usuario);
+    this.alert.presentAlert('mono qlooo', 'datos : ' +this.id);
+    if(this.id){
+      this.bd.verHistorial(this.id);
+    }else{
+      const id_usuario = Number(localStorage.getItem('id_usuario'))
+      this.bd.verHistorial(id_usuario);
+    }
   }
 }

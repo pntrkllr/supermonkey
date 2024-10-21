@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { ServicebdService } from 'src/app/services/servicebd.service';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 import { addIcons } from 'ionicons';
 import { library, playCircle, radio, search } from 'ionicons/icons';
@@ -56,6 +57,11 @@ export class ProductosPage implements OnInit {
         })
       }
     })
+  }
+
+  //vibración para botones del carrito
+  async triggerHeavyHaptic() {
+    await Haptics.impact({ style: ImpactStyle.Heavy });
   }
 
   //filtrar productos

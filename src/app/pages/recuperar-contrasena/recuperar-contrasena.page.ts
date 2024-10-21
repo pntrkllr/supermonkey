@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ServicebdService } from 'src/app/services/servicebd.service';
 
 @Component({
   selector: 'app-recuperar-contrasena',
@@ -10,7 +11,7 @@ export class RecuperarContrasenaPage implements OnInit {
 
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, private bd: ServicebdService) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -31,6 +32,16 @@ export class RecuperarContrasenaPage implements OnInit {
       return 'Correo inválido';
     }
     return '';
+  }
+
+  getCorreo(){
+    if (this.form.valid){
+      const { correo } = this.form.value;
+
+      this.bd.validarCorreo(correo)
+
+    }
+
   }
 
 }

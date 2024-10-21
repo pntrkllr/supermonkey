@@ -36,7 +36,7 @@
       <ion-button color="success" (click)="mas(x.id_producto)"> + </ion-button>
       <ion-label class="precio">{{x.subtotal}}</ion-label>
 
-      <ion-button color="danger" (click)="eliminar(x.id_producto)">
+      <ion-button color="danger" (click)="eliminar(x.id_producto)" (click)="triggerHeavyHaptic()">
         <mat-icon>close</mat-icon>
       </ion-button>
     </ion-item>

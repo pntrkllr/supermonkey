@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavigationExtras, Router } from '@angular/router';
 import { ServicealertService } from 'src/app/services/servicealert.service';
 import { ServicebdService } from 'src/app/services/servicebd.service';
 
@@ -20,7 +21,7 @@ export class ReportesPage implements OnInit {
     total_ventas : ''
   }]
 
-  constructor(private alert: ServicealertService ,private bd : ServicebdService) {
+  constructor(private alert: ServicealertService, private bd : ServicebdService, private router: Router) {
   }
 
   ngOnInit() {
@@ -32,9 +33,17 @@ export class ReportesPage implements OnInit {
         })
       }
     })
-    // this.alert.presentAlert('aaaaaa','datos : '+JSON.stringify(this.usuarios))
     this.bd.verUsuarios();
 
+  }
+
+  histoUsuario(id_usuario: number){
+    let navigationExtras: NavigationExtras = {
+      state: {
+        id : id_usuario
+      }
+    }
+    this.router.navigate(['/historial-compra'], navigationExtras);
   }
 
 }

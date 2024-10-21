@@ -52,13 +52,13 @@ export class ServicebdService {
   registroCatCarne: string = "INSERT or IGNORE INTO categoria(id_categoria, nomb_categoria) VALUES (3, 'Carnes')"
   registroCatLacteo: string = "INSERT or IGNORE INTO categoria(id_categoria, nomb_categoria) VALUES (4, 'Lácteos')"
 
-  registroAdmin: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (1, 'Angel', 'Llanos', 'kaifury', 'kaifury@monosql.cl', '12345678Angel@', 1)";
+  registroAdmin: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (1, 'Angel', 'Llanos', 'admin', 'kaifury@monosql.cl', '@@@@123a', 1)";
 
-  registroAdmin2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (2, 'Rodrigo', 'Rocabado', 'pntrkllr', 'pntrkllr@monosql.cl', '1234Rodrigo@', 1)";
+  registroAdmin2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (2, 'Rodrigo', 'Rocabado', 'pntrkllr', 'pntrkllr@monosql.cl', '@@@@123a', 1)";
 
-  registroUsuario: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (3, 'Rodrigo', 'Guzmán', 'rodrigang', 'rodrigang@monosql.cl', 'Holacomoestan123@', 2)";
+  registroUsuario: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (3, 'Rodrigo', 'Guzmán', 'rodrigang', 'rodrigang@monosql.cl', '@@@@123a', 2)";
 
-  registroUsuario2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (4, 'Roberto', 'Leiva', 'robertson', 'robertson@monosql.cl', 'mellamorobertoxd123@', 2)";
+  registroUsuario2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (4, 'Roberto', 'Leiva', 'robertson', 'robertson@monosql.cl', '@@@@123a', 2)";
 
   registroProductoFruta: string = "INSERT or IGNORE INTO producto(id_producto, nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria) VALUES (1, 'Manzana Verde', 1, 2390, 10, '../assets/Productos/manzana-verde.png', 'Disponible', 1)";
 
@@ -581,11 +581,13 @@ export class ServicebdService {
     )
       .then((res) => {
         let total = 0;
+        let cantidad_venta = 0;
         let productosActualizados = [];
 
         // Paso 2: Calcular el total sumando los subtotales de los productos
         for (let i = 0; i < res.rows.length; i++) {
           total += res.rows.item(i).sub_total;
+          cantidad_venta += res.rows.item(i).cantidad;
 
           // Guardar la información para actualizar el stock de cada producto
           let id_producto = res.rows.item(i).id_producto;
@@ -605,10 +607,10 @@ export class ServicebdService {
           return Promise.all(productosActualizados) // Descontar stock de los productos
             .then(() => {
               return this.database.executeSql(
-                `UPDATE venta 
-               SET total = ?, id_estado = 1 
+               `UPDATE venta 
+               SET cant_venta = ?, total = ?, id_estado = 1 
                WHERE id_usuario = ?`,
-                [total, id_usuario]
+                [cantidad_venta ,total, id_usuario]
               );
             })
             .then(() => {
@@ -627,6 +629,7 @@ export class ServicebdService {
       });
   }
 
+
   verHistorial(id_usuario: number) {
     // Consulta para obtener las compras del usuario, excluyendo aquellas en estado de carrito (id_estado = 2)
     return this.database.executeSql(
@@ -639,9 +642,7 @@ export class ServicebdService {
       [id_usuario]
     )
       .then((res) => {
-
         let items: any[] = [];
-
         // Recorrer las ventas y agregarlas al historial
         for (let i = 0; i < res.rows.length; i++) {
           let venta = res.rows.item(i);
@@ -736,7 +737,23 @@ export class ServicebdService {
       });
   }
 
-  
+  validarCorreo(correo: string) {
+    return this.database.executeSql('SELECT * FROM usuario WHERE correo = ?', [correo])
+    .then(res => {
+
+      if (res.rows.length > 0) {
+
+        this.alert.presentAlert('Correo válido', 'El correo existe. Redirigiendo a la recuperación de contraseña...');
+        this.router.navigate(['/login']);
+      } else {
+        this.alert.presentAlert('Correo no válido', 'El correo proporcionado no está registrado.');
+      }
+    })
+    .catch(error => {
+
+      return this.alert.presentAlert('Error', 'Error al validar el correo: ' + JSON.stringify(error));
+    });
+  }
 
 
 }

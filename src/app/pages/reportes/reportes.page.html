@@ -31,7 +31,7 @@
       </ion-thumbnail>
       <ion-label>{{x.nom_usuario}}</ion-label>
       <ion-label>{{x.total_ventas}}</ion-label>
-      <ion-button color="success" [routerLink]="['/historial-compra']">Ver más</ion-button>
+      <ion-button color="success" (click)="histoUsuario(x.id_usuario)">Ver más</ion-button>
     </ion-item>
   </div>
 

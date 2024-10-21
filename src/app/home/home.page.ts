@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ServicebdService } from '../services/servicebd.service';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 @Component({
   selector: 'app-home',
@@ -9,5 +10,10 @@ import { ServicebdService } from '../services/servicebd.service';
 export class HomePage {
 
   constructor(private bd: ServicebdService) {}
+
+  //vibración para botones del carrito
+  async triggerHeavyHaptic() {
+    await Haptics.impact({ style: ImpactStyle.Heavy });
+  }
 
 }
