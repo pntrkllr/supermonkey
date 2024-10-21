@@ -34,14 +34,14 @@ export class RecuperarContrasenaPage implements OnInit {
     return '';
   }
 
-  getCorreo(){
-    if (this.form.valid){
+  getCorreo() {
+    if (this.form.valid) {
       const { correo } = this.form.value;
-
-      this.bd.validarCorreo(correo)
-
+  
+      this.bd.validarCorreo(correo);
     }
-
   }
+  
+  
 
 }

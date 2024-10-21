@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="success">
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/recuperar-contrasena"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cambiar contraseña</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+
+    <br>
+
+    <ion-input label="Nueva contraseña" type="password" label-placement="floating" fill="outline"
+      placeholder="Ingrese su nueva contraseña" [(ngModel)]="nuevaContrasena" (ionBlur)="nuevaContrasenaTocado = true">
+      <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+    </ion-input>
+    <p class="pRojos" *ngIf="!nuevaContrasena && nuevaContrasenaTocado">La nueva contraseña no puede estar vacía.</p>
+    <p class="pRojos" *ngIf="nuevaContrasena && (nuevaContrasena.length < 8 || nuevaContrasena.length > 16)">La nueva
+      contraseña debe ser de entre 8 y 16 caracteres.</p>
+    <p class="pRojos" *ngIf="nuevaContrasenaTocado && !patternContrasena()">La nueva contraseña debe incluir al menos un
+      símbolo.</p>
+    <p class="pRojos" *ngIf="nuevaContrasenaTocado && !letrasContrasena()">La nueva contraseña debe incluir al menos una
+      letra.</p>
+    <p class="pRojos" *ngIf="nuevaContrasenaTocado && !numerosContrasena()">La nueva contraseña debe incluir al menos un
+      número.</p>
+
+    <br>
+
+    <ion-input label="Confirmar Contraseña" type="password" label-placement="floating" fill="outline"
+      placeholder="Confirme su nueva contraseña" [(ngModel)]="confirmarContrasena"
+      (ionBlur)="confirmarContrasenaTocado = true">
+      <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
+    </ion-input>
+    <p class="pRojos" *ngIf="!confirmarContrasena && confirmarContrasenaTocado">Debe confirmar su nueva contraseña.</p>
+    <p class="pRojos" *ngIf="confirmarContrasenaTocado && nuevaContrasena !== confirmarContrasena">Las contraseñas no
+      coinciden.</p>
+    <br />
+
+    <ion-button class="cambiar" color="success" (click)="cambiarContrasena()"
+      [disabled]="!nuevaContrasena || nuevaContrasena.length < 8 || nuevaContrasena.length > 16 || !patternContrasena() || !numerosContrasena() || !letrasContrasena() || !confirmarContrasena || nuevaContrasena !== confirmarContrasena">
+      Cambiar contraseña
+    </ion-button>
+
+    <br>
+
+  </ion-card>
+
+</ion-content>

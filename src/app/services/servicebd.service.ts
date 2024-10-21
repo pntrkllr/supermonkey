@@ -737,23 +737,35 @@ export class ServicebdService {
       });
   }
 
-  validarCorreo(correo: string) {
-    return this.database.executeSql('SELECT * FROM usuario WHERE correo = ?', [correo])
-    .then(res => {
-
-      if (res.rows.length > 0) {
-
-        this.alert.presentAlert('Correo válido', 'El correo existe. Redirigiendo a la recuperación de contraseña...');
-        this.router.navigate(['/login']);
-      } else {
-        this.alert.presentAlert('Correo no válido', 'El correo proporcionado no está registrado.');
-      }
-    })
-    .catch(error => {
-
-      return this.alert.presentAlert('Error', 'Error al validar el correo: ' + JSON.stringify(error));
-    });
+  restablecerContrasena(correo: string, nuevaContrasena: string) {
+    const query = 'UPDATE usuario SET contrasena = ? WHERE correo = ?';
+    const params = [nuevaContrasena, correo];
+  
+    return this.database.executeSql(query, params)
+      .then(res => {
+        this.alert.presentAlert("Todo listo!", "Contraseña modificada de manera correcta.");
+      })
+      .catch(e => {
+        this.alert.presentAlert('Modificar contraseña', 'Error: ' + JSON.stringify(e));
+      });
   }
+
+  validarCorreo(correo: string) {
+    this.database.executeSql('SELECT * FROM usuario WHERE correo = ?', [correo])
+      .then(res => {
+        if (res.rows.length > 0) {
+          localStorage.setItem('correo-validado', correo);
+          this.alert.presentAlert('Correo válido', 'El correo existe. Redirigiendo al cambio de contraseña...');
+          this.router.navigate(['/cambiar-contrasena']);
+        } else {
+          this.alert.presentAlert('Correo no válido', 'El correo proporcionado no está registrado.');
+        }
+      })
+      .catch(error => {
+        this.alert.presentAlert('Error', 'Error al validar el correo: ' + JSON.stringify(error));
+      });
+  }
+  
 
 
 }

@@ -17,7 +17,7 @@ export class ModificarContrasenaPage implements OnInit {
   contrasenaActualTocado: boolean = false;
   nuevaContrasenaTocado: boolean = false;
   confirmarContrasenaTocado: boolean = false;
-  contrasenaActualIncorrecta: boolean = false; // Variable para controlar el error
+  contrasenaActualIncorrecta: boolean = false;
 
   constructor (private bd: ServicebdService, private router: Router, private alert: ServicealertService) {}
 
