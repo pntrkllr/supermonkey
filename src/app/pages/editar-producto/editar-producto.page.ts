@@ -22,7 +22,7 @@ export class EditarProductoPage implements OnInit {
     this.activerouter.queryParams.subscribe(res => {
       if (this.router.getCurrentNavigation()?.extras.state) {
         this.productoM = this.router.getCurrentNavigation()?.extras?.state?.['producto'];
-        this.foto = this.productoM.foto; // Inicializa con la foto existente
+        this.foto = this.productoM.foto;
       }
     });
   }

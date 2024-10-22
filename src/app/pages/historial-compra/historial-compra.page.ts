@@ -29,27 +29,23 @@ export class HistorialCompraPage implements OnInit {
     this.activedroute.queryParams.subscribe(param => {
 
       if (this.router.getCurrentNavigation()?.extras.state) {
-  
-        this.id = this.router.getCurrentNavigation()?.extras?.state?.['id'];
-  
+        if(this.router.getCurrentNavigation()?.extras?.state?.['id']){
+          this.id = this.router.getCurrentNavigation()?.extras?.state?.['id'];
+          this.bd.verHistorial(this.id);
+        }
       }
+
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.bd.dbState().subscribe(res=>{
       if(res){
         this.bd.fetchHistorial().subscribe(data=>{
-          this.historial= data;
+          this.historial = data;
         })
       }
     })
-    this.alert.presentAlert('mono qlooo', 'datos : ' +this.id);
-    if(this.id){
-      this.bd.verHistorial(this.id);
-    }else{
-      const id_usuario = Number(localStorage.getItem('id_usuario'))
-      this.bd.verHistorial(id_usuario);
-    }
+    this.bd.verHistorial(this.id);
   }
 }

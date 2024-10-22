@@ -240,13 +240,9 @@ export class ServicebdService {
 
   getProductos() {
     return this.database.executeSql('SELECT * FROM producto', []).then(res => {
-      //variable para almacenar el resultado del select
       let items: Productos[] = [];
-      //verificar si el select trae mas de 1 registro
       if (res.rows.length > 0) {
-        //recorremos el resultado de la consulta
         for (var i = 0; i < res.rows.length; i++) {
-          //ingresar registro a registro en mi variable
           items.push({
             id_producto: res.rows.item(i).id_producto,
             nombre_pr: res.rows.item(i).nombre_pr,
@@ -321,12 +317,11 @@ export class ServicebdService {
       params.push(apellido);
     }
     if (correo) {
-      query += params.length ? ', correo = ?' : ' correo = ?';  //campo de la foto
+      query += params.length ? ', correo = ?' : ' correo = ?';
       params.push(correo);
     }
-    //si el usuario elige una foto de perfil se ejecuta esto
     if (foto_perfil) {
-      query += params.length ? ', foto_perfil = ?' : ' foto_perfil = ?';  //campo de la foto
+      query += params.length ? ', foto_perfil = ?' : ' foto_perfil = ?';
       params.push(foto_perfil);
     }
 
@@ -334,7 +329,6 @@ export class ServicebdService {
 
       query += ' WHERE id_usuario = ?';
       params.push(id_usuario);
-      // Ejecutamos la consulta SQL con los parámetros
       return this.database.executeSql(query, params).then((res) => {
         this.alert.presentAlert("Modificar datos", "Datos modificados correctamente.");
         this.getUserPerfil(id_usuario);
@@ -344,7 +338,6 @@ export class ServicebdService {
     } else {
       return this.alert.presentAlert('Modificar Perfil', 'No hay datos para modificar.');
     }
-
   }
 
   carrito(id_usuario: number, id_producto: number) {
@@ -360,7 +353,7 @@ export class ServicebdService {
           // Si no hay una venta activa, crear una nueva venta
           return this.database.executeSql("INSERT INTO venta (id_usuario, total, id_estado) VALUES (?, 0, 2);", [id_usuario])
             .then((res) => {
-              id_venta = res.insertId; // Guardar el id de la nueva venta
+              id_venta = res.insertId;
             });
         }
 
@@ -370,7 +363,7 @@ export class ServicebdService {
             let productoYaEnCarrito = false;
 
             for (let i = 0; i < res.rows.length; i++) {
-              if (res.rows.item(i).id_producto === id_producto) {
+              if (res.rows.item(i).id_producto === id_producto) {            
                 productoYaEnCarrito = true;
                 break; // Salir del bucle si se encuentra el producto
               }
@@ -405,7 +398,7 @@ export class ServicebdService {
       });
   }
 
-  // Método para limpiar el carrito después de una compra
+  //metodo para limpiar el carrito después de una compra
   limpiarCarrito(id_usuario: number) {
     return this.database.executeSql("DELETE FROM detalle WHERE id_venta IN (SELECT id_venta FROM venta WHERE id_usuario = ? AND id_estado = 2)", [id_usuario])
       .then(() => {
@@ -416,7 +409,7 @@ export class ServicebdService {
       });
   }
 
-  // Método que llama a limpiarCarrito después de completar una compra
+  //metodo que llama a limpiarCarrito después de completar una compra
   comprarProductos(id_usuario: number) {
     // Lógica para procesar la compra
     this.limpiarCarrito(id_usuario);
@@ -453,19 +446,21 @@ export class ServicebdService {
   }
 
   masProducto(id_producto: number) {
+    const id_usuario = Number(localStorage.getItem('id_usuario'))
     // Obtener el precio y el stock del producto
     return this.database.executeSql(
-      `SELECT producto.*, detalle.sub_total AS subtotal, detalle.cantidad AS cantidad
+      `SELECT producto.*, detalle.sub_total AS subtotal, detalle.cantidad AS cantidad, venta.id_venta
       FROM producto 
       JOIN detalle ON detalle.id_producto = producto.id_producto 
       JOIN venta ON venta.id_venta = detalle.id_venta
-      WHERE producto.id_producto = ? AND venta.id_estado = 2`,
-      [id_producto]
+      WHERE producto.id_producto = ? AND venta.id_estado = 2 AND venta.id_usuario = ?`,
+      [id_producto , id_usuario]
     ).then((res) => {
       if (res.rows.length > 0) {
         const cantidadActual = res.rows.item(0).cantidad;
         const precioActual = res.rows.item(0).precio;
         const stockDisponible = res.rows.item(0).stock; // Asegúrate de que el campo stock esté presente en tu consulta
+        const id_venta = res.rows.item(0).id_venta;
         const nuevaCantidad = cantidadActual + 1;
 
         // Verificar si la nueva cantidad no supera el stock disponible
@@ -477,8 +472,8 @@ export class ServicebdService {
 
         // Actualizar la cantidad y el subtotal en la tabla detalle
         return this.database.executeSql(
-          'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ?',
-          [nuevaCantidad, nuevoSubtotal, id_producto]
+          'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ? AND id_venta = ?',
+          [nuevaCantidad, nuevoSubtotal, id_producto, id_venta]
         ).then(() => {
           const id_usuario = Number(localStorage.getItem('id_usuario'));
           this.verCarrito(id_usuario);
@@ -495,20 +490,20 @@ export class ServicebdService {
   }
 
   menosProducto(id_producto: number) {
-    // Obtener el precio y la cantidad actual del producto
+    const id_usuario = Number(localStorage.getItem('id_usuario'));
     return this.database.executeSql(
-      `SELECT producto.*, detalle.sub_total AS subtotal, detalle.cantidad AS cantidad
+      `SELECT producto.*, detalle.sub_total AS subtotal, detalle.cantidad AS cantidad, venta.id_venta
       FROM producto 
       JOIN detalle ON detalle.id_producto = producto.id_producto 
       JOIN venta ON venta.id_venta = detalle.id_venta
-      WHERE producto.id_producto = ? AND venta.id_estado = 2`,
-      [id_producto]
+      WHERE producto.id_producto = ? AND venta.id_estado = 2 AND venta.id_usuario = ?`,
+      [id_producto, id_usuario]
     ).then((res) => {
       if (res.rows.length > 0) {
         const cantidadActual = res.rows.item(0).cantidad;
         const precioActual = res.rows.item(0).precio;
+        const id_venta = res.rows.item(0).id_venta;
 
-        // Verificar si la cantidad actual es mayor a 1
         if (cantidadActual <= 1) {
           return this.alert.presentAlert('Cantidad mínima alcanzada', 'No puede reducir más la cantidad del producto.');
         }
@@ -516,10 +511,9 @@ export class ServicebdService {
         const nuevaCantidad = cantidadActual - 1;
         const nuevoSubtotal = nuevaCantidad * precioActual;
 
-        // Actualizar la cantidad y el subtotal en la tabla detalle
         return this.database.executeSql(
-          'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ?',
-          [nuevaCantidad, nuevoSubtotal, id_producto]
+          'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ? AND id_venta = ?',
+          [nuevaCantidad, nuevoSubtotal, id_producto, id_venta]
         ).then(() => {
           const id_usuario = Number(localStorage.getItem('id_usuario'));
           this.verCarrito(id_usuario);
@@ -548,7 +542,6 @@ export class ServicebdService {
   }
 
   getTotal(id_usuario: number) {
-    // Paso 1: Consultar los productos en el carrito del usuario (id_estado = 2)
     return this.database.executeSql(
       `SELECT d.cantidad, d.sub_total 
        FROM detalle d
@@ -559,7 +552,6 @@ export class ServicebdService {
       .then((res) => {
         let total = 0;
 
-        // Paso 2: Calcular el total sumando los subtotales de los productos
         for (let i = 0; i < res.rows.length; i++) {
           total += res.rows.item(i).sub_total;
         }
@@ -570,7 +562,6 @@ export class ServicebdService {
   }
 
   pagarProductos(id_usuario: number) {
-    // Paso 1: Consultar los productos en el carrito del usuario (id_estado = 2)
     return this.database.executeSql(
       `SELECT d.id_producto, d.cantidad, d.sub_total, p.stock 
        FROM detalle d
@@ -584,38 +575,33 @@ export class ServicebdService {
         let cantidad_venta = 0;
         let productosActualizados = [];
 
-        // Paso 2: Calcular el total sumando los subtotales de los productos
         for (let i = 0; i < res.rows.length; i++) {
           total += res.rows.item(i).sub_total;
           cantidad_venta += res.rows.item(i).cantidad;
 
-          // Guardar la información para actualizar el stock de cada producto
           let id_producto = res.rows.item(i).id_producto;
           let cantidadComprada = res.rows.item(i).cantidad;
           let stockActual = res.rows.item(i).stock;
 
-          // Actualizar el stock de cada producto
           productosActualizados.push(this.database.executeSql(
             `UPDATE producto SET stock = ? WHERE id_producto = ?`,
             [stockActual - cantidadComprada, id_producto]
           ));
         }
 
-        // Verificar si hay productos en el carrito antes de proceder
         if (total > 0) {
-          // Paso 3: Actualizar el estado de la venta para marcarla como pagada (por ejemplo, id_estado = 1)
-          return Promise.all(productosActualizados) // Descontar stock de los productos
+          return Promise.all(productosActualizados)
             .then(() => {
               return this.database.executeSql(
-               `UPDATE venta 
+                `UPDATE venta 
                SET cant_venta = ?, total = ?, id_estado = 1 
                WHERE id_usuario = ?`,
-                [cantidad_venta ,total, id_usuario]
+                [cantidad_venta, total, id_usuario]
               );
             })
             .then(() => {
               this.alert.presentAlert('Pago', 'El pago ha sido procesado exitosamente por un total de: ' + total);
-              this.router.navigate(['/productos']); // Redirigir a la página del historial de compras si es necesario
+              this.router.navigate(['/productos']);
             })
             .catch((error) => {
               return this.alert.presentAlert('Error pago', 'Error: ' + JSON.stringify(error));
@@ -631,7 +617,6 @@ export class ServicebdService {
 
 
   verHistorial(id_usuario: number) {
-    // Consulta para obtener las compras del usuario, excluyendo aquellas en estado de carrito (id_estado = 2)
     return this.database.executeSql(
       `SELECT v.id_venta, v.total, v.cant_venta, v.id_estado, v.id_usuario, 
         d.id_producto, d.cantidad, d.sub_total, p.nombre_pr AS producto_nombre, p.foto AS foto
@@ -643,7 +628,6 @@ export class ServicebdService {
     )
       .then((res) => {
         let items: any[] = [];
-        // Recorrer las ventas y agregarlas al historial
         for (let i = 0; i < res.rows.length; i++) {
           let venta = res.rows.item(i);
 
@@ -668,7 +652,6 @@ export class ServicebdService {
   }
 
   verUsuarios() {
-    // Consulta para obtener todos los usuarios de la tabla usuario
     return this.database.executeSql(
       `SELECT usuario.* , IFNULL(SUM(venta.cant_venta), 0) AS total_ventas
       FROM usuario left join venta on venta.id_usuario = usuario.id_usuario
@@ -679,9 +662,7 @@ export class ServicebdService {
       .then((res) => {
         let usuarios: any[] = [];
 
-        // Recorrer los usuarios y agregarlos a la lista
         for (let i = 0; i < res.rows.length; i++) {
-          /* let usuario = res.rows.item(i); */
 
           usuarios.push({
             id_usuario: res.rows.item(i).id_usuario,
@@ -711,10 +692,10 @@ export class ServicebdService {
       this.database.executeSql(query, params)
         .then(res => {
           if (res.rows.length > 0) {
-            const storedPassword = res.rows.item(0).contrasena; // Obtener la contraseña almacenada
-            resolve(storedPassword === contrasenaActual); // Compara y resuelve
+            const storedPassword = res.rows.item(0).contrasena;
+            resolve(storedPassword === contrasenaActual);
           } else {
-            resolve(false); // Usuario no encontrado
+            resolve(false);
           }
         })
         .catch(e => {
@@ -740,7 +721,7 @@ export class ServicebdService {
   restablecerContrasena(correo: string, nuevaContrasena: string) {
     const query = 'UPDATE usuario SET contrasena = ? WHERE correo = ?';
     const params = [nuevaContrasena, correo];
-  
+
     return this.database.executeSql(query, params)
       .then(res => {
         this.alert.presentAlert("Todo listo!", "Contraseña modificada de manera correcta.");
@@ -765,7 +746,6 @@ export class ServicebdService {
         this.alert.presentAlert('Error', 'Error al validar el correo: ' + JSON.stringify(error));
       });
   }
-  
 
 
 }

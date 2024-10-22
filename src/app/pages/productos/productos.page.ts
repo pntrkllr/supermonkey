@@ -5,6 +5,8 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 import { addIcons } from 'ionicons';
 import { library, playCircle, radio, search } from 'ionicons/icons';
+import { ApiService } from 'src/app/services/api.service';
+import { ServicealertService } from 'src/app/services/servicealert.service';
 
 @Component({
   selector: 'app-productos',
@@ -17,6 +19,10 @@ export class ProductosPage implements OnInit {
   nom_usuario: string = "";
   contrasena: string = "";
   rolUsuario: string | null = null;
+  id_user:number = 0;
+  recetas: any[] = [];
+  traducciones: string[] = [];
+
 
   arregloProductos: any = [{
     id_producto: '',
@@ -30,7 +36,7 @@ export class ProductosPage implements OnInit {
   //arreglo de filtros
   productosFiltrados: any = [];
 
-  constructor(private router: Router, private activedroute: ActivatedRoute, private bd: ServicebdService) {
+  constructor(private api: ApiService, private router: Router, private activedroute: ActivatedRoute, private bd: ServicebdService, private alert: ServicealertService) {
     addIcons({ library, playCircle, radio, search });
 
     this.activedroute.queryParams.subscribe(param => {
@@ -46,6 +52,9 @@ export class ProductosPage implements OnInit {
 
   ngOnInit() {
 
+    this.loadProductos();
+
+    this.id_user = Number(localStorage.getItem('id_usuario'));
     this.rolUsuario = localStorage.getItem('id_rol');
 
     //verificar si la BD esta lista
@@ -72,7 +81,7 @@ export class ProductosPage implements OnInit {
       this.productosFiltrados = this.arregloProductos;
     } else {
       this.productosFiltrados = this.arregloProductos.filter((producto: any) =>
-        producto.id_categoria === Number(categoriaSeleccionada) // Comparar id_categoria
+        producto.id_categoria === Number(categoriaSeleccionada)
       );
     }
   }
@@ -96,6 +105,21 @@ export class ProductosPage implements OnInit {
     this.bd.eliminarProducto(x.id_producto);
   }
 
+  loadProductos() {
+    this.api.getProductos().subscribe(response => {
+      this.recetas = response['results'];
+      this.translateTitles();
+    });
+  }
+
+  translateTitles() {
+    this.recetas.forEach(producto => {
+      this.api.translateText(producto.title, 'ES').subscribe(translatedResponse => {
+        this.traducciones.push(translatedResponse.translations[0].text);
+      });
+    });
+  }
+
   usuario() {
     let navigationExtras: NavigationExtras = {
       state: {
@@ -104,6 +128,15 @@ export class ProductosPage implements OnInit {
       }
     }
 
+  }
+
+  toHistory(){
+    let navigationExtras: NavigationExtras = {
+      state: {
+        id : this.id_user
+      }
+    }
+    this.router.navigate(['/historial-compra'],navigationExtras);
   }
 
 }

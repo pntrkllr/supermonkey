@@ -36,7 +36,7 @@ export class ModificarPerfilPage implements OnInit {
   }
 
   ngOnInit() {
-    const iduser = Number(localStorage.getItem('id_usuario')); // Obtener ID del usuario desde localStorage
+    const iduser = Number(localStorage.getItem('id_usuario'));
 
     // Traer los datos del usuario
     this.bd.getUserPerfil(iduser).then(() => {
@@ -44,7 +44,6 @@ export class ModificarPerfilPage implements OnInit {
         this.usuario = data;
 
         if (this.usuario) {
-          // Rellenar el formulario con los datos del usuario
           this.form.patchValue({
             nombre: this.usuario.pnombre || '',
             apellido: this.usuario.apellido || '',

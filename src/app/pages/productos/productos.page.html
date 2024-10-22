@@ -63,13 +63,30 @@
     </ion-card-content>
     <div class="container-boton">
       <div *ngIf="rolUsuario=='2'">
-        <ion-button *ngIf="x.stock > 0" color="success" (click)="agregarCarrito(x.id_producto)" (click)="triggerHeavyHaptic()">Agregar al
+        <ion-button *ngIf="x.stock > 0" color="success" (click)="agregarCarrito(x.id_producto)"
+          (click)="triggerHeavyHaptic()">Agregar al
           carrito</ion-button>
         <ion-button *ngIf="x.stock <= 0" disabled color="success">Agotado</ion-button>
       </div>
       <div *ngIf="rolUsuario=='1'">
         <ion-button color="warning" (click)="modificar(x)" (click)="triggerHeavyHaptic()">Modificar</ion-button>
         <ion-button color="danger" (click)="eliminar(x)" (click)="triggerHeavyHaptic()">Eliminar</ion-button>
+      </div>
+    </div>
+  </ion-card>
+
+  <br>
+  <br>
+
+  <ion-card>
+    <div *ngIf="recetas.length > 0">
+      <br>
+      <h2 class="tituloApi">Prepara estas recetas con los productos de Supermonkey</h2>
+      <br>
+      <div *ngFor="let receta of recetas; let i = index" class="receta">
+        <img [src]="receta.image" [alt]="receta.title" />
+        <h4 *ngIf="traducciones[i]">{{ traducciones[i] }}</h4>
+        <br>
       </div>
     </div>
   </ion-card>
@@ -83,7 +100,8 @@
       Productos
     </ion-tab-button>
 
-    <ion-tab-button tab="library" [routerLink]="['/historial-compra']" (click)="triggerHeavyHaptic()" *ngIf="rolUsuario=='2'">
+    <ion-tab-button tab="library" (click)="toHistory()" (click)="triggerHeavyHaptic()"
+      *ngIf="rolUsuario=='2'">
       <ion-icon name="timer-outline"></ion-icon>
       Historial
     </ion-tab-button>
