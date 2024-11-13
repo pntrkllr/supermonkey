@@ -58,19 +58,19 @@
       <ion-card-subtitle>{{ x.cantidad_kg }}kg.</ion-card-subtitle>
       <ion-card-subtitle>Stock disponible: {{ x.stock }}</ion-card-subtitle>
     </ion-card-header>
-    <ion-card-content>
-      Precio: {{ x.precio }}
+    <ion-card-content style="color: #2dd55b; font-size: 25px;">
+      ${{ x.precio }}
     </ion-card-content>
     <div class="container-boton">
       <div *ngIf="rolUsuario=='2'">
         <ion-button *ngIf="x.stock > 0" color="success" (click)="agregarCarrito(x.id_producto)"
           (click)="triggerHeavyHaptic()">Agregar al
           carrito</ion-button>
-        <ion-button *ngIf="x.stock <= 0" disabled color="success">Agotado</ion-button>
+        <ion-button *ngIf="x.stock <= 0" disabled color="success">No disponible</ion-button>
       </div>
       <div *ngIf="rolUsuario=='1'">
         <ion-button color="warning" (click)="modificar(x)" (click)="triggerHeavyHaptic()">Modificar</ion-button>
-        <ion-button color="danger" (click)="eliminar(x)" (click)="triggerHeavyHaptic()">Eliminar</ion-button>
+        <ion-button color="danger" *ngIf="x.stock > 0" (click)="deshabilitar(x)" (click)="triggerHeavyHaptic()">Deshabilitar</ion-button>
       </div>
     </div>
   </ion-card>
@@ -84,7 +84,7 @@
       <h2 class="tituloApi">Prepara estas recetas con los productos de Supermonkey</h2>
       <br>
       <div *ngFor="let receta of recetas; let i = index" class="receta">
-        <img [src]="receta.image" [alt]="receta.title" />
+        <img [src]="receta.image" [alt]="receta.title"/>
         <h4 *ngIf="traducciones[i]">{{ traducciones[i] }}</h4>
         <br>
       </div>

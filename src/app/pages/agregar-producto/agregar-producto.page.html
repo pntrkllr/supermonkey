@@ -25,22 +25,26 @@
       <p class="pRojos" *ngIf="!nombre_pr && nombrePrTocado">El nombre del producto no puede estar vacío.</p>
       <br />
 
-      <ion-input label="Peso (kg)" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
+      <ion-input label="Peso (kg)" type="number" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
         [(ngModel)]="cantidad_kg" (ionBlur)="pesoTocado = true"></ion-input>
       <p class="pRojos" *ngIf="!cantidad_kg && pesoTocado">El peso (kg) del producto no puede estar vacío.</p>
+      <p class="pRojos" *ngIf="cantidad_kg < 0">El peso (kg) no puede ser negativo.</p>
       <br />
 
       <ion-input label="Stock" type="number" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
-        [(ngModel)]="stock"></ion-input>
+        [(ngModel)]="stock" (ionBlur)="stockTocado = true"></ion-input>
+      <p class="pRojos" *ngIf="!stock && stockTocado">El stock no puede estar vacío. Debe asignar '0' como valor inicial.</p>
       <p class="pRojos" *ngIf="stock < 0">El stock no puede ser menor a 0.</p>
 
       <p style="text-align: center;">Disponibilidad del producto según stock:</p>
-      <p *ngIf="stock === undefined || stock <= 0" class="estatus_not">No disponible</p>
+      <p *ngIf="stock === undefined || stock === 0" class="estatus_not">No disponible</p>
       <p *ngIf="stock > 0" class="estatus_ok">Disponible</p>
 
-      <ion-input label="Precio" type="input" label-placement="floating" fill="outline" placeholder="Precio del producto"
+      <ion-input label="Precio" type="number" label-placement="floating" fill="outline" placeholder="Precio del producto"
         [(ngModel)]="precio" (ionBlur)="precioTocado = true"></ion-input>
       <p class="pRojos" *ngIf="!precio && precioTocado">El precio es obligatorio para continuar.</p>
+      <p class="pRojos" *ngIf="precio < 0">El precio no puede ser negativo.</p>
+      <p class="pRojos" *ngIf="precio > 10000000">Excede el máximo de precio.</p>
       <br />
 
       <ion-item>
@@ -57,7 +61,7 @@
 
       <div class="container-boton">
         <ion-button type="submit" color="success"
-          [disabled]="!imagen || !nombre_pr || !cantidad_kg || !precio || !id_categoria"
+          [disabled]="!imagen || !nombre_pr || !cantidad_kg || !stock || !precio || !id_categoria || cantidad_kg < 0 || stock < 0 || stock > 10000000"
           (click)="crear()">Confirmar</ion-button>
         <ion-button color="danger" [routerLink]="['/productos']">Cancelar</ion-button>
       </div>

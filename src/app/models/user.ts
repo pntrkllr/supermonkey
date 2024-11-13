@@ -6,6 +6,8 @@ export class User {
         public apellido: string,
         public nom_usuario : string,
         public correo : string,
+        public pregunta: string,
+        public respuesta: string,
         public id_rol : string,
         public foto? : any 
     ){

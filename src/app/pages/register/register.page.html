@@ -9,6 +9,13 @@
 
 <ion-content [fullscreen]="true">
   <div id="container">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <ion-card class="bordes">
       <div class="div-titulo">
         <ion-title>Rellena los datos para registrarte</ion-title>
@@ -51,6 +58,26 @@
           <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
         </ion-input>
         <p *ngIf="arePasswordsDifferent()">{{ getConfirmPasswordError() }}</p>
+        <br />
+
+        <!-- pregunta de seguridad -->
+        <ion-item>
+          <ion-label>Pregunta</ion-label>
+          <ion-select formControlName="pregunta" placeholder="Escoge una pregunta">
+            <ion-select-option value="nombre_padre">¿Cuál es el nombre de tu padre?</ion-select-option>
+            <ion-select-option value="nombre_madre">¿Cuál es el nombre de tu madre?</ion-select-option>
+            <ion-select-option value="ciudad_nacimiento">¿En qué ciudad naciste?</ion-select-option>
+            <ion-select-option value="primera_mascota">¿Cuál fue tu primera mascota?</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <br>
+
+        <!-- respuesta pregunta seguridad -->
+        <ion-input label="Respuesta" type="text" label-placement="floating" fill="outline"
+          placeholder="Escriba su respuesta" formControlName="respuesta" (ionBlur)="form.get('respuesta')?.markAsTouched()">
+        </ion-input>
+        <p *ngIf="isRespuestaInvalid()">{{ getRespuestaError() }}</p>
         <br />
 
         <div class="container-check">

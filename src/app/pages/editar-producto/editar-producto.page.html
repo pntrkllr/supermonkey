@@ -26,21 +26,26 @@
       <p class="pRojos" *ngIf="!productoM.nombre_pr && nombrePrTocado">El nombre del producto no puede estar vacío.</p>
       <br />
 
-      <ion-input label="Peso (kg)" type="input" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
+      <ion-input label="Peso (kg)" type="number" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
         [(ngModel)]="productoM.cantidad_kg" (ionBlur)="pesoTocado = true"></ion-input>
       <p class="pRojos" *ngIf="!productoM.cantidad_kg && pesoTocado">El peso (kg) del producto no puede estar vacío.</p>
+      <p class="pRojos" *ngIf="productoM.cantidad_kg < 0">El peso (kg) no puede ser negativo.</p>
       <br />
 
       <ion-input label="Stock" type="number" label-placement="floating" fill="outline" placeholder="Ej: 4, 5..."
-        [(ngModel)]="productoM.stock"></ion-input>
+        [(ngModel)]="productoM.stock" (ionBlur)="stockTocado = true"></ion-input>
+      <p class="pRojos" *ngIf="!productoM.stock && stockTocado">El stock no puede estar vacío. Debe asignar '0' como valor inicial.</p>
+      <p class="pRojos" *ngIf="productoM.stock < 0">El stock no puede ser menor a 0.</p>
 
       <p style="text-align: center;">Disponibilidad del producto según stock:</p>
-      <p *ngIf="productoM.stock === undefined || productoM.stock <= 0" class="estatus_ok">No disponible</p>
+      <p *ngIf="productoM.stock === undefined || productoM.stock === 0" class="estatus_ok">No disponible</p>
       <p *ngIf="productoM.stock > 0" class="estatus_not">Disponible</p>
 
-      <ion-input label="Precio" type="input" label-placement="floating" fill="outline" placeholder="Precio del producto"
+      <ion-input label="Precio" type="number" label-placement="floating" fill="outline" placeholder="Precio del producto"
         [(ngModel)]="productoM.precio" (ionBlur)="precioTocado = true"></ion-input>
       <p class="pRojos" *ngIf="!productoM.precio && precioTocado">El precio es obligatorio para continuar.</p>
+      <p class="pRojos" *ngIf="productoM.precio < 0">El precio no puede ser negativo.</p>
+      <p class="pRojos" *ngIf="productoM.precio > 10000000">Excede el máximo de precio.</p>
       <br />
 
       <ion-item>
@@ -55,11 +60,12 @@
       <br />
 
       <div class="container-boton">
-        <ion-button type="submit" color="success" (click)="modificar()" [disabled]="!foto || !productoM.nombre_pr || !productoM.cantidad_kg || !productoM.precio || !productoM.id_categoria">Confirmar</ion-button>
+        <ion-button type="submit" color="success" (click)="modificar()" [disabled]="!foto || !productoM.nombre_pr || !productoM.cantidad_kg || !productoM.stock || !productoM.precio || !productoM.id_categoria || productoM.cantidad_kg < 0 || productoM.stock < 0 || productoM.stock > 10000000">Confirmar</ion-button>
         <ion-button color="danger" [routerLink]="['/productos']">Cancelar</ion-button>
       </div>
 
       <br />
+
     </ion-card>
   </div>
 </ion-content>

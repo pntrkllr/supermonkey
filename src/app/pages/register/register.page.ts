@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ServicebdService } from 'src/app/services/servicebd.service';
 import { Camera, CameraResultType } from '@capacitor/camera';
+import { ServicealertService } from 'src/app/services/servicealert.service';
 
 @Component({
   selector: 'app-register',
@@ -15,7 +16,9 @@ export class RegisterPage implements OnInit {
   imagen: any = null;
   id_rol: number = 2;
 
-  constructor(private bd: ServicebdService, private router: Router, private fb: FormBuilder) { }
+  // pregunta!: string;
+
+  constructor(private bd: ServicebdService, private router: Router, private fb: FormBuilder, private alert: ServicealertService) { }
 
   ngOnInit() {
 
@@ -30,7 +33,9 @@ export class RegisterPage implements OnInit {
         Validators.maxLength(16),
         this.passwordValidator
       ]],
-      confirmar_contrasena: ['', [Validators.required]]
+      confirmar_contrasena: ['', [Validators.required]],
+      pregunta: ['', [Validators.required]],
+      respuesta: ['', [Validators.required]]
     });
   }
 
@@ -46,9 +51,10 @@ export class RegisterPage implements OnInit {
 
   crear() {
     if (this.form.valid) {
-      const { pnombre, apellido, nom_usuario, correo, contrasena } = this.form.value;
+      const { pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta } = this.form.value;
+      this.alert.presentAlert('mono qloo', 'datos : '+pregunta)
       const foto = this.imagen || null;
-      this.bd.insertarUsuario(foto, pnombre, apellido, nom_usuario, correo, contrasena, this.id_rol);
+      this.bd.insertarUsuario(foto, pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta, this.id_rol);
       this.router.navigate(['/login']);
     }
   }
@@ -126,6 +132,19 @@ export class RegisterPage implements OnInit {
       return 'La contraseña no puede tener más de 16 caracteres.';
     } else if (control?.hasError('invalidPassword')) {
       return 'La contraseña debe contener letras, números y símbolos.';
+    }
+    return '';
+  }
+
+  isRespuestaInvalid() {
+    const control = this.form.get('respuesta');
+    return control?.touched && control.invalid;
+  }
+
+  getRespuestaError() {
+    const control = this.form.get('respuesta');
+    if (control?.hasError('required')) {
+      return 'La respuesta no puede estar vacía.';
     }
     return '';
   }

@@ -29,7 +29,7 @@ export class ServicebdService {
   //tablas con fk
 
   //4.
-  tablaUsuario: string = "CREATE TABLE IF NOT EXISTS usuario(id_usuario INTEGER PRIMARY KEY autoincrement NOT NULL, foto_perfil BLOB, pnombre VARCHAR(20) NOT NULL, apellido VARCHAR(30) NOT NULL, nom_usuario VARCHAR(30) NOT NULL UNIQUE, correo VARCHAR(40) NOT NULL, contrasena VARCHAR(16), id_rol INTEGER, FOREIGN KEY (id_rol) REFERENCES rol(id_rol))";
+  tablaUsuario: string = "CREATE TABLE IF NOT EXISTS usuario(id_usuario INTEGER PRIMARY KEY autoincrement NOT NULL, foto_perfil BLOB, pnombre VARCHAR(20) NOT NULL, apellido VARCHAR(30) NOT NULL, nom_usuario VARCHAR(30) NOT NULL UNIQUE, correo VARCHAR(40) NOT NULL, contrasena VARCHAR(16), pregunta VARCHAR(50) NOT NULL, respuesta VARCHAR(20) NOT NULL, id_rol INTEGER, FOREIGN KEY (id_rol) REFERENCES rol(id_rol))";
 
   //5.
   tablaVenta: string = "CREATE TABLE IF NOT EXISTS venta (id_venta INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, cant_venta INTEGER, total INTEGER, id_usuario INTEGER, id_estado INTEGER,FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario), FOREIGN KEY (id_estado) REFERENCES estado(id_estado))";
@@ -52,13 +52,13 @@ export class ServicebdService {
   registroCatCarne: string = "INSERT or IGNORE INTO categoria(id_categoria, nomb_categoria) VALUES (3, 'Carnes')"
   registroCatLacteo: string = "INSERT or IGNORE INTO categoria(id_categoria, nomb_categoria) VALUES (4, 'Lácteos')"
 
-  registroAdmin: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (1, 'Angel', 'Llanos', 'admin', 'kaifury@monosql.cl', '@@@@123a', 1)";
+  registroAdmin: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta, id_rol) VALUES (1, 'Angel', 'Llanos', 'admin', 'kaifury@monosql.cl', '@@@@123a', 'nombre_padre', 'mariano', 1)";
 
-  registroAdmin2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (2, 'Rodrigo', 'Rocabado', 'pntrkllr', 'pntrkllr@monosql.cl', '@@@@123a', 1)";
+  registroAdmin2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta, id_rol) VALUES (2, 'Rodrigo', 'Rocabado', 'pntrkllr', 'pntrkllr@monosql.cl', '@@@@123a', 'nombre_padre', 'victor', 1)";
 
-  registroUsuario: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (3, 'Rodrigo', 'Guzmán', 'rodrigang', 'rodrigang@monosql.cl', '@@@@123a', 2)";
+  registroUsuario: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta, id_rol) VALUES (3, 'Rodrigo', 'Guzmán', 'rodrigang', 'rodrigang@monosql.cl', '@@@@123a', 'ciudad_nacimiento', 'santiago', 2)";
 
-  registroUsuario2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (4, 'Roberto', 'Leiva', 'robertson', 'robertson@monosql.cl', '@@@@123a', 2)";
+  registroUsuario2: string = "INSERT or IGNORE INTO usuario(id_usuario, pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta, id_rol) VALUES (4, 'Roberto', 'Leiva', 'robertson', 'robertson@monosql.cl', '@@@@123a', 'ciudad_nacimiento', 'santiago', 2)";
 
   registroProductoFruta: string = "INSERT or IGNORE INTO producto(id_producto, nombre_pr, cantidad_kg, precio, stock, foto, estatus, id_categoria) VALUES (1, 'Manzana Verde', 1, 2390, 10, '../assets/Productos/manzana-verde.png', 'Disponible', 1)";
 
@@ -196,6 +196,8 @@ export class ServicebdService {
             nom_usuario: res.rows.item(i).nom_usuario,
             correo: res.rows.item(i).correo,
             contrasena: res.rows.item(i).contrasena,
+            pregunta: res.rows.item(i).pregunta,
+            respuesta: res.rows.item(i).respuesta,
             id_rol: res.rows.item(i).id_rol
           });
         }
@@ -218,6 +220,8 @@ export class ServicebdService {
             res.rows.item(0).apellido,
             res.rows.item(0).nom_usuario,
             res.rows.item(0).correo,
+            res.rows.item(0).pregunta,
+            res.rows.item(0).respuesta,
             res.rows.item(0).id_rol,
             res.rows.item(0).foto_perfil
           );
@@ -253,7 +257,6 @@ export class ServicebdService {
             estatus: res.rows.item(i).estatus,
             id_categoria: res.rows.item(i).id_categoria
           })
-
         }
       }
       this.listaProductos.next(items as any);
@@ -281,19 +284,18 @@ export class ServicebdService {
     })
   }
 
-  eliminarProducto(id_producto: string) {
-    return this.database.executeSql('DELETE FROM producto WHERE id_producto = ?', [id_producto]).then((res) => {
-      this.alert.presentAlert("Eliminar", "Producto eliminado de manera correcta");
+  deshabilitarProducto(id_producto: number) {
+    return this.database.executeSql('UPDATE producto SET stock = 0 WHERE id_producto = ?', [id_producto]).then((res) => {
+      this.alert.presentAlert("Deshabilitar", "Producto deshabilitado.");
       this.getProductos();
     }).catch(e => {
-      this.alert.presentAlert('Eliminar', 'Error : ' + JSON.stringify(e));
+      this.alert.presentAlert('Deshabilitar', 'Error : ' + JSON.stringify(e));
     })
   }
 
-
   //usuarios
-  insertarUsuario(foto_perfil: Blob, pnombre: string, apellido: string, nom_usuario: string, correo: string, contrasena: string, id_rol: number) {
-    return this.database.executeSql('INSERT INTO usuario(foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol) VALUES (?,?,?,?,?,?,?)', [foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, id_rol]).then((res) => {
+  insertarUsuario(foto_perfil: Blob, pnombre: string, apellido: string, nom_usuario: string, correo: string, contrasena: string, pregunta: string, respuesta: string, id_rol: number) {
+    return this.database.executeSql('INSERT INTO usuario(foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta, id_rol) VALUES (?,?,?,?,?,?,?,?,?)', [foto_perfil, pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta, id_rol]).then((res) => {
       this.router.navigate(['/login']);
       this.alert.presentAlert("Todo listo!", "Inicia sesión en Supermonkey.");
       const iduser = Number(localStorage.getItem('id_usuario'))
@@ -411,7 +413,6 @@ export class ServicebdService {
 
   //metodo que llama a limpiarCarrito después de completar una compra
   comprarProductos(id_usuario: number) {
-    // Lógica para procesar la compra
     this.limpiarCarrito(id_usuario);
   }
 
@@ -459,18 +460,16 @@ export class ServicebdService {
       if (res.rows.length > 0) {
         const cantidadActual = res.rows.item(0).cantidad;
         const precioActual = res.rows.item(0).precio;
-        const stockDisponible = res.rows.item(0).stock; // Asegúrate de que el campo stock esté presente en tu consulta
+        const stockDisponible = res.rows.item(0).stock;
         const id_venta = res.rows.item(0).id_venta;
         const nuevaCantidad = cantidadActual + 1;
 
-        // Verificar si la nueva cantidad no supera el stock disponible
         if (nuevaCantidad > stockDisponible) {
           return this.alert.presentAlert('Fuera de stock', 'No puedes agregar más unidades de este producto.');
         }
 
         const nuevoSubtotal = nuevaCantidad * precioActual;
 
-        // Actualizar la cantidad y el subtotal en la tabla detalle
         return this.database.executeSql(
           'UPDATE detalle SET cantidad = ?, sub_total = ? WHERE id_producto = ? AND id_venta = ?',
           [nuevaCantidad, nuevoSubtotal, id_producto, id_venta]
@@ -736,8 +735,8 @@ export class ServicebdService {
       .then(res => {
         if (res.rows.length > 0) {
           localStorage.setItem('correo-validado', correo);
-          this.alert.presentAlert('Correo válido', 'El correo existe. Redirigiendo al cambio de contraseña...');
-          this.router.navigate(['/cambiar-contrasena']);
+          this.alert.presentAlert('Correo válido', 'El correo existe. Redirigiendo a pregunta de seguridad...');
+          this.router.navigate(['/pregunta-seguridad']);
         } else {
           this.alert.presentAlert('Correo no válido', 'El correo proporcionado no está registrado.');
         }
@@ -747,5 +746,19 @@ export class ServicebdService {
       });
   }
 
+  validarPregunta(pregunta: string, respuesta : string) {
+    this.database.executeSql('SELECT * FROM usuario WHERE pregunta = ? and respuesta = ?', [pregunta , respuesta])
+      .then(res => {
+        if (res.rows.length > 0) {
+          this.alert.presentAlert('Pregunta y respuesta válida', 'La pregunta existe. Redirigiendo al cambio de contraseña...');
+          this.router.navigate(['/cambiar-contrasena']);
+        } else {
+          this.alert.presentAlert('Pregunta o respuesta no válida', 'Asegúrese de escoger con los datos correctos.');
+        }
+      })
+      .catch(error => {
+        this.alert.presentAlert('Error', 'Error al validar pregunta y respuesta: ' + JSON.stringify(error));
+      });
+  }
 
 }

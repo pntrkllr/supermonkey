@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ServicebdService } from 'src/app/services/servicebd.service';
 
 @Component({
@@ -11,7 +12,7 @@ export class RecuperarContrasenaPage implements OnInit {
 
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder, private bd: ServicebdService) { }
+  constructor(private fb: FormBuilder, private bd: ServicebdService, private router: Router) { }
 
   ngOnInit() {
     this.form = this.fb.group({

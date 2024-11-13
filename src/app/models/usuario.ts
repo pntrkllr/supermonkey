@@ -5,5 +5,7 @@ export class Usuario {
     nom_usuario !: string;
     correo !: string; 
     contrasena!: string;
+    pregunta !: string;
+    respuesta !: string;
     id_rol !: string;
 }

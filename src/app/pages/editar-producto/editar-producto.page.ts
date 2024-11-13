@@ -16,6 +16,7 @@ export class EditarProductoPage implements OnInit {
   nombrePrTocado: boolean = false;
   pesoTocado: boolean = false;
   precioTocado: boolean = false;
+  stockTocado: boolean = false;
   categoriaTocada: boolean = false;
 
   constructor(private router: Router, private activerouter: ActivatedRoute, private bd: ServicebdService) { 

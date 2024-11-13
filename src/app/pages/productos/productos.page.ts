@@ -66,6 +66,9 @@ export class ProductosPage implements OnInit {
         })
       }
     })
+
+    this.bd.getProductos();
+
   }
 
   //vibración para botones del carrito
@@ -101,8 +104,8 @@ export class ProductosPage implements OnInit {
     this.router.navigate(['/editar-producto'], navigationExtras);
   }
 
-  eliminar(x: any) {
-    this.bd.eliminarProducto(x.id_producto);
+  deshabilitar(x: any) {
+    this.bd.deshabilitarProducto(x.id_producto);
   }
 
   loadProductos() {

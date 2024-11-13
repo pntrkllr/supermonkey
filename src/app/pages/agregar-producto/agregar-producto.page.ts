@@ -23,6 +23,7 @@ export class AgregarProductoPage implements OnInit {
   nombrePrTocado: boolean = false;
   pesoTocado: boolean = false;
   precioTocado: boolean = false;
+  stockTocado: boolean = false;
   categoriaTocada: boolean = false;
 
   constructor(private bd: ServicebdService) { }
