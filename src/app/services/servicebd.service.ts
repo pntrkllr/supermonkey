@@ -175,6 +175,10 @@ export class ServicebdService {
     return this.isDBReady.asObservable();
   }
 
+  actualizarProductos() {
+    this.getProductos();
+  }
+
   getUsuario(nom_usuario: string, contrasena: string) {
     return this.database.executeSql('SELECT * FROM usuario WHERE nom_usuario = ? AND contrasena = ?', [nom_usuario, contrasena]).then(res => {
       let items: any[] = [];
@@ -591,6 +595,9 @@ export class ServicebdService {
         if (total > 0) {
           return Promise.all(productosActualizados)
             .then(() => {
+
+              this.actualizarProductos();
+
               return this.database.executeSql(
                 `UPDATE venta 
                SET cant_venta = ?, total = ?, id_estado = 1 

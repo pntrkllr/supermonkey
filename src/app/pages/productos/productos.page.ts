@@ -19,7 +19,7 @@ export class ProductosPage implements OnInit {
   nom_usuario: string = "";
   contrasena: string = "";
   rolUsuario: string | null = null;
-  id_user:number = 0;
+  id_user: number = 0;
   recetas: any[] = [];
   traducciones: string[] = [];
 
@@ -62,12 +62,12 @@ export class ProductosPage implements OnInit {
         this.bd.fetchProductos().subscribe(data => {
           this.arregloProductos = data;
           this.productosFiltrados = this.arregloProductos;
-          this.bd.getProductos();
         });
       }
     });
   
     this.bd.getProductos();
+
   }
   
   //vibración para botones del carrito
