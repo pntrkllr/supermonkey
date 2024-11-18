@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" keyboard-attach>
 
   <div id="container">
 
@@ -18,30 +18,34 @@
       </div>
 
       <br />
-      <br />
 
       <form [formGroup]="form" (ngSubmit)="crear()">
 
+        <!-- Nombre -->
         <ion-input label="Nombre" label-placement="floating" fill="outline" placeholder="Ingrese su nombre"
           formControlName="pnombre" (ionBlur)="form.get('pnombre')?.markAsTouched()"></ion-input>
         <p *ngIf="isNombreInvalid()">{{ getNombreError() }}</p>
         <br />
 
+        <!-- Apellido -->
         <ion-input label="Apellido" label-placement="floating" fill="outline" placeholder="Ingrese su apellido"
           formControlName="apellido" (ionBlur)="form.get('apellido')?.markAsTouched()"></ion-input>
         <p *ngIf="isApellidoInvalid()">{{ getApellidoError() }}</p>
         <br />
 
+        <!-- Nombre de usuario -->
         <ion-input label="Nombre de usuario" label-placement="floating" fill="outline"
           placeholder="Ingrese su nombre de usuario" formControlName="nom_usuario" (ionBlur)="form.get('nom_usuario')?.markAsTouched()"></ion-input>
         <p *ngIf="isUsuarioInvalid()">{{ getUsuarioError() }}</p>
         <br />
 
+        <!-- Correo electrónico -->
         <ion-input label="Correo electrónico" type="email" label-placement="floating" fill="outline"
           placeholder="Ingrese su correo electrónico" formControlName="correo" (ionBlur)="form.get('correo')?.markAsTouched()"></ion-input>
         <p *ngIf="isEmailInvalid()">{{ getEmailError() }}</p>
         <br />
 
+        <!-- Contraseña -->
         <ion-input label="Contraseña" type="password" label-placement="floating" fill="outline"
           placeholder="Ingrese su contraseña" formControlName="contrasena" (ionBlur)="form.get('contrasena')?.markAsTouched()">
           <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
@@ -49,6 +53,7 @@
         <p *ngIf="isPasswordInvalid()">{{ getPasswordError() }}</p>
         <br />
 
+        <!-- Confirmar Contraseña -->
         <ion-input label="Confirmar Contraseña" type="password" label-placement="floating" fill="outline"
           placeholder="Confirme su contraseña" formControlName="confirmar_contrasena" (ionBlur)="form.get('confirmar_contrasena')?.markAsTouched()">
           <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
@@ -56,7 +61,7 @@
         <p *ngIf="arePasswordsDifferent()">{{ getConfirmPasswordError() }}</p>
         <br />
 
-        <!-- pregunta de seguridad -->
+        <!-- Pregunta de seguridad -->
         <ion-item>
           <ion-label>Pregunta</ion-label>
           <ion-select formControlName="pregunta" placeholder="Escoge una pregunta">
@@ -67,24 +72,27 @@
           </ion-select>
         </ion-item>
 
-        <br>
+        <br />
 
-        <!-- respuesta pregunta seguridad -->
+        <!-- Respuesta pregunta seguridad -->
         <ion-input label="Respuesta" type="text" label-placement="floating" fill="outline"
           placeholder="Escriba su respuesta" formControlName="respuesta" (ionBlur)="form.get('respuesta')?.markAsTouched()">
         </ion-input>
         <p *ngIf="isRespuestaInvalid()">{{ getRespuestaError() }}</p>
         <br />
 
+        <!-- Aceptación términos y condiciones -->
         <div class="container-check">
           <ion-checkbox>Acepto los <a [routerLink]="['/terminos-y-condiciones']" (click)="$event.stopPropagation()">términos y condiciones</a></ion-checkbox>
         </div>
 
+        <!-- Subir foto -->
         <div class="container-check">
           <ion-button (click)="takePicture()">Subir Foto (Opcional)</ion-button>
           <p *ngIf="imagen">Foto seleccionada: <img [src]="imagen" alt="Foto de perfil" style="width: 100px; height: auto;" /></p>
         </div>
 
+        <!-- Botón de envío -->
         <div class="container-boton">
           <ion-button color="success" type="submit" [disabled]="form.invalid">Crear cuenta</ion-button>
         </div>
@@ -93,4 +101,5 @@
 
     </div>
   </div>
+
 </ion-content>
