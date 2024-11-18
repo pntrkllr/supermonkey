@@ -53,24 +53,23 @@ export class ProductosPage implements OnInit {
   ngOnInit() {
 
     this.loadProductos();
-
+  
     this.id_user = Number(localStorage.getItem('id_usuario'));
     this.rolUsuario = localStorage.getItem('id_rol');
-
-    //verificar si la BD esta lista
+  
     this.bd.dbState().subscribe(res => {
       if (res) {
         this.bd.fetchProductos().subscribe(data => {
           this.arregloProductos = data;
           this.productosFiltrados = this.arregloProductos;
-        })
+          this.bd.getProductos();
+        });
       }
-    })
-
+    });
+  
     this.bd.getProductos();
-
   }
-
+  
   //vibración para botones del carrito
   async triggerHeavyHaptic() {
     await Haptics.impact({ style: ImpactStyle.Heavy });

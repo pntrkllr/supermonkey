@@ -365,7 +365,7 @@ export class ServicebdService {
             let productoYaEnCarrito = false;
 
             for (let i = 0; i < res.rows.length; i++) {
-              if (res.rows.item(i).id_producto === id_producto) {            
+              if (res.rows.item(i).id_producto === id_producto) {
                 productoYaEnCarrito = true;
                 break; // Salir del bucle si se encuentra el producto
               }
@@ -455,7 +455,7 @@ export class ServicebdService {
       JOIN detalle ON detalle.id_producto = producto.id_producto 
       JOIN venta ON venta.id_venta = detalle.id_venta
       WHERE producto.id_producto = ? AND venta.id_estado = 2 AND venta.id_usuario = ?`,
-      [id_producto , id_usuario]
+      [id_producto, id_usuario]
     ).then((res) => {
       if (res.rows.length > 0) {
         const cantidadActual = res.rows.item(0).cantidad;
@@ -614,7 +614,6 @@ export class ServicebdService {
       });
   }
 
-
   verHistorial(id_usuario: number) {
     return this.database.executeSql(
       `SELECT v.id_venta, v.total, v.cant_venta, v.id_estado, v.id_usuario, 
@@ -746,8 +745,8 @@ export class ServicebdService {
       });
   }
 
-  validarPregunta(pregunta: string, respuesta : string) {
-    this.database.executeSql('SELECT * FROM usuario WHERE pregunta = ? and respuesta = ?', [pregunta , respuesta])
+  validarPregunta(pregunta: string, respuesta: string) {
+    this.database.executeSql('SELECT * FROM usuario WHERE pregunta = ? and respuesta = ?', [pregunta, respuesta])
       .then(res => {
         if (res.rows.length > 0) {
           this.alert.presentAlert('Pregunta y respuesta válida', 'La pregunta existe. Redirigiendo al cambio de contraseña...');
