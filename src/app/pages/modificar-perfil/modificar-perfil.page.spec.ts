@@ -43,4 +43,18 @@ describe('ModificarPerfilPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('debe validar el formulario con nombre, apellido y email válidos', () => {
+    component.form.setValue({
+      nombre : "pedro",
+      apellido : "torre",
+      email : "pedrot@gmail.com"
+    })
+  
+    expect(component.form.valid).toBeTrue();
+    expect(component.isNombreInvalid()).toBeFalse();
+    expect(component.isApellidoInvalid()).toBeFalse();
+    expect(component.isEmailInvalid()).toBeFalse();
+
+  });
 });

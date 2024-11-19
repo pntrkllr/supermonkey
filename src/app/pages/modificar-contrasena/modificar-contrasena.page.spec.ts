@@ -32,4 +32,17 @@ describe('ModificarContrasenaPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('validar contrasena con simbolos, numeros y letras', () => {
+    
+    component.nuevaContrasena = '@@@@123a';
+    component.confirmarContrasena = '@@@@123a';
+  
+    expect(component.patternContrasena()).toBeTrue(); // Debe contener símbolos
+    expect(component.numerosContrasena()).toBeTrue(); // Debe contener números
+    expect(component.letrasContrasena()).toBeTrue();  // Debe contener letras
+  
+    
+    expect(component.nuevaContrasena === component.confirmarContrasena).toBeTrue();
+  });
 });

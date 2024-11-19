@@ -31,4 +31,14 @@ describe('RecuperarContrasenaPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('debe validar el formulario con email válidos', () => {
+    component.form.setValue({
+      correo : "pedrot@gmail.com"
+    })
+
+    expect(component.form.valid).toBeTrue();
+    expect(component.isEmailInvalid()).toBeFalse();
+  });
+
 });

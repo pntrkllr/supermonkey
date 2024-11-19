@@ -31,4 +31,19 @@ describe('RegisterPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('valdiar datos del registro', () => {
+    component.form.setValue({
+      pnombre: 'Juan',
+      apellido: 'Pérez',
+      nom_usuario: 'juanp',
+      correo: 'juan.perez@example.com',
+      contrasena: '@@@@123a',
+      confirmar_contrasena: '@@@@123a',
+      pregunta: 'nombre_padre',
+      respuesta: 'Seba',
+    })
+    expect(component.form.valid).toBeTrue();
+  });
+
 });

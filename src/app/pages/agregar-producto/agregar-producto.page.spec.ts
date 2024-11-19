@@ -8,12 +8,9 @@ describe('AgregarProductoPage', () => {
   let component: AgregarProductoPage;
   let fixture: ComponentFixture<AgregarProductoPage>;
 
-  // Crear un mock básico de SQLite
-  const mockSQLite = jasmine.createSpyObj('SQLite', {
-    create: Promise.resolve({
-      executeSql: jasmine.createSpy('executeSql').and.returnValue(Promise.resolve({ rows: [] })),
-    }),
-  });
+  const mockSQLite = {
+    executeSql: jasmine.createSpy('executeSql').and.returnValue(Promise.resolve())
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
