@@ -9,7 +9,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 })
 export class HomePage {
 
-  constructor(private bd: ServicebdService) {}
+  constructor() {}
 
   //vibración para botones del carrito
   async triggerHeavyHaptic() {

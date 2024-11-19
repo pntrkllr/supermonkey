@@ -25,7 +25,7 @@ export class HistorialCompraPage implements OnInit {
   id! : number;
 
 
-  constructor(private alert : ServicealertService,private bd : ServicebdService, private router: Router, private activedroute: ActivatedRoute) { 
+  constructor(private bd : ServicebdService, private router: Router, private activedroute: ActivatedRoute) { 
     this.activedroute.queryParams.subscribe(param => {
 
       if (this.router.getCurrentNavigation()?.extras.state) {
