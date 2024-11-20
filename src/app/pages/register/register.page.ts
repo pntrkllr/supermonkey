@@ -52,7 +52,6 @@ export class RegisterPage implements OnInit {
   crear() {
     if (this.form.valid) {
       const { pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta } = this.form.value;
-      this.alert.presentAlert('mono qloo', 'datos : '+pregunta)
       const foto = this.imagen || null;
       this.bd.insertarUsuario(foto, pnombre, apellido, nom_usuario, correo, contrasena, pregunta, respuesta, this.id_rol);
       this.router.navigate(['/login']);
